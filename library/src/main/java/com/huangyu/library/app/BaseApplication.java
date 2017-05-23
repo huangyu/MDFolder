@@ -7,8 +7,6 @@ import android.support.multidex.MultiDexApplication;
 
 import com.huangyu.library.util.LogUtils;
 
-import io.realm.Realm;
-
 /**
  * 应用基类
  * Created by huangyu on 2017-4-10.
@@ -24,7 +22,6 @@ public class BaseApplication extends MultiDexApplication {
 
         CrashHandler.getInstance().init(this);
         LogUtils.init(isApkInDebug(this));
-        Realm.init(this);
     }
 
     public static Context getAppContext() {
