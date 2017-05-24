@@ -1,7 +1,10 @@
 package com.huangyu.mdfolder.mvp.presenter;
 
+import android.content.Context;
+
 import com.huangyu.library.mvp.BasePresenter;
 import com.huangyu.mdfolder.mvp.model.FileListModel;
+import com.huangyu.mdfolder.mvp.model.FileModel;
 import com.huangyu.mdfolder.mvp.view.IMainView;
 
 import java.io.File;
@@ -14,25 +17,27 @@ import java.util.Stack;
 
 public class MainPresenter extends BasePresenter<IMainView> {
 
-    private FileListModel mFileModel;
+    private FileListModel mFileListModel;
+    private FileModel mFileModel;
     private Stack<File> mFileStack;
     private String mCurrentPath;
 
     @Override
     public void create() {
-        mFileModel = new FileListModel();
+        mFileListModel = new FileListModel();
+        mFileModel = new FileModel();
         mFileStack = new Stack<>();
     }
 
     public List<File> getRootFileList() {
-        mCurrentPath = mFileModel.getSDCardPath();
+        mCurrentPath = mFileListModel.getSDCardPath();
         mView.addTab(mCurrentPath);
         mFileStack.push(new File(mCurrentPath));
         return getCurrentFileList();
     }
 
     public List<File> getCurrentFileList() {
-        return mFileModel.orderByType(mFileModel.orderByAlphabet(mFileModel.getFileList(mCurrentPath)));
+        return mFileListModel.orderByType(mFileListModel.orderByAlphabet(mFileListModel.getFileList(mCurrentPath)));
     }
 
     /**
@@ -69,7 +74,7 @@ public class MainPresenter extends BasePresenter<IMainView> {
     }
 
     /**
-     * 点击返回返回的文件夹
+     * 点击返回显示的文件夹
      *
      * @return
      */
@@ -83,6 +88,10 @@ public class MainPresenter extends BasePresenter<IMainView> {
             return true;
         }
         return false;
+    }
+
+    public void openFile(Context context, File file) {
+        mFileModel.openFile(context, file);
     }
 
 }

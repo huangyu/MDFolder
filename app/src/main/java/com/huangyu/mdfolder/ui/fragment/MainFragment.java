@@ -63,7 +63,7 @@ public class MainFragment extends BaseFragment<IMainView, MainPresenter> impleme
                 if (file.isDirectory()) {
                     mPresenter.enterFolder(file);
                 } else {
-                    // TODO
+                    mPresenter.openFile(getContext(), file);
                 }
             }
         });
