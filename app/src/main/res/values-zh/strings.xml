@@ -8,6 +8,7 @@
     <string name="navigation_drawer_open">打开导航栏</string>
     <string name="navigation_drawer_close">关闭导航栏</string>
 
+    <string name="menu_other">其他</string>
     <string name="menu_photo">照片</string>
     <string name="menu_music">音乐</string>
     <string name="menu_video">视频</string>

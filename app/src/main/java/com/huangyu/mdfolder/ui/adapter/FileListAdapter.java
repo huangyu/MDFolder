@@ -40,10 +40,10 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
 
         if (file.isDirectory()) {
             mTvSize.setText(mContext.getString(R.string.str_folder));
-            mIvIcon.setImageResource(R.drawable.ic_folder);
+            mIvIcon.setImageResource(R.mipmap.ic_folder);
         } else {
             mTvSize.setText(FileUtils.getFormatSize(file.getTotalSpace()));
-            mIvIcon.setImageResource(R.drawable.ic_file);
+            mIvIcon.setImageResource(R.mipmap.ic_file);
         }
 
         mTvTime.setText(DateUtils.getFormatDate(file.lastModified()));

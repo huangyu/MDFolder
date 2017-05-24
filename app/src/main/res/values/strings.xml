@@ -7,6 +7,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <string name="menu_other">Other</string>
     <string name="menu_photo">Photo</string>
     <string name="menu_music">Music</string>
     <string name="menu_video">Video</string>
