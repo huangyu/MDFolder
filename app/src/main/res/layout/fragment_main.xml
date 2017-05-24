@@ -5,6 +5,7 @@
     android:id="@+id/cl_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.huangyu.mdfolder.ui.activity.MainActivity">
 
@@ -14,20 +15,28 @@
         android:orientation="vertical">
 
         <com.huangyu.mdfolder.ui.widget.TabView
+            android:id="@+id/tab_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
             android:elevation="4dp" />
 
-        <android.support.v4.widget.SwipeRefreshLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycler_view"
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/swipe_refresh_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent">
 
-        </android.support.v4.widget.SwipeRefreshLayout>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </android.support.v4.widget.SwipeRefreshLayout>
+        </FrameLayout>
 
     </LinearLayout>
 

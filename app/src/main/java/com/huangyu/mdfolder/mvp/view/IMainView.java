@@ -7,4 +7,7 @@ import com.huangyu.library.mvp.IBaseView;
  */
 
 public interface IMainView extends IBaseView {
+    void addTab(String path);
+    boolean removeTab();
+    void refreshData();
 }

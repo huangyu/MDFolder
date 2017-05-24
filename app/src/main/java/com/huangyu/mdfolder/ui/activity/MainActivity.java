@@ -37,7 +37,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     RelativeLayout mRelativeLayout;
 
     private SearchView mSearchView;
-
+    private MainFragment mMainFragment;
     private boolean isSearchViewShow;
     private long mCurrentTime;
 
@@ -66,9 +66,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void replaceFragment() {
+        mMainFragment = new MainFragment();
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.rl_content, new MainFragment())
+                .replace(R.id.rl_content, mMainFragment)
                 .commit();
     }
 
@@ -76,6 +77,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
+            return;
+        }
+
+        if (mMainFragment != null && mMainFragment.onBackPressed()) {
             return;
         }
 

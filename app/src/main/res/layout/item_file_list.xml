@@ -2,18 +2,20 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="76dp"
     android:background="@android:color/white">
 
     <ImageView
         android:id="@+id/iv_icon"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_centerVertical="true"
         android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@string/str_image"
         android:src="@drawable/ic_file" />
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -26,41 +28,52 @@
             android:id="@+id/tv_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="48dp"
             android:layout_marginLeft="72dp"
             android:layout_marginRight="48dp"
+            android:layout_marginStart="72dp"
             android:maxLines="1"
             android:textColor="@android:color/black"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            tools:text="Title" />
 
         <TextView
             android:id="@+id/tv_size"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/tv_name"
+            android:layout_marginEnd="48dp"
             android:layout_marginLeft="72dp"
             android:layout_marginRight="48dp"
+            android:layout_marginStart="72dp"
             android:layout_marginTop="8dp"
+            android:ellipsize="end"
             android:maxLines="1"
             android:textColor="@android:color/darker_gray"
-            android:textSize="14sp" />
-    </LinearLayout>
+            android:textSize="14sp"
+            tools:text="Size" />
 
-    <TextView
-        android:id="@+id/tv_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_gravity="center"
-        android:layout_marginRight="16dp"
-        android:maxLines="1"
-        android:textColor="@android:color/darker_gray"
-        tools:text="time" />
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/tv_size"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:maxLines="1"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="14sp"
+            tools:text="Time" />
+
+    </RelativeLayout>
 
     <View
         android:id="@+id/v_divider"
         android:layout_width="match_parent"
         android:layout_height="0.3dp"
-        android:layout_marginLeft="72dp"
+        android:layout_alignParentBottom="true"
         android:background="@android:color/darker_gray" />
-
 </RelativeLayout>

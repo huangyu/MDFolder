@@ -7,7 +7,9 @@ import android.widget.TextView;
 
 import com.huangyu.library.ui.CommonRecyclerViewAdapter;
 import com.huangyu.library.ui.CommonRecyclerViewHolder;
+import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.R;
+import com.huangyu.mdfolder.utils.DateUtils;
 
 import java.io.File;
 
@@ -27,12 +29,24 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
     }
 
     @Override
-    public void convert(CommonRecyclerViewHolder holder, File data, int position) {
+    public void convert(CommonRecyclerViewHolder holder, File file, int position) {
         mIvIcon = holder.getView(R.id.iv_icon);
         mTvName = holder.getView(R.id.tv_name);
         mTvSize = holder.getView(R.id.tv_size);
         mTvTime = holder.getView(R.id.tv_time);
         mVDivider = holder.getView(R.id.v_divider);
+
+        mTvName.setText(file.getName());
+
+        if (file.isDirectory()) {
+            mTvSize.setText(mContext.getString(R.string.str_folder));
+            mIvIcon.setImageResource(R.drawable.ic_folder);
+        } else {
+            mTvSize.setText(FileUtils.getFormatSize(file.getTotalSpace()));
+            mIvIcon.setImageResource(R.drawable.ic_file);
+        }
+
+        mTvTime.setText(DateUtils.getFormatDate(file.lastModified()));
 
         if (position == getItemCount() - 1) {
             mVDivider.setVisibility(View.GONE);
