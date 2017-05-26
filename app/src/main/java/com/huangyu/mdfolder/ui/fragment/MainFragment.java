@@ -1,14 +1,20 @@
 package com.huangyu.mdfolder.ui.fragment;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.huangyu.library.ui.BaseFragment;
 import com.huangyu.library.ui.CommonRecyclerViewAdapter;
 import com.huangyu.mdfolder.R;
@@ -16,6 +22,8 @@ import com.huangyu.mdfolder.mvp.presenter.MainPresenter;
 import com.huangyu.mdfolder.mvp.view.IMainView;
 import com.huangyu.mdfolder.ui.adapter.FileListAdapter;
 import com.huangyu.mdfolder.ui.widget.TabView;
+import com.huangyu.mdfolder.utils.AlertUtils;
+import com.huangyu.mdfolder.utils.KeyboardUtils;
 
 import java.io.File;
 
@@ -38,8 +46,14 @@ public class MainFragment extends BaseFragment<IMainView, MainPresenter> impleme
     @Bind(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
-    @Bind(R.id.fab)
-    FloatingActionButton mFab;
+    @Bind(R.id.fam_add)
+    FloatingActionMenu mFamAdd;
+
+    @Bind(R.id.fab_add_file)
+    FloatingActionButton mFabAddFile;
+
+    @Bind(R.id.fab_add_folder)
+    FloatingActionButton mFabAddFolder;
 
     private FileListAdapter mAdapter;
 
@@ -77,13 +91,6 @@ public class MainFragment extends BaseFragment<IMainView, MainPresenter> impleme
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO
-            }
-        });
-
         mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -95,6 +102,95 @@ public class MainFragment extends BaseFragment<IMainView, MainPresenter> impleme
                         mSwipeRefreshLayout.setRefreshing(false);
                     }
                 }, 500);
+            }
+        });
+
+        mFabAddFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View view = inflater.inflate(R.layout.dialog_add, new LinearLayout(getContext()), false);
+                final AppCompatEditText editText = (AppCompatEditText) view.findViewById(R.id.et_name);
+                mCoordinatorLayout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        KeyboardUtils.showSoftInput(editText);
+                    }
+                }, 50);
+                AlertUtils.showCustomAlert(getContext(), getString(R.string.tips_add_file), view, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String fileName = editText.getText().toString();
+                        String filePath = mPresenter.getCurrentPath() + File.separator + fileName;
+
+                        if (mPresenter.isFileExists(filePath)) {
+                            AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_file_exist));
+                        } else {
+                            if (mPresenter.addFile(filePath)) {
+                                refreshData();
+                            } else {
+                                AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_add_file_error));
+                            }
+                        }
+                        dialog.dismiss();
+                    }
+                }, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mCoordinatorLayout.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                KeyboardUtils.hideSoftInput(getContext(), editText);
+                            }
+                        }, 50);
+                        dialog.dismiss();
+                    }
+                });
+                mFamAdd.close(true);
+            }
+        });
+        mFabAddFolder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View view = inflater.inflate(R.layout.dialog_add, new LinearLayout(getContext()), false);
+                final AppCompatEditText editText = (AppCompatEditText) view.findViewById(R.id.et_name);
+                mCoordinatorLayout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        KeyboardUtils.showSoftInput(editText);
+                    }
+                }, 50);
+                AlertUtils.showCustomAlert(getContext(), getString(R.string.tips_add_folder), view, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String fileName = editText.getText().toString();
+                        String filePath = mPresenter.getCurrentPath() + File.separator + fileName;
+
+                        if (mPresenter.isFolderExists(filePath)) {
+                            AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_folder_exist));
+                        } else {
+                            if (mPresenter.addFolder(filePath)) {
+                                refreshData();
+                            } else {
+                                AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_add_folder_error));
+                            }
+                        }
+                        dialog.dismiss();
+                    }
+                }, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mCoordinatorLayout.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                KeyboardUtils.hideSoftInput(getContext(), editText);
+                            }
+                        }, 50);
+                        dialog.dismiss();
+                    }
+                });
+                mFamAdd.close(true);
             }
         });
 
@@ -127,6 +223,9 @@ public class MainFragment extends BaseFragment<IMainView, MainPresenter> impleme
     }
 
     public boolean onBackPressed() {
+        if (mFamAdd.isOpened()) {
+            mFamAdd.close(true);
+        }
         return mPresenter.backFolder();
     }
 

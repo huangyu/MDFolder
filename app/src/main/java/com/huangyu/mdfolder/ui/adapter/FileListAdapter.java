@@ -42,7 +42,7 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
             mTvSize.setText(mContext.getString(R.string.str_folder));
             mIvIcon.setImageResource(R.mipmap.ic_folder);
         } else {
-            mTvSize.setText(FileUtils.getFormatSize(file.getTotalSpace()));
+            mTvSize.setText(FileUtils.getFileSize(file));
             mIvIcon.setImageResource(R.mipmap.ic_file);
         }
 

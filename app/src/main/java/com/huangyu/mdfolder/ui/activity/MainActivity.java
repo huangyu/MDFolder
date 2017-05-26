@@ -1,5 +1,6 @@
 package com.huangyu.mdfolder.ui.activity;
 
+import android.Manifest;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -20,9 +21,15 @@ import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.ui.fragment.MainFragment;
 import com.huangyu.mdfolder.utils.AlertUtils;
 
-import butterknife.Bind;
+import java.util.List;
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+import butterknife.Bind;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
+import static com.huangyu.mdfolder.app.Constants.PERMISSION_ACCESS_FILES;
+
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -62,7 +69,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         mNavigationView.setNavigationItemSelectedListener(this);
 
-        replaceFragment();
+        // 请求运行时权限
+        requirePermissions();
     }
 
     private void replaceFragment() {
@@ -176,6 +184,39 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         supportInvalidateOptionsMenu();
         isSearchViewShow = false;
         return true;
+    }
+
+    @AfterPermissionGranted(PERMISSION_ACCESS_FILES)
+    private void requirePermissions() {
+        String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            replaceFragment();
+        } else {
+            EasyPermissions.requestPermissions(this, getString(R.string.tips_require_file_permissions), PERMISSION_ACCESS_FILES, perms);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+        replaceFragment();
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        AlertUtils.showSnack(mRelativeLayout, getString(R.string.tips_no_permissions), getString(R.string.act_exit), new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
     }
 
 }

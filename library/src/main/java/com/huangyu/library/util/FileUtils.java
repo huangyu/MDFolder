@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -160,6 +159,27 @@ public final class FileUtils {
      */
     public static boolean isFile(File file) {
         return isFileExists(file) && file.isFile();
+    }
+
+    public static boolean createFile(String dirPath) {
+        return createFile(getFileByPath(dirPath));
+    }
+
+    public static boolean createFile(File file) {
+        try {
+            return file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean createFolder(String dirPath) {
+        return createFolder(getFileByPath(dirPath));
+    }
+
+    public static boolean createFolder(File file) {
+        return file.mkdir();
     }
 
     /**
@@ -1487,7 +1507,7 @@ public final class FileUtils {
 
     /**
      * 字节数转合适内存大小
-     * <p>保留3位小数</p>
+     * <p>保留2位小数</p>
      *
      * @param byteNum 字节数
      * @return 合适内存大小
@@ -1497,13 +1517,13 @@ public final class FileUtils {
         if (byteNum < 0) {
             return "shouldn't be less than zero!";
         } else if (byteNum < KB) {
-            return String.format("%.3fB", (double) byteNum + 0.0005);
+            return String.format("%.2fB", (double) byteNum);
         } else if (byteNum < MB) {
-            return String.format("%.3fKB", (double) byteNum / KB + 0.0005);
+            return String.format("%.2fKB", (double) byteNum / KB);
         } else if (byteNum < GB) {
-            return String.format("%.3fMB", (double) byteNum / MB + 0.0005);
+            return String.format("%.2fMB", (double) byteNum / MB);
         } else {
-            return String.format("%.3fGB", (double) byteNum / GB + 0.0005);
+            return String.format("%.2fGB", (double) byteNum / GB);
         }
     }
 
@@ -1515,39 +1535,6 @@ public final class FileUtils {
             }
         }
         return true;
-    }
-
-    /**
-     * 格式化内存单位
-     *
-     * @param size 大小
-     * @return
-     */
-    public static String getFormatSize(double size) {
-        double kiloByte = size / 1024;
-        if (kiloByte < 1) {
-            return size + "Byte";
-        }
-
-        double megaByte = kiloByte / 1024;
-        if (megaByte < 1) {
-            BigDecimal result1 = new BigDecimal(Double.toString(kiloByte));
-            return result1.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "KB";
-        }
-
-        double gigaByte = megaByte / 1024;
-        if (gigaByte < 1) {
-            BigDecimal result2 = new BigDecimal(Double.toString(megaByte));
-            return result2.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "MB";
-        }
-
-        double teraBytes = gigaByte / 1024;
-        if (teraBytes < 1) {
-            BigDecimal result3 = new BigDecimal(Double.toString(gigaByte));
-            return result3.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "GB";
-        }
-        BigDecimal result4 = new BigDecimal(teraBytes);
-        return result4.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "TB";
     }
 
 }

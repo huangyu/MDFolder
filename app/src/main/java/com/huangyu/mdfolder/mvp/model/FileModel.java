@@ -239,4 +239,40 @@ public class FileModel implements IBaseModel {
         return mimeTypeMap.get(FileUtils.getFileExtension(file));
     }
 
+    public boolean isFileExists(String path) {
+        return FileUtils.isFileExists(path) && FileUtils.isFile(path);
+    }
+
+    public boolean isFolderExists(String path) {
+        return FileUtils.isFileExists(path) && FileUtils.isDir(path);
+    }
+
+    public boolean addFile(String filePath) {
+        return FileUtils.createFile(filePath);
+    }
+
+    public boolean addFolder(String folderPath) {
+        return FileUtils.createFolder(folderPath);
+    }
+
+    public boolean deleteFile(String filePath) {
+        return FileUtils.deleteFile(filePath);
+    }
+
+    public boolean deleteFolder(String folderPath) {
+        return FileUtils.deleteDir(folderPath);
+    }
+
+    public boolean moveFile(String srcFilePath, String destFilePath) {
+        return FileUtils.moveFile(srcFilePath, destFilePath);
+    }
+
+    public boolean moveFolder(String srcFolderPath, String destFolderPath) {
+        return FileUtils.moveDir(srcFolderPath, destFolderPath);
+    }
+
+    public boolean renameFile(String filePath, String newName) {
+        return FileUtils.rename(filePath, newName);
+    }
+
 }

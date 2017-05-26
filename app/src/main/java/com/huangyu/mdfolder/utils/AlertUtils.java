@@ -39,7 +39,19 @@ public class AlertUtils {
     }
 
     /**
-     * 显示提示框
+     * 显示Snack
+     *
+     * @param view            view
+     * @param content         内容
+     * @param action          按钮操作
+     * @param onClickListener 按钮事件
+     */
+    public static void showSnack(@NonNull View view, String content, String action, View.OnClickListener onClickListener) {
+        Snackbar.make(view, content, Snackbar.LENGTH_SHORT).setDuration(Snackbar.LENGTH_INDEFINITE).setAction(action, onClickListener).show();
+    }
+
+    /**
+     * 显示普通提示框
      *
      * @param context       context
      * @param message       信息
@@ -47,13 +59,27 @@ public class AlertUtils {
      * @param negativeClick 否定按钮事件
      * @return dialog
      */
-    public static AlertDialog showAlert(Context context, String message, String positiveString, String negativeString, DialogInterface.OnClickListener positiveClick, DialogInterface.OnClickListener negativeClick) {
+    public static AlertDialog showNormalAlert(Context context, String message, String positiveString, String negativeString, DialogInterface.OnClickListener positiveClick, DialogInterface.OnClickListener negativeClick) {
         AlertDialog alertDialog = new AlertDialog.Builder(context).setMessage(message).setNeutralButton(context.getString(R.string.act_cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
         }).setPositiveButton(positiveString, positiveClick).setNegativeButton(negativeString, negativeClick).create();
+        alertDialog.show();
+        return alertDialog;
+    }
+
+    /**
+     * 显示自定义View提示框
+     *
+     * @param context       context
+     * @param title         标题
+     * @param positiveClick 肯定按钮事件
+     * @return
+     */
+    public static AlertDialog showCustomAlert(final Context context, String title, View view, DialogInterface.OnClickListener positiveClick, DialogInterface.OnClickListener negativeClick) {
+        AlertDialog alertDialog = new AlertDialog.Builder(context).setTitle(title).setView(view).setPositiveButton(context.getString(R.string.act_confirm), positiveClick).setNegativeButton(context.getString(R.string.act_cancel), negativeClick).create();
         alertDialog.show();
         return alertDialog;
     }

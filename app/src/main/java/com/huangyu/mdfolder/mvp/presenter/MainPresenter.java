@@ -29,6 +29,10 @@ public class MainPresenter extends BasePresenter<IMainView> {
         mFileStack = new Stack<>();
     }
 
+    public String getCurrentPath() {
+        return mCurrentPath;
+    }
+
     public List<File> getRootFileList() {
         mCurrentPath = mFileListModel.getSDCardPath();
         mView.addTab(mCurrentPath);
@@ -92,6 +96,42 @@ public class MainPresenter extends BasePresenter<IMainView> {
 
     public void openFile(Context context, File file) {
         mFileModel.openFile(context, file);
+    }
+
+    public boolean isFileExists(String path) {
+        return mFileModel.isFileExists(path);
+    }
+
+    public boolean isFolderExists(String path) {
+        return mFileModel.isFolderExists(path);
+    }
+
+    public boolean addFile(String filePath) {
+        return mFileModel.addFile(filePath);
+    }
+
+    public boolean addFolder(String folderPath) {
+        return mFileModel.addFolder(folderPath);
+    }
+
+    public boolean deleteFile(String filePath) {
+        return mFileModel.deleteFile(filePath);
+    }
+
+    public boolean deleteFolder(String folderPath) {
+        return mFileModel.deleteFolder(folderPath);
+    }
+
+    public boolean moveFile(String srcFilePath, String destFilePath) {
+        return mFileModel.moveFile(srcFilePath, destFilePath);
+    }
+
+    public boolean moveFolder(String srcFolderPath, String destFolderPath) {
+        return mFileModel.moveFolder(srcFolderPath, destFolderPath);
+    }
+
+    public boolean renameFile(String filePath, String newName) {
+        return mFileModel.renameFile(filePath, newName);
     }
 
 }
