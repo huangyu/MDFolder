@@ -5,5 +5,5 @@
     <color name="colorAccentLight">#FF80AB</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorAccentDark">#F50057</color>
-    <color name="black_semi_transparent">#B2000000</color>
+    <color name="colorShadow">#66000000</color>
 </resources>

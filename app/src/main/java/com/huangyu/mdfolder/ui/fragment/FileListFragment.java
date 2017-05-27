@@ -1,5 +1,6 @@
 package com.huangyu.mdfolder.ui.fragment;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -11,10 +12,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.ScaleAnimation;
 import android.widget.LinearLayout;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.huangyu.library.ui.BaseFragment;
 import com.huangyu.library.ui.CommonRecyclerViewAdapter;
 import com.huangyu.mdfolder.R;
@@ -47,7 +49,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     RecyclerView mRecyclerView;
 
     @Bind(R.id.fam_add)
-    FloatingActionsMenu mFamAdd;
+    FloatingActionMenu mFamAdd;
 
     @Bind(R.id.fab_add_file)
     FloatingActionButton mFabAddFile;
@@ -90,6 +92,33 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+//        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                if (dy > 0) {
+//                    mFamAdd.hideMenu(true);
+//                    animTabView(dy, false);
+//                } else {
+//                    mFamAdd.showMenu(true);
+//                    animTabView(dy, true);
+//                }
+//            }
+//
+//            @Override
+//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+//                switch (newState) {
+//                    case RecyclerView.SCROLL_STATE_IDLE:
+//                        break;
+//                    case RecyclerView.SCROLL_STATE_DRAGGING:
+//                        if (mFamAdd.isOpened()) {
+//                            mFamAdd.close(true);
+//                        }
+//                        break;
+//                    case RecyclerView.SCROLL_STATE_SETTLING:
+//                        break;
+//                }
+//            }
+//        });
 
         mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -105,6 +134,12 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             }
         });
 
+        ScaleAnimation hideAnim = new ScaleAnimation(1.0f, 0.5f, 1.0f, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+        hideAnim.setDuration(250);
+        ScaleAnimation showAnim = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+        showAnim.setDuration(250);
+        mFamAdd.setMenuButtonHideAnimation(hideAnim);
+        mFamAdd.setMenuButtonShowAnimation(showAnim);
         mFabAddFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,7 +181,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         dialog.dismiss();
                     }
                 });
-                mFamAdd.collapse();
+                mFamAdd.close(true);
             }
         });
         mFabAddFolder.setOnClickListener(new View.OnClickListener() {
@@ -190,11 +225,62 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         dialog.dismiss();
                     }
                 });
-                mFamAdd.collapse();
+                mFamAdd.close(true);
             }
         });
 
         mAdapter.setData(mPresenter.getRootFileList());
+    }
+
+    private void animTabView(int dy, boolean isShow) {
+        if (isShow) {
+            if (dy > mTabView.getHeight()) {
+                dy = mTabView.getHeight();
+            }
+            mTabView.animate().translationY(dy).setListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    mTabView.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            }).start();
+        } else {
+            mTabView.animate().translationY(0).setListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mTabView.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            }).start();
+        }
     }
 
     @Override
@@ -223,8 +309,8 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     public boolean onBackPressed() {
-        if (mFamAdd.isExpanded()) {
-            mFamAdd.collapse();
+        if (mFamAdd.isOpened()) {
+            mFamAdd.close(true);
             return true;
         }
         return mPresenter.backFolder();
