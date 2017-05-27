@@ -18,7 +18,7 @@ import android.widget.RelativeLayout;
 import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.library.ui.BaseActivity;
 import com.huangyu.mdfolder.R;
-import com.huangyu.mdfolder.ui.fragment.MainFragment;
+import com.huangyu.mdfolder.ui.fragment.FileListFragment;
 import com.huangyu.mdfolder.utils.AlertUtils;
 
 import java.util.List;
@@ -29,7 +29,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 import static com.huangyu.mdfolder.app.Constants.PERMISSION_ACCESS_FILES;
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
+public class FileListActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -44,7 +44,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     RelativeLayout mRelativeLayout;
 
     private SearchView mSearchView;
-    private MainFragment mMainFragment;
+    private FileListFragment mFileListFragment;
     private boolean isSearchViewShow;
     private long mCurrentTime;
 
@@ -74,10 +74,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void replaceFragment() {
-        mMainFragment = new MainFragment();
+        mFileListFragment = new FileListFragment();
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.rl_content, mMainFragment)
+                .replace(R.id.rl_content, mFileListFragment)
                 .commit();
     }
 
@@ -88,7 +88,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             return;
         }
 
-        if (mMainFragment != null && mMainFragment.onBackPressed()) {
+        if (mFileListFragment != null && mFileListFragment.onBackPressed()) {
             return;
         }
 

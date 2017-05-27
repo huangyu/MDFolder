@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cl_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.huangyu.mdfolder.ui.activity.MainActivity">
+    fab:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.huangyu.mdfolder.ui.activity.FileListActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -40,38 +40,39 @@
 
     </LinearLayout>
 
-    <com.github.clans.fab.FloatingActionMenu
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/fam_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right|bottom"
         android:layout_marginBottom="16dp"
         android:layout_marginRight="16dp"
-        app:menu_colorNormal="@color/colorAccent"
-        app:menu_colorPressed="@color/colorAccentDark"
-        app:menu_colorRipple="@color/colorAccentLight"
-        app:menu_icon="@mipmap/ic_add">
+        fab:fab_addButtonColorNormal="@color/colorAccent"
+        fab:fab_addButtonColorPressed="@color/colorAccentDark"
+        fab:fab_addButtonSize="normal"
+        fab:fab_labelStyle="@style/menu_labels_style"
+        fab:fab_labelsPosition="left">
 
-        <com.github.clans.fab.FloatingActionButton
+        <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_add_file"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_file_white"
-            app:fab_colorNormal="@color/colorAccent"
-            app:fab_colorPressed="@color/colorAccentDark"
-            app:fab_colorRipple="@color/colorAccentLight"
-            app:fab_label="@string/act_add_file" />
+            fab:fab_colorNormal="@color/colorAccent"
+            fab:fab_colorPressed="@color/colorAccentDark"
+            fab:fab_icon="@mipmap/ic_file_white"
+            fab:fab_size="mini"
+            fab:fab_title="@string/act_add_file" />
 
-        <com.github.clans.fab.FloatingActionButton
+        <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_add_folder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_folder_white"
-            app:fab_colorNormal="@color/colorAccent"
-            app:fab_colorPressed="@color/colorAccentDark"
-            app:fab_colorRipple="@color/colorAccentLight"
-            app:fab_label="@string/act_add_folder" />
+            fab:fab_colorNormal="@color/colorAccent"
+            fab:fab_colorPressed="@color/colorAccentDark"
+            fab:fab_icon="@mipmap/ic_folder_white"
+            fab:fab_size="mini"
+            fab:fab_title="@string/act_add_folder" />
 
-    </com.github.clans.fab.FloatingActionMenu>
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
 </android.support.design.widget.CoordinatorLayout>

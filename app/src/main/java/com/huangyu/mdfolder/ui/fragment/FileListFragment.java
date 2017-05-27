@@ -13,13 +13,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.huangyu.library.ui.BaseFragment;
 import com.huangyu.library.ui.CommonRecyclerViewAdapter;
 import com.huangyu.mdfolder.R;
-import com.huangyu.mdfolder.mvp.presenter.MainPresenter;
-import com.huangyu.mdfolder.mvp.view.IMainView;
+import com.huangyu.mdfolder.mvp.presenter.FileListPresenter;
+import com.huangyu.mdfolder.mvp.view.IFileListView;
 import com.huangyu.mdfolder.ui.adapter.FileListAdapter;
 import com.huangyu.mdfolder.ui.widget.TabView;
 import com.huangyu.mdfolder.utils.AlertUtils;
@@ -32,7 +32,7 @@ import butterknife.Bind;
 /**
  * Created by huangyu on 2017-5-23.
  */
-public class MainFragment extends BaseFragment<IMainView, MainPresenter> implements IMainView {
+public class FileListFragment extends BaseFragment<IFileListView, FileListPresenter> implements IFileListView {
 
     @Bind(R.id.cl_main)
     CoordinatorLayout mCoordinatorLayout;
@@ -47,7 +47,7 @@ public class MainFragment extends BaseFragment<IMainView, MainPresenter> impleme
     RecyclerView mRecyclerView;
 
     @Bind(R.id.fam_add)
-    FloatingActionMenu mFamAdd;
+    FloatingActionsMenu mFamAdd;
 
     @Bind(R.id.fab_add_file)
     FloatingActionButton mFabAddFile;
@@ -63,7 +63,7 @@ public class MainFragment extends BaseFragment<IMainView, MainPresenter> impleme
     }
 
     @Override
-    protected IMainView initAttachView() {
+    protected IFileListView initAttachView() {
         return this;
     }
 
@@ -146,7 +146,7 @@ public class MainFragment extends BaseFragment<IMainView, MainPresenter> impleme
                         dialog.dismiss();
                     }
                 });
-                mFamAdd.close(true);
+                mFamAdd.collapse();
             }
         });
         mFabAddFolder.setOnClickListener(new View.OnClickListener() {
@@ -190,7 +190,7 @@ public class MainFragment extends BaseFragment<IMainView, MainPresenter> impleme
                         dialog.dismiss();
                     }
                 });
-                mFamAdd.close(true);
+                mFamAdd.collapse();
             }
         });
 
@@ -223,8 +223,9 @@ public class MainFragment extends BaseFragment<IMainView, MainPresenter> impleme
     }
 
     public boolean onBackPressed() {
-        if (mFamAdd.isOpened()) {
-            mFamAdd.close(true);
+        if (mFamAdd.isExpanded()) {
+            mFamAdd.collapse();
+            return true;
         }
         return mPresenter.backFolder();
     }

@@ -5,7 +5,7 @@ import android.content.Context;
 import com.huangyu.library.mvp.BasePresenter;
 import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
-import com.huangyu.mdfolder.mvp.view.IMainView;
+import com.huangyu.mdfolder.mvp.view.IFileListView;
 
 import java.io.File;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.Stack;
  * Created by huangyu on 2017/5/22.
  */
 
-public class MainPresenter extends BasePresenter<IMainView> {
+public class FileListPresenter extends BasePresenter<IFileListView> {
 
     private FileListModel mFileListModel;
     private FileModel mFileModel;
