@@ -24,6 +24,7 @@ import com.huangyu.mdfolder.utils.AlertUtils;
 import java.util.List;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -103,7 +104,7 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
             finish();
         } else {
             mCurrentTime = System.currentTimeMillis();
-            AlertUtils.showSnack(mRelativeLayout, getString(R.string.tips_leave));
+            AlertUtils.showSnack(ButterKnife.findById(this, R.id.cl_main), getString(R.string.tips_leave));
         }
     }
 

@@ -92,7 +92,6 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mAdapter.setOnItemLongClick(new CommonRecyclerViewAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, final int position) {
-
                 mActionMode = getActivity().startActionMode(new ActionMode.Callback() {
                     @Override
                     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -117,6 +116,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                                             mPresenter.deleteFolder(file.getPath());
                                             refreshData();
                                             dialog.dismiss();
+
+                                            if (mActionMode != null) {
+                                                mActionMode.finish();
+                                            }
                                         }
                                     });
                                 } else {
@@ -126,6 +129,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                                             mPresenter.deleteFile(file.getPath());
                                             refreshData();
                                             dialog.dismiss();
+
+                                            if (mActionMode != null) {
+                                                mActionMode.finish();
+                                            }
                                         }
                                     });
                                 }
@@ -149,31 +156,6 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                if (dy > 50) {
-                    mFamAdd.hideMenu(true);
-                } else if (dy < -50) {
-                    mFamAdd.showMenu(true);
-                }
-            }
-
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                switch (newState) {
-                    case RecyclerView.SCROLL_STATE_IDLE:
-                        break;
-                    case RecyclerView.SCROLL_STATE_DRAGGING:
-                        if (mFamAdd.isOpened()) {
-                            mFamAdd.close(true);
-                        }
-                        break;
-                    case RecyclerView.SCROLL_STATE_SETTLING:
-                        break;
-                }
-            }
-        });
 
         mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

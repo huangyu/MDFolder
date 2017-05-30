@@ -47,6 +47,7 @@
         android:layout_gravity="right|bottom"
         android:layout_marginBottom="16dp"
         android:layout_marginRight="16dp"
+        app:layout_behavior="com.huangyu.mdfolder.ui.widget.FloatingActionMenuBehavior"
         app:menu_colorNormal="@color/colorAccent"
         app:menu_colorPressed="@color/colorAccentDark"
         app:menu_colorRipple="@color/colorAccentLight"
