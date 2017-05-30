@@ -1,6 +1,5 @@
 package com.huangyu.mdfolder.ui.fragment;
 
-import android.animation.Animator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -10,9 +9,11 @@ import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.ScaleAnimation;
 import android.widget.LinearLayout;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -58,6 +59,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     FloatingActionButton mFabAddFolder;
 
     private FileListAdapter mAdapter;
+    private ActionMode mActionMode;
 
     @Override
     protected int getLayoutId() {
@@ -81,44 +83,97 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 } else {
                     mPresenter.openFile(getContext(), file);
                 }
+
+                if (mActionMode != null) {
+                    mActionMode.finish();
+                }
             }
         });
         mAdapter.setOnItemLongClick(new CommonRecyclerViewAdapter.OnItemLongClickListener() {
             @Override
-            public void onItemLongClick(View view, int position) {
-                // TODO
+            public void onItemLongClick(View view, final int position) {
+
+                mActionMode = getActivity().startActionMode(new ActionMode.Callback() {
+                    @Override
+                    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                        mode.getMenuInflater().inflate(R.menu.menu_control, menu);
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.action_delete:
+                                final File file = mAdapter.getItem(position);
+                                if (file.isDirectory()) {
+                                    AlertUtils.showNormalAlert(getContext(), getString(R.string.tips_delete_folder), getString(R.string.act_delete), new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            mPresenter.deleteFolder(file.getPath());
+                                            refreshData();
+                                            dialog.dismiss();
+                                        }
+                                    });
+                                } else {
+                                    AlertUtils.showNormalAlert(getContext(), getString(R.string.tips_delete_file), getString(R.string.act_delete), new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            mPresenter.deleteFile(file.getPath());
+                                            refreshData();
+                                            dialog.dismiss();
+                                        }
+                                    });
+                                }
+                                break;
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    public void onDestroyActionMode(ActionMode mode) {
+                        refreshData();
+                        getActivity().supportInvalidateOptionsMenu();
+
+                        if (mActionMode != null) {
+                            mActionMode = null;
+                        }
+                    }
+                });
             }
         });
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-//        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//                if (dy > 0) {
-//                    mFamAdd.hideMenu(true);
-//                    animTabView(dy, false);
-//                } else {
-//                    mFamAdd.showMenu(true);
-//                    animTabView(dy, true);
-//                }
-//            }
-//
-//            @Override
-//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-//                switch (newState) {
-//                    case RecyclerView.SCROLL_STATE_IDLE:
-//                        break;
-//                    case RecyclerView.SCROLL_STATE_DRAGGING:
-//                        if (mFamAdd.isOpened()) {
-//                            mFamAdd.close(true);
-//                        }
-//                        break;
-//                    case RecyclerView.SCROLL_STATE_SETTLING:
-//                        break;
-//                }
-//            }
-//        });
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 50) {
+                    mFamAdd.hideMenu(true);
+                } else if (dy < -50) {
+                    mFamAdd.showMenu(true);
+                }
+            }
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                switch (newState) {
+                    case RecyclerView.SCROLL_STATE_IDLE:
+                        break;
+                    case RecyclerView.SCROLL_STATE_DRAGGING:
+                        if (mFamAdd.isOpened()) {
+                            mFamAdd.close(true);
+                        }
+                        break;
+                    case RecyclerView.SCROLL_STATE_SETTLING:
+                        break;
+                }
+            }
+        });
 
         mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -130,16 +185,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         refreshData();
                         mSwipeRefreshLayout.setRefreshing(false);
                     }
-                }, 500);
+                }, 50);
             }
         });
 
-        ScaleAnimation hideAnim = new ScaleAnimation(1.0f, 0.5f, 1.0f, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
-        hideAnim.setDuration(250);
-        ScaleAnimation showAnim = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
-        showAnim.setDuration(250);
-        mFamAdd.setMenuButtonHideAnimation(hideAnim);
-        mFamAdd.setMenuButtonShowAnimation(showAnim);
         mFabAddFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -151,7 +200,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     public void run() {
                         KeyboardUtils.showSoftInput(editText);
                     }
-                }, 50);
+                }, 200);
                 AlertUtils.showCustomAlert(getContext(), getString(R.string.tips_add_file), view, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -177,7 +226,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                             public void run() {
                                 KeyboardUtils.hideSoftInput(getContext(), editText);
                             }
-                        }, 50);
+                        }, 200);
                         dialog.dismiss();
                     }
                 });
@@ -195,7 +244,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     public void run() {
                         KeyboardUtils.showSoftInput(editText);
                     }
-                }, 50);
+                }, 200);
                 AlertUtils.showCustomAlert(getContext(), getString(R.string.tips_add_folder), view, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -221,7 +270,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                             public void run() {
                                 KeyboardUtils.hideSoftInput(getContext(), editText);
                             }
-                        }, 50);
+                        }, 200);
                         dialog.dismiss();
                     }
                 });
@@ -230,57 +279,6 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         });
 
         mAdapter.setData(mPresenter.getRootFileList());
-    }
-
-    private void animTabView(int dy, boolean isShow) {
-        if (isShow) {
-            if (dy > mTabView.getHeight()) {
-                dy = mTabView.getHeight();
-            }
-            mTabView.animate().translationY(dy).setListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    mTabView.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-
-                }
-            }).start();
-        } else {
-            mTabView.animate().translationY(0).setListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mTabView.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-
-                }
-            }).start();
-        }
     }
 
     @Override
@@ -292,6 +290,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 if (tag != null && tag instanceof Integer) {
                     int index = (Integer) tag;
                     mPresenter.enterCertainFolder(index);
+                }
+
+                if (mActionMode != null) {
+                    mActionMode.finish();
                 }
             }
         });

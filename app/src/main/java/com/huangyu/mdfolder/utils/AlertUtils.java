@@ -53,10 +53,12 @@ public class AlertUtils {
     /**
      * 显示普通提示框
      *
-     * @param context       context
-     * @param message       信息
-     * @param positiveClick 肯定按钮事件
-     * @param negativeClick 否定按钮事件
+     * @param context        context
+     * @param message        信息
+     * @param positiveString 肯定按钮信息
+     * @param negativeString 否定按钮信息
+     * @param positiveClick  肯定按钮事件
+     * @param negativeClick  否定按钮事件
      * @return dialog
      */
     public static AlertDialog showNormalAlert(Context context, String message, String positiveString, String negativeString, DialogInterface.OnClickListener positiveClick, DialogInterface.OnClickListener negativeClick) {
@@ -66,6 +68,25 @@ public class AlertUtils {
                 dialog.dismiss();
             }
         }).setPositiveButton(positiveString, positiveClick).setNegativeButton(negativeString, negativeClick).create();
+        alertDialog.show();
+        return alertDialog;
+    }
+
+    /**
+     * 显示普通提示框
+     *
+     * @param context       context
+     * @param message       信息
+     * @param positiveClick 肯定按钮事件
+     * @return dialog
+     */
+    public static AlertDialog showNormalAlert(Context context, String message, String positiveString, DialogInterface.OnClickListener positiveClick) {
+        AlertDialog alertDialog = new AlertDialog.Builder(context).setMessage(message).setNegativeButton(context.getString(R.string.act_cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }).setPositiveButton(positiveString, positiveClick).create();
         alertDialog.show();
         return alertDialog;
     }

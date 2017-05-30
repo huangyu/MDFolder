@@ -21,9 +21,12 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
     protected OnItemClickListener mOnItemClick;
     protected OnItemLongClickListener mOnItemLongClick;
 
+    protected int mSelectPosition;
+
     public CommonRecyclerViewAdapter(Context context) {
         mContext = context;
         mDataList = new ArrayList<>();
+        mSelectPosition = -1;
     }
 
     public void setData(List<T> list) {
@@ -31,27 +34,36 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
             return;
         }
         mDataList.addAll(list);
+        beforeNotify();
         notifyDataSetChanged();
     }
 
     public void addItem(T data) {
         mDataList.add(data);
+        beforeNotify();
         notifyDataSetChanged();
     }
 
     public void addItem(T data, int position) {
         mDataList.add(position, data);
+        beforeNotify();
         notifyItemInserted(position);
     }
 
     public void removeItem(int positon) {
         mDataList.remove(positon);
+        beforeNotify();
         notifyItemRemoved(positon);
     }
 
     public void clearData() {
         mDataList.clear();
+        beforeNotify();
         notifyDataSetChanged();
+    }
+
+    public void beforeNotify() {
+        mSelectPosition = -1;
     }
 
     public void setOnItemClick(OnItemClickListener onItemClick) {
@@ -64,7 +76,7 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
 
     @Override
     public CommonRecyclerViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        CommonRecyclerViewHolder holder;
+        final CommonRecyclerViewHolder holder;
 
         holder = CommonRecyclerViewHolder.getViewHolder(viewGroup, getLayoutResource());
 
@@ -72,6 +84,7 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    mSelectPosition = -1;
                     CommonRecyclerViewHolder holder = (CommonRecyclerViewHolder) v.getTag();
                     mOnItemClick.onItemClick(v, holder.getLayoutPosition());
                 }
@@ -81,9 +94,12 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
             holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
+                    mSelectPosition = holder.getAdapterPosition();
+                    holder.itemView.setSelected(true);
+
                     CommonRecyclerViewHolder holder = (CommonRecyclerViewHolder) v.getTag();
                     mOnItemLongClick.onItemLongClick(v, holder.getLayoutPosition());
-                    return false;
+                    return true;
                 }
             });
         }

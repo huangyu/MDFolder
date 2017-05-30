@@ -108,13 +108,20 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
     }
 
     private boolean isDoubleCheck() {
-        return Math.abs(mCurrentTime - System.currentTimeMillis()) < 1000L;
+        return Math.abs(mCurrentTime - System.currentTimeMillis()) < 2000L;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         initSearchView(menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.clear();
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 

@@ -15,12 +15,15 @@
     <string name="menu_apps">应用</string>
     <string name="menu_share">分享</string>
     <string name="menu_help">帮助</string>
+    <string name="menu_delete">删除</string>
+    <string name="menu_rename">重命名</string>
 
     <string name="act_exit">退出</string>
     <string name="act_settings">设置</string>
     <string name="act_search">搜索</string>
     <string name="act_cancel">取消</string>
     <string name="act_confirm">确定</string>
+    <string name="act_delete">删除</string>
     <string name="act_add_file">新增文件</string>
     <string name="act_add_folder">新增文件夹</string>
 
@@ -29,6 +32,8 @@
     <string name="tips_leave">快速双击将退出应用</string>
     <string name="tips_add_file">请输入文件名</string>
     <string name="tips_add_folder">请输入文件夹名</string>
+    <string name="tips_delete_file">是否删除此文件？</string>
+    <string name="tips_delete_folder">是否删除此文件夹？</string>
     <string name="tips_file_exist">文件已存在</string>
     <string name="tips_folder_exist">文件夹已存在</string>
     <string name="tips_add_file_error">新增文件失败</string>

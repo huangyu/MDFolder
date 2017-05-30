@@ -53,6 +53,13 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
         } else {
             mVDivider.setVisibility(View.VISIBLE);
         }
+
+        if(position == mSelectPosition) {
+            holder.itemView.setSelected(true);
+        }
+        else {
+            holder.itemView.setSelected(false);
+        }
     }
 
     @Override
