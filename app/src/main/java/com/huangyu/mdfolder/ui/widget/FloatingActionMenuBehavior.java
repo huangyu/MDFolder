@@ -36,8 +36,10 @@ public class FloatingActionMenuBehavior extends CoordinatorLayout.Behavior<Float
 
     @Override
     public void onDependentViewRemoved(CoordinatorLayout parent, FloatingActionMenu child, View dependency) {
-//        this.updateTranslation(parent, child, dependency);
+        ViewCompat.animate(child).cancel();
         ViewCompat.animate(child).translationY(0);
+        ViewCompat.setTranslationY(child, 0);
+        this.mTranslationY = 0;
     }
 
     private void updateTranslation(CoordinatorLayout parent, FloatingActionMenu child, View dependency) {
@@ -51,12 +53,6 @@ public class FloatingActionMenuBehavior extends CoordinatorLayout.Behavior<Float
             }
 
             this.mTranslationY = translationY;
-        }
-        else {
-            ViewCompat.animate(child).cancel();
-            ViewCompat.animate(child).translationY(0);
-            ViewCompat.setTranslationY(child, 0);
-            this.mTranslationY = 0;
         }
     }
 
