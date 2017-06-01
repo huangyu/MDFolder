@@ -3,6 +3,7 @@ package com.huangyu.mdfolder.mvp.presenter;
 import android.content.Context;
 
 import com.huangyu.library.mvp.BasePresenter;
+import com.huangyu.mdfolder.mvp.model.EditModel;
 import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
@@ -22,11 +23,14 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     private Stack<File> mFileStack;
     private String mCurrentPath;
 
+    public int mEditMode;
+
     @Override
     public void create() {
         mFileListModel = new FileListModel();
         mFileModel = new FileModel();
         mFileStack = new Stack<>();
+        mEditMode = EditModel.NONE;
     }
 
     public String getCurrentPath() {
@@ -107,6 +111,27 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 复制
+     */
+    public void copy() {
+
+    }
+
+    /**
+     * 粘贴
+     */
+    public void cut() {
+
+    }
+
+    /**
+     * 粘贴
+     */
+    public void paste() {
+
     }
 
     public void openFile(Context context, File file) {

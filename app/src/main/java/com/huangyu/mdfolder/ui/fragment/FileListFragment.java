@@ -22,6 +22,7 @@ import com.github.clans.fab.FloatingActionMenu;
 import com.huangyu.library.ui.BaseFragment;
 import com.huangyu.library.ui.CommonRecyclerViewAdapter;
 import com.huangyu.mdfolder.R;
+import com.huangyu.mdfolder.mvp.model.EditModel;
 import com.huangyu.mdfolder.mvp.presenter.FileListPresenter;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
 import com.huangyu.mdfolder.ui.adapter.FileListAdapter;
@@ -81,21 +82,26 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mAdapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                File file = mAdapter.getItem(position);
-                if (file.isDirectory()) {
-                    mPresenter.enterFolder(file);
-                } else {
-                    mPresenter.openFile(getContext(), file);
-                }
+                if (mPresenter.mEditMode == EditModel.NONE) {
+                    File file = mAdapter.getItem(position);
+                    if (file.isDirectory()) {
+                        mPresenter.enterFolder(file);
+                    } else {
+                        mPresenter.openFile(getContext(), file);
+                    }
 
-                if (mActionMode != null) {
-                    mActionMode.finish();
+                    if (mActionMode != null) {
+                        mActionMode.finish();
+                    }
+                } else {
+                    // TODO
                 }
             }
         });
         mAdapter.setOnItemLongClick(new CommonRecyclerViewAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, final int position) {
+                mPresenter.mEditMode = EditModel.SELECT;
                 mActionMode = getActivity().startActionMode(new ActionMode.Callback() {
                     @Override
                     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -110,9 +116,15 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
                     @Override
                     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                        final File file = mAdapter.getItem(position);
                         switch (item.getItemId()) {
+                            case R.id.action_copy:
+                                // TODO
+                                break;
+                            case R.id.action_cut:
+                                // TODO
+                                break;
                             case R.id.action_delete:
-                                final File file = mAdapter.getItem(position);
                                 if (file.isDirectory()) {
                                     AlertUtils.showNormalAlert(getContext(), getString(R.string.tips_delete_folder), getString(R.string.act_delete), new DialogInterface.OnClickListener() {
                                         @Override
