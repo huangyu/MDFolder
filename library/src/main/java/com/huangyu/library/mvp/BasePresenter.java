@@ -12,6 +12,7 @@ public abstract class BasePresenter<V extends IBaseView> {
 
     public Context mContext;
     protected V mView;
+    protected RxManager mRxManager = new RxManager();
 
     public void attachView(V view) {
         this.mView = view;
@@ -20,7 +21,7 @@ public abstract class BasePresenter<V extends IBaseView> {
     public abstract void create();
 
     public void destroy() {
-        RxManager.getInstance().clear();
+        mRxManager.clear();
     }
 
 }

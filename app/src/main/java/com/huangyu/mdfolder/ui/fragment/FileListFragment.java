@@ -9,6 +9,7 @@ import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,6 +32,7 @@ import com.huangyu.mdfolder.utils.KeyboardUtils;
 import java.io.File;
 
 import butterknife.Bind;
+import rx.functions.Action1;
 
 /**
  * Created by huangyu on 2017-5-23.
@@ -60,6 +62,8 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
     private FileListAdapter mAdapter;
     private ActionMode mActionMode;
+
+    private String mSearchStr;
 
     @Override
     protected int getLayoutId() {
@@ -166,6 +170,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     public void run() {
                         refreshData();
                         mSwipeRefreshLayout.setRefreshing(false);
+
+                        if (mActionMode != null) {
+                            mActionMode.finish();
+                        }
                     }
                 }, 50);
             }
@@ -261,6 +269,22 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         });
 
         mAdapter.setData(mPresenter.getRootFileList());
+
+        mRxManager.on("search", new Action1<String>() {
+            @Override
+            public void call(String text) {
+                mSearchStr = text;
+                refreshData();
+            }
+        });
+
+        mRxManager.on("resetSearch", new Action1<String>() {
+            @Override
+            public void call(String text) {
+                mSearchStr = "";
+                refreshData();
+            }
+        });
     }
 
     @Override
@@ -289,7 +313,11 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     @Override
     public void refreshData() {
         mAdapter.clearData();
-        mAdapter.setData(mPresenter.getCurrentFileList());
+        if (TextUtils.isEmpty(mSearchStr)) {
+            mAdapter.setData(mPresenter.getCurrentFileList());
+        } else {
+            mAdapter.setData(mPresenter.getCurrentFileList(mSearchStr));
+        }
     }
 
     public boolean onBackPressed() {

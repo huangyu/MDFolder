@@ -16,30 +16,10 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class RxManager {
 
-    private static volatile RxManager INSTANCE;
     private RxBus mRxBus = RxBus.getInstance();
 
     private Map<String, Observable<?>> mObservables = new HashMap<>();
     private CompositeSubscription mCompositeSubscription = new CompositeSubscription();
-
-    private RxManager() {
-    }
-
-    /**
-     * 获取RxManager
-     *
-     * @return RxManager
-     */
-    public static RxManager getInstance() {
-        if (INSTANCE == null) {
-            synchronized (RxManager.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new RxManager();
-                }
-            }
-        }
-        return INSTANCE;
-    }
 
     /**
      * RxBus注入监听
@@ -95,6 +75,7 @@ public class RxManager {
             mRxBus.unregister(entry.getKey(), entry.getValue());
             mRxBus.removeStickyEvent(entry.getKey());
         }
+        mObservables.clear();
     }
 
     /**

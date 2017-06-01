@@ -22,6 +22,7 @@ import static com.huangyu.library.util.GenericUtils.getT;
 public abstract class BaseActivity<V extends IBaseView, P extends BasePresenter<V>> extends AppCompatActivity {
 
     protected P mPresenter;
+    protected RxManager mRxManager = new RxManager();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,7 +47,9 @@ public abstract class BaseActivity<V extends IBaseView, P extends BasePresenter<
         if (mPresenter != null) {
             mPresenter.destroy();
         }
-        RxManager.getInstance().clear();
+        if(mRxManager!= null) {
+            mRxManager.clear();
+        }
         ButterKnife.unbind(this);
         ActivityManager.getInstance().removeActivity(this);
         super.onDestroy();

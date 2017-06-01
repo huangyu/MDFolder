@@ -7,6 +7,7 @@ import com.huangyu.mdfolder.utils.comparator.AlphabetComparator;
 import com.huangyu.mdfolder.utils.comparator.TimeComparator;
 import com.huangyu.mdfolder.utils.comparator.TypeComparator;
 import com.huangyu.mdfolder.utils.filter.HiddenFilter;
+import com.huangyu.mdfolder.utils.filter.SearchFilter;
 
 import java.io.File;
 import java.util.Collections;
@@ -23,6 +24,10 @@ public class FileListModel implements IBaseModel {
 
     public List<File> getFileList(String path) {
         return FileUtils.listFilesInDirWithFilter(path, new HiddenFilter(), false);
+    }
+
+    public List<File> getFileList(String path, String searchStr) {
+        return FileUtils.listFilesInDirWithFilter(path, new SearchFilter(searchStr), false);
     }
 
     public String getSDCardPath() {

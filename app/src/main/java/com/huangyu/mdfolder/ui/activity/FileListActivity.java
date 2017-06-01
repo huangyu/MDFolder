@@ -10,6 +10,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -70,7 +71,6 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
 
         mNavigationView.setNavigationItemSelectedListener(this);
 
-        // 请求运行时权限
         requirePermissions();
     }
 
@@ -94,9 +94,7 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
         }
 
         if (mSearchView != null && mSearchView.isShown() && isSearchViewShow) {
-            mSearchView.onActionViewCollapsed();
-            supportInvalidateOptionsMenu();
-            isSearchViewShow = false;
+            resetSearch();
             return;
         }
 
@@ -123,6 +121,7 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.clear();
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        initSearchView(menu);
         return true;
     }
 
@@ -137,7 +136,9 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
             }
 
             public boolean onQueryTextChange(String text) {
-                // TODO
+                if (!TextUtils.isEmpty(text)) {
+                    mRxManager.post("search", text);
+                }
                 return false;
             }
         });
@@ -149,19 +150,18 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
                 }
             }
         });
-    }
+        MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                return true;
+            }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_search:
-                // TODO
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                resetSearch();
                 return true;
-            case R.id.action_settings:
-                // TODO
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
+            }
+        });
     }
 
     @Override
@@ -188,10 +188,15 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
         }
 
         mDrawerLayout.closeDrawer(GravityCompat.START);
-        mSearchView.onActionViewCollapsed();
-        supportInvalidateOptionsMenu();
-        isSearchViewShow = false;
+        resetSearch();
         return true;
+    }
+
+    private void resetSearch() {
+        supportInvalidateOptionsMenu();
+        mSearchView.onActionViewCollapsed();
+        isSearchViewShow = false;
+        mRxManager.post("resetSearch", "");
     }
 
     @AfterPermissionGranted(PERMISSION_ACCESS_FILES)
@@ -205,8 +210,7 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                           int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }

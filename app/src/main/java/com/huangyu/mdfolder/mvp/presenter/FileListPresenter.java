@@ -40,8 +40,23 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         return getCurrentFileList();
     }
 
+    /**
+     * 获取当前路径文件列表
+     *
+     * @return
+     */
     public List<File> getCurrentFileList() {
         return mFileListModel.orderByType(mFileListModel.orderByAlphabet(mFileListModel.getFileList(mCurrentPath)));
+    }
+
+    /**
+     * 获取当前路径文件列表
+     *
+     * @param searchStr 查询文字
+     * @return
+     */
+    public List<File> getCurrentFileList(String searchStr) {
+        return mFileListModel.orderByType(mFileListModel.orderByAlphabet(mFileListModel.getFileList(mCurrentPath, searchStr)));
     }
 
     /**

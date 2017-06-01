@@ -23,6 +23,7 @@ public abstract class BaseFragment<V extends IBaseView, P extends BasePresenter<
 
     private View mRootView;
     protected P mPresenter;
+    protected RxManager mRxManager = new RxManager();
 
     @Nullable
     @Override
@@ -32,12 +33,6 @@ public abstract class BaseFragment<V extends IBaseView, P extends BasePresenter<
         }
         ButterKnife.bind(this, mRootView);
 
-        // 因为共用一个Fragment视图，所以当前这个视图已被加载到Activity中，必须先清除后再加入Activity
-        ViewGroup parent = (ViewGroup) mRootView.getParent();
-        if (parent != null) {
-            parent.removeView(mRootView);
-        }
-
         mPresenter = getT(this, 1);
         if (mPresenter != null) {
             mPresenter.mContext = getContext();
@@ -45,13 +40,22 @@ public abstract class BaseFragment<V extends IBaseView, P extends BasePresenter<
             mPresenter.attachView(view);
             mPresenter.create();
         }
-        initView(savedInstanceState);
+
         return mRootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initView(savedInstanceState);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (mRootView != null) {
+            ((ViewGroup) mRootView.getParent()).removeView(mRootView);
+        }
         ButterKnife.unbind(this);
     }
 
@@ -60,7 +64,7 @@ public abstract class BaseFragment<V extends IBaseView, P extends BasePresenter<
         if (mPresenter != null) {
             mPresenter.destroy();
         }
-        RxManager.getInstance().clear();
+        mRxManager.clear();
         super.onDestroy();
     }
 

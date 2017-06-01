@@ -10,10 +10,4 @@
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="always|collapseActionView" />
 
-    <item
-        android:id="@+id/action_settings"
-        android:icon="@mipmap/ic_settings"
-        android:orderInCategory="2"
-        android:title="@string/act_settings"
-        app:showAsAction="never" />
 </menu>
