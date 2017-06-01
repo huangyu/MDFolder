@@ -17,9 +17,9 @@
     <string name="menu_help">帮助</string>
     <string name="menu_delete">删除</string>
     <string name="menu_rename">重命名</string>
+    <string name="menu_settings">设置</string>
 
     <string name="act_exit">退出</string>
-    <string name="act_settings">设置</string>
     <string name="act_search">搜索</string>
     <string name="act_cancel">取消</string>
     <string name="act_confirm">确定</string>

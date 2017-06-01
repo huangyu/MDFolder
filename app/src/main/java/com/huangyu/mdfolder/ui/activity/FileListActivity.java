@@ -182,7 +182,7 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
             case R.id.nav_share:
                 // TODO
                 break;
-            case R.id.nav_help:
+            case R.id.nav_settings:
                 // TODO
                 break;
         }
