@@ -9,6 +9,7 @@ import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.text.TextUtils;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -94,6 +95,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         finishAction();
                     }
                 } else {
+                    mPresenter.mEditMode = EditModel.SELECT;
                     mAdapter.switchSelectedState(position);
                 }
             }
@@ -106,12 +108,15 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 }
                 mPresenter.mEditMode = EditModel.SELECT;
                 mAdapter.switchSelectedState(position);
-                mActionMode = getControlActionMode();
+                if (mActionMode == null) {
+                    mActionMode = getControlActionMode();
+                }
             }
         });
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        ((SimpleItemAnimator) mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
         mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
