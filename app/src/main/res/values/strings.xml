@@ -26,6 +26,8 @@
     <string name="act_cancel">Cancel</string>
     <string name="act_confirm">Confirm</string>
     <string name="act_delete">Delete</string>
+    <string name="act_copy">Copy</string>
+    <string name="act_cut">Cut</string>
     <string name="act_add_file">Add file</string>
     <string name="act_add_folder">Add folder</string>
 
@@ -34,8 +36,15 @@
     <string name="tips_leave">Double click to leave.</string>
     <string name="tips_add_file">Please input file name.</string>
     <string name="tips_add_folder">Please input folder name.</string>
-    <string name="tips_delete_file">Delete this file?</string>
-    <string name="tips_delete_folder">Delete this folder?</string>
+    <string name="tips_delete_files">Delete these files?</string>
+    <string name="tips_copy_files">Copy these files?</string>
+    <string name="tips_move_files">Move these files?</string>
+    <string name="tips_delete_successfully">Delete successfully.</string>
+    <string name="tips_delete_in_error">Delete in error.</string>
+    <string name="tips_copy_successfully">Copy successfully.</string>
+    <string name="tips_copy_in_error">Copy in error.</string>
+    <string name="tips_cut_successfully">Cut successfully.</string>
+    <string name="tips_cut_in_error">Cut in error.</string>
     <string name="tips_file_exist">File is exist.</string>
     <string name="tips_add_file_error">Add file error.</string>
     <string name="tips_add_folder_error">Add folder error.</string>

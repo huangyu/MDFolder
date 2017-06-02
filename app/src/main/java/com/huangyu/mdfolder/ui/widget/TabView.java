@@ -51,7 +51,7 @@ public class TabView extends HorizontalScrollView {
         TextView textView = (TextView) view.findViewById(R.id.tv_name);
         textView.setOnClickListener(onClickListener);
         textView.setText(title);
-        textView.setTag(R.id.tag, mLayout.getChildCount());
+        textView.setTag(R.id.tab_tag, mLayout.getChildCount());
         if (mLayout.getChildCount() <= 0) {
             // 第一个就隐藏箭头
             view.findViewById(R.id.arrow).setVisibility(View.GONE);

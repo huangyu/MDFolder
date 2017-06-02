@@ -5,12 +5,12 @@ package com.huangyu.mdfolder.mvp.model;
  */
 public class EditModel {
 
-    public static final int NONE = 0x11;
+    public static final int NONE = 0;
 
-    public static final int SELECT = 0x12;
+    public static final int SELECT = 1;
 
-    public static final int COPY_OR_CUT = 0x13;
+    public static final int COPY = 2;
 
-    public static final int PASTE = 0x14;
+    public static final int CUT = 3;
 
 }

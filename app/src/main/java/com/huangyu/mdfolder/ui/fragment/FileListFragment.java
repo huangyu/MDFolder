@@ -31,6 +31,7 @@ import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.KeyboardUtils;
 
 import java.io.File;
+import java.util.List;
 
 import butterknife.Bind;
 import rx.functions.Action1;
@@ -63,7 +64,6 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
     private FileListAdapter mAdapter;
     private ActionMode mActionMode;
-
     private String mSearchStr;
 
     @Override
@@ -82,7 +82,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mAdapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                if (mPresenter.mEditMode == EditModel.NONE) {
+                if (mPresenter.mEditMode == EditModel.NONE || mPresenter.mEditMode == EditModel.COPY || mPresenter.mEditMode == EditModel.CUT) {
                     File file = mAdapter.getItem(position);
                     if (file.isDirectory()) {
                         mPresenter.enterFolder(file);
@@ -90,83 +90,23 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         mPresenter.openFile(getContext(), file);
                     }
 
-                    if (mActionMode != null) {
-                        mActionMode.finish();
+                    if (mPresenter.mEditMode == EditModel.NONE) {
+                        finishAction();
                     }
                 } else {
-                    // TODO
+                    mAdapter.switchSelectedState(position);
                 }
             }
         });
         mAdapter.setOnItemLongClick(new CommonRecyclerViewAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, final int position) {
+                if (mPresenter.mEditMode == EditModel.COPY || mPresenter.mEditMode == EditModel.CUT) {
+                    return;
+                }
                 mPresenter.mEditMode = EditModel.SELECT;
-                mActionMode = getActivity().startActionMode(new ActionMode.Callback() {
-                    @Override
-                    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                        mode.getMenuInflater().inflate(R.menu.menu_control, menu);
-                        return true;
-                    }
-
-                    @Override
-                    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                        final File file = mAdapter.getItem(position);
-                        switch (item.getItemId()) {
-                            case R.id.action_copy:
-                                // TODO
-                                break;
-                            case R.id.action_cut:
-                                // TODO
-                                break;
-                            case R.id.action_delete:
-                                if (file.isDirectory()) {
-                                    AlertUtils.showNormalAlert(getContext(), getString(R.string.tips_delete_folder), getString(R.string.act_delete), new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            mPresenter.deleteFolder(file.getPath());
-                                            refreshData();
-                                            dialog.dismiss();
-
-                                            if (mActionMode != null) {
-                                                mActionMode.finish();
-                                            }
-                                        }
-                                    });
-                                } else {
-                                    AlertUtils.showNormalAlert(getContext(), getString(R.string.tips_delete_file), getString(R.string.act_delete), new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            mPresenter.deleteFile(file.getPath());
-                                            refreshData();
-                                            dialog.dismiss();
-
-                                            if (mActionMode != null) {
-                                                mActionMode.finish();
-                                            }
-                                        }
-                                    });
-                                }
-                                break;
-                        }
-                        return false;
-                    }
-
-                    @Override
-                    public void onDestroyActionMode(ActionMode mode) {
-                        refreshData();
-                        getActivity().supportInvalidateOptionsMenu();
-
-                        if (mActionMode != null) {
-                            mActionMode = null;
-                        }
-                    }
-                });
+                mAdapter.switchSelectedState(position);
+                mActionMode = getControlActionMode();
             }
         });
         mRecyclerView.setAdapter(mAdapter);
@@ -180,11 +120,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 mSwipeRefreshLayout.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        refreshData();
+                        refreshData(false);
                         mSwipeRefreshLayout.setRefreshing(false);
-
-                        if (mActionMode != null) {
-                            mActionMode.finish();
+                        if (mPresenter.mEditMode == EditModel.NONE) {
+                            finishAction();
                         }
                     }
                 }, 50);
@@ -207,13 +146,13 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String fileName = editText.getText().toString();
-                        String filePath = mPresenter.getCurrentPath() + File.separator + fileName;
+                        String filePath = mPresenter.mCurrentPath + File.separator + fileName;
 
                         if (mPresenter.isFileExists(filePath)) {
                             AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_file_exist));
                         } else {
                             if (mPresenter.addFile(filePath)) {
-                                refreshData();
+                                refreshData(false);
                             } else {
                                 AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_add_file_error));
                             }
@@ -251,13 +190,13 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String fileName = editText.getText().toString();
-                        String filePath = mPresenter.getCurrentPath() + File.separator + fileName;
+                        String filePath = mPresenter.mCurrentPath + File.separator + fileName;
 
                         if (mPresenter.isFolderExists(filePath)) {
                             AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_folder_exist));
                         } else {
                             if (mPresenter.addFolder(filePath)) {
-                                refreshData();
+                                refreshData(false);
                             } else {
                                 AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_add_folder_error));
                             }
@@ -286,15 +225,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public void call(String text) {
                 mSearchStr = text;
-                refreshData();
-            }
-        });
-
-        mRxManager.on("resetSearch", new Action1<String>() {
-            @Override
-            public void call(String text) {
-                mSearchStr = "";
-                refreshData();
+                refreshData(true);
             }
         });
     }
@@ -304,14 +235,13 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mTabView.addTab(path, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Object tag = v.getTag(R.id.tag);
+                Object tag = v.getTag(R.id.tab_tag);
                 if (tag != null && tag instanceof Integer) {
                     int index = (Integer) tag;
                     mPresenter.enterCertainFolder(index);
                 }
-
-                if (mActionMode != null) {
-                    mActionMode.finish();
+                if (mPresenter.mEditMode == EditModel.NONE) {
+                    finishAction();
                 }
             }
         });
@@ -323,8 +253,8 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     @Override
-    public void refreshData() {
-        mAdapter.clearData();
+    public void refreshData(boolean ifClearSelected) {
+        mAdapter.clearData(ifClearSelected);
         if (TextUtils.isEmpty(mSearchStr)) {
             mAdapter.setData(mPresenter.getCurrentFileList());
         } else {
@@ -338,6 +268,161 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             return true;
         }
         return mPresenter.backFolder();
+    }
+
+    private void finishAction() {
+        if (mActionMode != null) {
+            mActionMode.finish();
+        }
+        mPresenter.mEditMode = EditModel.NONE;
+    }
+
+    private ActionMode getControlActionMode() {
+        return getActivity().startActionMode(new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                mode.getMenuInflater().inflate(R.menu.menu_control, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                menu.clear();
+                mode.getMenuInflater().inflate(R.menu.menu_control, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                final List<File> fileList = mAdapter.getSelectedDataList();
+                switch (item.getItemId()) {
+                    case R.id.action_copy:
+                        mPresenter.mEditMode = EditModel.COPY;
+                        mActionMode = getPasteActonMode();
+                        mAdapter.mSelectedFileList = fileList;
+                        break;
+                    case R.id.action_cut:
+                        mPresenter.mEditMode = EditModel.CUT;
+                        mActionMode = getPasteActonMode();
+                        mAdapter.mSelectedFileList = fileList;
+                        break;
+                    case R.id.action_delete:
+                        AlertUtils.showNormalAlert(getContext(), getString(R.string.tips_delete_files), getString(R.string.act_delete), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                boolean result = true;
+                                for (File file : fileList) {
+                                    if (file.isDirectory()) {
+                                        result = mPresenter.deleteFolder(file.getPath());
+                                    } else {
+                                        result = mPresenter.deleteFile(file.getPath());
+                                    }
+                                }
+                                if (result) {
+                                    AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_delete_successfully));
+                                } else {
+                                    AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_delete_in_error));
+                                }
+                                finishAction();
+                                dialog.dismiss();
+                            }
+                        });
+                        break;
+                }
+                return false;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                if (mPresenter.mEditMode != EditModel.COPY && mPresenter.mEditMode != EditModel.CUT) {
+                    refreshData(true);
+                    getActivity().supportInvalidateOptionsMenu();
+                    mActionMode = null;
+                    mPresenter.mEditMode = EditModel.NONE;
+                } else {
+                    refreshData(false);
+                }
+            }
+        });
+    }
+
+    private ActionMode getPasteActonMode() {
+        return getActivity().startActionMode(new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                mode.getMenuInflater().inflate(R.menu.menu_paste, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                menu.clear();
+                mode.getMenuInflater().inflate(R.menu.menu_paste, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                final List<File> fileList = mAdapter.mSelectedFileList;
+                switch (item.getItemId()) {
+                    case R.id.action_paste:
+                        if (mPresenter.mEditMode == EditModel.COPY) {
+                            AlertUtils.showNormalAlert(getContext(), getString(R.string.tips_copy_files), getString(R.string.act_copy), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    boolean result = true;
+                                    for (File file : fileList) {
+                                        if (file.isDirectory()) {
+                                            result = mPresenter.copyFolder(file.getPath(), mPresenter.mCurrentPath + File.separator + file.getName());
+                                        } else {
+                                            result = mPresenter.copyFile(file.getPath(), mPresenter.mCurrentPath + File.separator + file.getName());
+                                        }
+                                    }
+                                    if (result) {
+                                        AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_copy_successfully));
+                                    } else {
+                                        AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_copy_in_error));
+                                    }
+                                    finishAction();
+                                    dialog.dismiss();
+                                }
+                            });
+                        } else if (mPresenter.mEditMode == EditModel.CUT) {
+                            AlertUtils.showNormalAlert(getContext(), getString(R.string.tips_move_files), getString(R.string.act_cut), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    boolean result = true;
+                                    for (File file : fileList) {
+                                        if (file.isDirectory()) {
+                                            result = mPresenter.moveFolder(file.getPath(), mPresenter.mCurrentPath + File.separator + file.getName());
+                                        } else {
+                                            result = mPresenter.moveFile(file.getPath(), mPresenter.mCurrentPath + File.separator + file.getName());
+                                        }
+                                    }
+                                    if (result) {
+                                        AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_cut_successfully));
+                                    } else {
+                                        AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_cut_in_error));
+                                    }
+                                    finishAction();
+                                    dialog.dismiss();
+                                }
+                            });
+                        }
+                        break;
+                }
+                return false;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                refreshData(true);
+                getActivity().supportInvalidateOptionsMenu();
+                mActionMode = null;
+                mPresenter.mEditMode = EditModel.NONE;
+                mAdapter.mSelectedFileList = null;
+            }
+        });
     }
 
 }

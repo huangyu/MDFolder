@@ -12,17 +12,14 @@ import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.utils.DateUtils;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Created by huangyu on 2017-5-23.
  */
 public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
 
-    private ImageView mIvIcon;
-    private TextView mTvName;
-    private TextView mTvSize;
-    private TextView mTvTime;
-    private View mVDivider;
+    public List<File> mSelectedFileList;
 
     public FileListAdapter(Context context) {
         super(context);
@@ -30,11 +27,11 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
 
     @Override
     public void convert(CommonRecyclerViewHolder holder, File file, int position) {
-        mIvIcon = holder.getView(R.id.iv_icon);
-        mTvName = holder.getView(R.id.tv_name);
-        mTvSize = holder.getView(R.id.tv_size);
-        mTvTime = holder.getView(R.id.tv_time);
-        mVDivider = holder.getView(R.id.v_divider);
+        ImageView mIvIcon = holder.getView(R.id.iv_icon);
+        TextView mTvName = holder.getView(R.id.tv_name);
+        TextView mTvSize = holder.getView(R.id.tv_size);
+        TextView mTvTime = holder.getView(R.id.tv_time);
+        View mVDivider = holder.getView(R.id.v_divider);
 
         mTvName.setText(file.getName());
 
@@ -54,10 +51,9 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
             mVDivider.setVisibility(View.VISIBLE);
         }
 
-        if(position == mSelectPosition) {
+        if (isSelected(position) && isInSelectPath(position)) {
             holder.itemView.setSelected(true);
-        }
-        else {
+        } else {
             holder.itemView.setSelected(false);
         }
     }
@@ -65,6 +61,32 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
     @Override
     public int getLayoutResource() {
         return R.layout.item_file_list;
+    }
+
+    /**
+     * 是否选中项在当前目录
+     *
+     * @param position
+     * @return
+     */
+    private boolean isInSelectPath(int position) {
+        // 考虑正在选择的情况
+        if (mSelectedFileList == null) {
+            if (mSelectArray == null || mSelectArray.size() == 0) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        // 判断路径是否一致
+        else {
+            String selectPath = mSelectedFileList.get(0).getParent();
+            String currentPath = getItem(position).getParent();
+            if (selectPath.equals(currentPath)) {
+                return true;
+            }
+            return false;
+        }
     }
 
 }

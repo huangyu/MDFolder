@@ -2,6 +2,7 @@ package com.huangyu.library.ui;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -21,12 +22,12 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
     protected OnItemClickListener mOnItemClick;
     protected OnItemLongClickListener mOnItemLongClick;
 
-    protected int mSelectPosition;
+    protected SparseBooleanArray mSelectArray;
 
     public CommonRecyclerViewAdapter(Context context) {
         mContext = context;
         mDataList = new ArrayList<>();
-        mSelectPosition = -1;
+        mSelectArray = new SparseBooleanArray();
     }
 
     public void setData(List<T> list) {
@@ -34,36 +35,71 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
             return;
         }
         mDataList.addAll(list);
-        beforeNotify();
         notifyDataSetChanged();
     }
 
     public void addItem(T data) {
         mDataList.add(data);
-        beforeNotify();
         notifyDataSetChanged();
     }
 
     public void addItem(T data, int position) {
         mDataList.add(position, data);
-        beforeNotify();
         notifyItemInserted(position);
     }
 
     public void removeItem(int positon) {
         mDataList.remove(positon);
-        beforeNotify();
         notifyItemRemoved(positon);
     }
 
-    public void clearData() {
+    public void clearData(boolean ifClearSelected) {
         mDataList.clear();
-        beforeNotify();
+        if (ifClearSelected) {
+            clearSelectedState();
+        }
         notifyDataSetChanged();
     }
 
-    public void beforeNotify() {
-        mSelectPosition = -1;
+    public boolean isSelected(int position) {
+        return getSelectedItemList().contains(position);
+    }
+
+    public void switchSelectedState(int position) {
+        if (mSelectArray.get(position, false)) {
+            mSelectArray.delete(position);
+        } else {
+            mSelectArray.put(position, true);
+        }
+        notifyItemChanged(position);
+    }
+
+    public void clearSelectedState() {
+        List<Integer> selection = getSelectedItemList();
+        mSelectArray.clear();
+        for (Integer i : selection) {
+            notifyItemChanged(i);
+        }
+    }
+
+    public int getSelectedItemCount() {
+        return mSelectArray.size();
+    }
+
+    public List<Integer> getSelectedItemList() {
+        List<Integer> itemList = new ArrayList<>(mSelectArray.size());
+        for (int i = 0; i < mSelectArray.size(); ++i) {
+            itemList.add(mSelectArray.keyAt(i));
+        }
+        return itemList;
+    }
+
+    public List<T> getSelectedDataList() {
+        List<T> dataList = new ArrayList<>(mSelectArray.size());
+        for (int i = 0; i < mSelectArray.size(); ++i) {
+            dataList.add(mDataList.get(mSelectArray.keyAt(i)));
+        }
+        return dataList;
     }
 
     public void setOnItemClick(OnItemClickListener onItemClick) {
@@ -84,7 +120,6 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mSelectPosition = -1;
                     CommonRecyclerViewHolder holder = (CommonRecyclerViewHolder) v.getTag();
                     mOnItemClick.onItemClick(v, holder.getLayoutPosition());
                 }
@@ -94,9 +129,6 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
             holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    mSelectPosition = holder.getAdapterPosition();
-                    holder.itemView.setSelected(true);
-
                     CommonRecyclerViewHolder holder = (CommonRecyclerViewHolder) v.getTag();
                     mOnItemLongClick.onItemLongClick(v, holder.getLayoutPosition());
                     return true;

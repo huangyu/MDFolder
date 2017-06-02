@@ -27,6 +27,8 @@
     <string name="act_cancel">取消</string>
     <string name="act_confirm">确定</string>
     <string name="act_delete">删除</string>
+    <string name="act_copy">复制</string>
+    <string name="act_cut">剪切</string>
     <string name="act_add_file">新增文件</string>
     <string name="act_add_folder">新增文件夹</string>
 
@@ -35,8 +37,15 @@
     <string name="tips_leave">快速双击将退出应用</string>
     <string name="tips_add_file">请输入文件名</string>
     <string name="tips_add_folder">请输入文件夹名</string>
-    <string name="tips_delete_file">是否删除此文件？</string>
-    <string name="tips_delete_folder">是否删除此文件夹？</string>
+    <string name="tips_delete_files">是否删除这些文件？</string>
+    <string name="tips_copy_files">是否复制这些文件?</string>
+    <string name="tips_move_files">是否剪切这些文件?</string>
+    <string name="tips_delete_successfully">删除成功</string>
+    <string name="tips_delete_in_error">删除失败</string>
+    <string name="tips_copy_successfully">复制成功</string>
+    <string name="tips_copy_in_error">复制失败</string>
+    <string name="tips_cut_successfully">剪切成功</string>
+    <string name="tips_cut_in_error">剪切失败</string>
     <string name="tips_file_exist">文件已存在</string>
     <string name="tips_folder_exist">文件夹已存在</string>
     <string name="tips_add_file_error">新增文件失败</string>

@@ -21,9 +21,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     private FileListModel mFileListModel;
     private FileModel mFileModel;
     private Stack<File> mFileStack;
-    private String mCurrentPath;
 
-    public int mEditMode;
+    public String mCurrentPath; // 当前路径
+    public int mEditMode;   // 当前编辑状态
 
     @Override
     public void create() {
@@ -33,10 +33,11 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         mEditMode = EditModel.NONE;
     }
 
-    public String getCurrentPath() {
-        return mCurrentPath;
-    }
-
+    /**
+     * 获取根目录文件列表
+     *
+     * @return
+     */
     public List<File> getRootFileList() {
         mCurrentPath = mFileListModel.getSDCardPath();
         mView.addTab(mCurrentPath);
@@ -72,7 +73,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         mFileStack.push(file);
         mView.addTab(file.getName());
         mCurrentPath = file.getPath();
-        mView.refreshData();
+        mView.refreshData(false);
     }
 
     /**
@@ -91,7 +92,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         if (isRemoved) {
             File file = mFileStack.peek();
             mCurrentPath = file.getPath();
-            mView.refreshData();
+            mView.refreshData(false);
         }
         return isRemoved;
     }
@@ -107,31 +108,10 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
             mView.removeTab();
             File file = mFileStack.peek();
             mCurrentPath = file.getPath();
-            mView.refreshData();
+            mView.refreshData(false);
             return true;
         }
         return false;
-    }
-
-    /**
-     * 复制
-     */
-    public void copy() {
-
-    }
-
-    /**
-     * 粘贴
-     */
-    public void cut() {
-
-    }
-
-    /**
-     * 粘贴
-     */
-    public void paste() {
-
     }
 
     public void openFile(Context context, File file) {
@@ -168,6 +148,14 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
     public boolean moveFolder(String srcFolderPath, String destFolderPath) {
         return mFileModel.moveFolder(srcFolderPath, destFolderPath);
+    }
+
+    public boolean copyFile(String srcFilePath, String destFilePath) {
+        return mFileModel.copyFile(srcFilePath, destFilePath);
+    }
+
+    public boolean copyFolder(String srcFolderPath, String destFolderPath) {
+        return mFileModel.copyFolder(srcFolderPath, destFolderPath);
     }
 
     public boolean renameFile(String filePath, String newName) {

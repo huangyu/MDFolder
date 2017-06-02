@@ -10,7 +10,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -136,9 +135,7 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
             }
 
             public boolean onQueryTextChange(String text) {
-                if (!TextUtils.isEmpty(text)) {
-                    mRxManager.post("search", text);
-                }
+                mRxManager.post("search", text);
                 return false;
             }
         });
@@ -196,7 +193,7 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
         supportInvalidateOptionsMenu();
         mSearchView.onActionViewCollapsed();
         isSearchViewShow = false;
-        mRxManager.post("resetSearch", "");
+        mRxManager.post("search", "");
     }
 
     @AfterPermissionGranted(PERMISSION_ACCESS_FILES)

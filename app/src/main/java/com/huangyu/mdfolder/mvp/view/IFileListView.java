@@ -9,5 +9,5 @@ import com.huangyu.library.mvp.IBaseView;
 public interface IFileListView extends IBaseView {
     void addTab(String path);
     boolean removeTab();
-    void refreshData();
+    void refreshData(boolean ifClearSelected);
 }

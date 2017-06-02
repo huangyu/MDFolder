@@ -271,6 +271,14 @@ public class FileModel implements IBaseModel {
         return FileUtils.moveDir(srcFolderPath, destFolderPath);
     }
 
+    public boolean copyFile(String srcFilePath, String destFilePath) {
+        return FileUtils.copyFile(srcFilePath, destFilePath);
+    }
+
+    public boolean copyFolder(String srcFolderPath, String destFolderPath) {
+        return FileUtils.copyDir(srcFolderPath, destFolderPath);
+    }
+
     public boolean renameFile(String filePath, String newName) {
         return FileUtils.rename(filePath, newName);
     }
