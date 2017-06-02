@@ -3,7 +3,7 @@ package com.huangyu.mdfolder.mvp.presenter;
 import android.content.Context;
 
 import com.huangyu.library.mvp.BasePresenter;
-import com.huangyu.mdfolder.mvp.model.EditModel;
+import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
@@ -30,7 +30,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         mFileListModel = new FileListModel();
         mFileModel = new FileModel();
         mFileStack = new Stack<>();
-        mEditMode = EditModel.NONE;
+        mEditMode = Constants.EditType.NONE;
     }
 
     /**

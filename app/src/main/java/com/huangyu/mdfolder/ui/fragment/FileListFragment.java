@@ -23,7 +23,7 @@ import com.github.clans.fab.FloatingActionMenu;
 import com.huangyu.library.ui.BaseFragment;
 import com.huangyu.library.ui.CommonRecyclerViewAdapter;
 import com.huangyu.mdfolder.R;
-import com.huangyu.mdfolder.mvp.model.EditModel;
+import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.mvp.presenter.FileListPresenter;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
 import com.huangyu.mdfolder.ui.adapter.FileListAdapter;
@@ -83,7 +83,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mAdapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                if (mPresenter.mEditMode == EditModel.NONE || mPresenter.mEditMode == EditModel.COPY || mPresenter.mEditMode == EditModel.CUT) {
+                if (mPresenter.mEditMode == Constants.EditType.NONE || mPresenter.mEditMode == Constants.EditType.COPY || mPresenter.mEditMode == Constants.EditType.CUT) {
                     File file = mAdapter.getItem(position);
                     if (file.isDirectory()) {
                         mPresenter.enterFolder(file);
@@ -91,11 +91,11 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         mPresenter.openFile(getContext(), file);
                     }
 
-                    if (mPresenter.mEditMode == EditModel.NONE) {
+                    if (mPresenter.mEditMode == Constants.EditType.NONE) {
                         finishAction();
                     }
                 } else {
-                    mPresenter.mEditMode = EditModel.SELECT;
+                    mPresenter.mEditMode = Constants.EditType.SELECT;
                     mAdapter.switchSelectedState(position);
                 }
             }
@@ -103,10 +103,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mAdapter.setOnItemLongClick(new CommonRecyclerViewAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, final int position) {
-                if (mPresenter.mEditMode == EditModel.COPY || mPresenter.mEditMode == EditModel.CUT) {
+                if (mPresenter.mEditMode == Constants.EditType.COPY || mPresenter.mEditMode == Constants.EditType.CUT) {
                     return;
                 }
-                mPresenter.mEditMode = EditModel.SELECT;
+                mPresenter.mEditMode = Constants.EditType.SELECT;
                 mAdapter.switchSelectedState(position);
                 if (mActionMode == null) {
                     mActionMode = getControlActionMode();
@@ -127,7 +127,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     public void run() {
                         refreshData(false);
                         mSwipeRefreshLayout.setRefreshing(false);
-                        if (mPresenter.mEditMode == EditModel.NONE) {
+                        if (mPresenter.mEditMode == Constants.EditType.NONE) {
                             finishAction();
                         }
                     }
@@ -155,6 +155,8 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
                         if (mPresenter.isFileExists(filePath)) {
                             AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_file_exist));
+                        } else if (mPresenter.isFolderExists(filePath)) {
+                            AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_folder_exist));
                         } else {
                             if (mPresenter.addFile(filePath)) {
                                 refreshData(false);
@@ -197,7 +199,9 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         String fileName = editText.getText().toString();
                         String filePath = mPresenter.mCurrentPath + File.separator + fileName;
 
-                        if (mPresenter.isFolderExists(filePath)) {
+                        if (mPresenter.isFileExists(filePath)) {
+                            AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_file_exist));
+                        } else if (mPresenter.isFolderExists(filePath)) {
                             AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_folder_exist));
                         } else {
                             if (mPresenter.addFolder(filePath)) {
@@ -245,7 +249,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     int index = (Integer) tag;
                     mPresenter.enterCertainFolder(index);
                 }
-                if (mPresenter.mEditMode == EditModel.NONE) {
+                if (mPresenter.mEditMode == Constants.EditType.NONE) {
                     finishAction();
                 }
             }
@@ -279,7 +283,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         if (mActionMode != null) {
             mActionMode.finish();
         }
-        mPresenter.mEditMode = EditModel.NONE;
+        mPresenter.mEditMode = Constants.EditType.NONE;
     }
 
     private ActionMode getControlActionMode() {
@@ -302,12 +306,12 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 final List<File> fileList = mAdapter.getSelectedDataList();
                 switch (item.getItemId()) {
                     case R.id.action_copy:
-                        mPresenter.mEditMode = EditModel.COPY;
+                        mPresenter.mEditMode = Constants.EditType.COPY;
                         mActionMode = getPasteActonMode();
                         mAdapter.mSelectedFileList = fileList;
                         break;
                     case R.id.action_cut:
-                        mPresenter.mEditMode = EditModel.CUT;
+                        mPresenter.mEditMode = Constants.EditType.CUT;
                         mActionMode = getPasteActonMode();
                         mAdapter.mSelectedFileList = fileList;
                         break;
@@ -339,11 +343,11 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
-                if (mPresenter.mEditMode != EditModel.COPY && mPresenter.mEditMode != EditModel.CUT) {
+                if (mPresenter.mEditMode != Constants.EditType.COPY && mPresenter.mEditMode != Constants.EditType.CUT) {
                     refreshData(true);
                     getActivity().supportInvalidateOptionsMenu();
                     mActionMode = null;
-                    mPresenter.mEditMode = EditModel.NONE;
+                    mPresenter.mEditMode = Constants.EditType.NONE;
                 } else {
                     refreshData(false);
                 }
@@ -371,7 +375,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 final List<File> fileList = mAdapter.mSelectedFileList;
                 switch (item.getItemId()) {
                     case R.id.action_paste:
-                        if (mPresenter.mEditMode == EditModel.COPY) {
+                        if (mPresenter.mEditMode == Constants.EditType.COPY) {
                             AlertUtils.showNormalAlert(getContext(), getString(R.string.tips_copy_files), getString(R.string.act_copy), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -392,7 +396,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                                     dialog.dismiss();
                                 }
                             });
-                        } else if (mPresenter.mEditMode == EditModel.CUT) {
+                        } else if (mPresenter.mEditMode == Constants.EditType.CUT) {
                             AlertUtils.showNormalAlert(getContext(), getString(R.string.tips_move_files), getString(R.string.act_cut), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -424,7 +428,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 refreshData(true);
                 getActivity().supportInvalidateOptionsMenu();
                 mActionMode = null;
-                mPresenter.mEditMode = EditModel.NONE;
+                mPresenter.mEditMode = Constants.EditType.NONE;
                 mAdapter.mSelectedFileList = null;
             }
         });

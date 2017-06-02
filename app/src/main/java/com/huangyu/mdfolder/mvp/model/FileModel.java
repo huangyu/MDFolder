@@ -240,7 +240,7 @@ public class FileModel implements IBaseModel {
     }
 
     public boolean isFileExists(String path) {
-        return FileUtils.isFileExists(path) && FileUtils.isFile(path);
+        return FileUtils.isFileExists(path) && !FileUtils.isDir(path);
     }
 
     public boolean isFolderExists(String path) {
