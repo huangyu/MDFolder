@@ -46,6 +46,7 @@
     <string name="tips_cut_successfully">Cut successfully.</string>
     <string name="tips_cut_in_error">Cut in error.</string>
     <string name="tips_file_exist">File is exist.</string>
+    <string name="tips_folder_exist">Folder is exist.</string>
     <string name="tips_add_file_error">Add file error.</string>
     <string name="tips_add_folder_error">Add folder error.</string>
 
