@@ -249,7 +249,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     int index = (Integer) tag;
                     mPresenter.enterCertainFolder(index);
                 }
-                if (mPresenter.mEditMode == Constants.EditType.NONE) {
+                if (mPresenter.mEditMode != Constants.EditType.COPY && mPresenter.mEditMode != Constants.EditType.CUT) {
                     finishAction();
                 }
             }
