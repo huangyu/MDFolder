@@ -34,6 +34,7 @@
     <string name="act_add_file">新增文件</string>
     <string name="act_add_folder">新增文件夹</string>
 
+    <string name="tips_loading">加载中&#8230;</string>
     <string name="tips_require_file_permissions">请授予文件权限以正常使用</string>
     <string name="tips_no_permissions">应用无相关权限，无法正常使用</string>
     <string name="tips_leave">快速双击将退出应用</string>

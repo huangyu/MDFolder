@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.huangyu.mdfolder.R;
+import com.huangyu.mdfolder.utils.SizeUtils;
 
 /**
  * Created by huangyu on 2017-5-23.
@@ -39,9 +40,8 @@ public class TabView extends HorizontalScrollView {
         this.setHorizontalScrollBarEnabled(false);
         mInflater = LayoutInflater.from(getContext());
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, SizeUtils.dp2px(30) + SizeUtils.sp2px(14));
         mLayout = new LinearLayout(getContext());
-        mLayout.setPadding(1, 0, 1, 0);
         mLayout.setOrientation(LinearLayout.HORIZONTAL);
         addView(mLayout, params);
     }

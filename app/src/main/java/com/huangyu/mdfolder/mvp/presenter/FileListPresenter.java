@@ -11,6 +11,13 @@ import com.huangyu.mdfolder.mvp.view.IFileListView;
 import java.io.File;
 import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.TimeUnit;
+
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by huangyu on 2017/5/22.
@@ -38,11 +45,43 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      *
      * @return
      */
-    public List<File> getRootFileList() {
-        mCurrentPath = mFileListModel.getRootPath();
-        mView.addTab(mCurrentPath);
-        mFileStack.push(new File(mCurrentPath));
-        return getCurrentFileList();
+    public void onLoadRootFileList() {
+        Subscription subscription = Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> subscriber) {
+                mCurrentPath = mFileListModel.getRootPath();
+                mFileStack.clear();
+                mFileStack.push(new File(mCurrentPath));
+                subscriber.onNext(mCurrentPath);
+                subscriber.onCompleted();
+            }
+        }).delay(500, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<String>() {
+                    @Override
+                    public void onStart() {
+                        mView.startRefresh();
+                        mView.removeAllTabs();
+                        mView.finishAction();
+                    }
+
+                    @Override
+                    public void onNext(String currentPath) {
+                        mView.addTab(mCurrentPath);
+                        mView.refreshData(true);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showSnack(e.toString());
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        mView.stopRefresh();
+                    }
+                });
+        mRxManager.add(subscription);
     }
 
     /**
@@ -50,11 +89,120 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      *
      * @return
      */
-    public List<File> getStorageFileList() {
-        mCurrentPath = mFileListModel.getSDCardPath();
-        mView.addTab(mCurrentPath);
-        mFileStack.push(new File(mCurrentPath));
-        return getCurrentFileList();
+    public void onLoadStorageFileList() {
+        Subscription subscription = Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> subscriber) {
+                mCurrentPath = mFileListModel.getSDCardPath();
+                mFileStack.clear();
+                mFileStack.push(new File(mCurrentPath));
+                subscriber.onNext(mCurrentPath);
+                subscriber.onCompleted();
+            }
+        }).delay(500, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<String>() {
+                    @Override
+                    public void onStart() {
+                        mView.startRefresh();
+                        mView.removeAllTabs();
+                        mView.finishAction();
+                    }
+
+                    @Override
+                    public void onNext(String currentPath) {
+                        mView.addTab(mCurrentPath);
+                        mView.refreshData(true);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showSnack(e.toString());
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        mView.stopRefresh();
+                    }
+                });
+        mRxManager.add(subscription);
+    }
+
+    /**
+     * 刷新界面
+     */
+    public void onRefresh() {
+        Subscription subscription = Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> subscriber) {
+                subscriber.onCompleted();
+            }
+        }).delay(500, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<String>() {
+                    @Override
+                    public void onStart() {
+                        mView.startRefresh();
+                    }
+
+                    @Override
+                    public void onNext(String text) {
+                        mView.refreshData(false);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showSnack(e.toString());
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        if (mEditMode == Constants.EditType.NONE) {
+                            mView.finishAction();
+                        }
+                        mView.stopRefresh();
+                    }
+                });
+        mRxManager.add(subscription);
+    }
+
+    /**
+     * 查询
+     *
+     * @param text 查询文字信息
+     */
+    public void onSearch(final String text) {
+        Subscription subscription = Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> subscriber) {
+                subscriber.onNext(text);
+                subscriber.onCompleted();
+            }
+        }).delay(500, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<String>() {
+                    @Override
+                    public void onStart() {
+                        mView.startRefresh();
+                    }
+
+                    @Override
+                    public void onNext(String text) {
+                        mView.setSearchText(text);
+                        mView.refreshData(true);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showSnack(e.toString());
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        mView.stopRefresh();
+                    }
+                });
+        mRxManager.add(subscription);
     }
 
     /**
@@ -180,6 +328,12 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
     public boolean renameFile(String filePath, String newName) {
         return mFileModel.renameFile(filePath, newName);
+    }
+
+    @Override
+    public void destroy() {
+        mView.stopRefresh();
+        super.destroy();
     }
 
 }

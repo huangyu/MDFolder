@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -124,16 +125,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mSwipeRefreshLayout.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshData(false);
-                        mSwipeRefreshLayout.setRefreshing(false);
-                        if (mPresenter.mEditMode == Constants.EditType.NONE) {
-                            finishAction();
-                        }
-                    }
-                }, 50);
+                mPresenter.onRefresh();
             }
         });
 
@@ -143,12 +135,9 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 final View view = inflater.inflate(R.layout.dialog_add, new LinearLayout(getContext()), false);
                 final AppCompatEditText editText = (AppCompatEditText) view.findViewById(R.id.et_name);
-                mCoordinatorLayout.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        KeyboardUtils.showSoftInput(editText);
-                    }
-                }, 200);
+
+                showKeyboard(editText);
+
                 AlertUtils.showCustomAlert(getContext(), getString(R.string.tips_add_file), view, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -186,7 +175,6 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         dialog.dismiss();
                     }
                 });
-                mFamAdd.close(true);
             }
         });
         mFabAddFolder.setOnClickListener(new View.OnClickListener() {
@@ -195,12 +183,9 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 final View view = inflater.inflate(R.layout.dialog_add, new LinearLayout(getContext()), false);
                 final AppCompatEditText editText = (AppCompatEditText) view.findViewById(R.id.et_name);
-                mCoordinatorLayout.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        KeyboardUtils.showSoftInput(editText);
-                    }
-                }, 200);
+
+                showKeyboard(editText);
+
                 AlertUtils.showCustomAlert(getContext(), getString(R.string.tips_add_folder), view, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -229,12 +214,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 }, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mCoordinatorLayout.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                KeyboardUtils.hideSoftInput(getContext(), editText);
-                            }
-                        }, 200);
+                        hideKeyboard(editText);
                         dialog.dismiss();
                     }
                 });
@@ -242,39 +222,42 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             }
         });
 
-        mAdapter.setData(mPresenter.getStorageFileList());
+        mPresenter.onLoadStorageFileList();
 
         initRxManagerActions();
     }
 
     private void initRxManagerActions() {
-        mRxManager.on("search", new Action1<String>() {
+        mRxManager.on("onSearch", new Action1<String>() {
             @Override
             public void call(String text) {
-                mSearchStr = text;
-                refreshData(true);
+                mPresenter.onSearch(text);
             }
         });
 
         mRxManager.on("toRoot", new Action1<String>() {
             @Override
             public void call(String text) {
-                removeAllTabs();
-                finishAction();
-                mAdapter.clearData(true);
-                mAdapter.setData(mPresenter.getRootFileList());
+                mPresenter.onLoadRootFileList();
             }
         });
 
         mRxManager.on("toStorage", new Action1<String>() {
             @Override
             public void call(String text) {
-                removeAllTabs();
-                finishAction();
-                mAdapter.clearData(true);
-                mAdapter.setData(mPresenter.getStorageFileList());
+                mPresenter.onLoadStorageFileList();
             }
         });
+    }
+
+    @Override
+    public void startRefresh() {
+        mSwipeRefreshLayout.setRefreshing(true);
+    }
+
+    @Override
+    public void stopRefresh() {
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -299,6 +282,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         return mTabView.removeTab();
     }
 
+    @Override
     public void removeAllTabs() {
         mTabView.removeAllTabs();
     }
@@ -313,19 +297,62 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         }
     }
 
-    public boolean onBackPressed() {
-        if (mFamAdd.isOpened()) {
-            mFamAdd.close(true);
-            return true;
-        }
-        return mPresenter.backFolder();
+    @Override
+    public void showSnack(String message) {
+        AlertUtils.showSnack(mCoordinatorLayout, message);
     }
 
-    private void finishAction() {
+    @Override
+    public void showKeyboard(final EditText editText) {
+        mCoordinatorLayout.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                KeyboardUtils.showSoftInput(editText);
+            }
+        }, 200);
+    }
+
+    @Override
+    public void hideKeyboard(final EditText editText) {
+        mCoordinatorLayout.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                KeyboardUtils.hideSoftInput(getContext(), editText);
+            }
+        }, 200);
+    }
+
+    @Override
+    public View inflateAlertDialogLayout() {
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        return inflater.inflate(R.layout.dialog_add, new LinearLayout(getContext()), false);
+    }
+
+    @Override
+    public EditText inflateAlertDialogEditText(View view) {
+        return (AppCompatEditText) view.findViewById(R.id.et_name);
+    }
+
+    @Override
+    public void showAlert(View view, DialogInterface.OnClickListener onPositiveClickListener, DialogInterface.OnClickListener onNegativeClick) {
+        AlertUtils.showCustomAlert(getContext(), getString(R.string.tips_add_file), view, onPositiveClickListener, onNegativeClick);
+    }
+
+    @Override
+    public void closeFloatingActionMenu() {
+        mFamAdd.close(true);
+    }
+
+    public void finishAction() {
         if (mActionMode != null) {
             mActionMode.finish();
         }
         mPresenter.mEditMode = Constants.EditType.NONE;
+    }
+
+    @Override
+    public void setSearchText(String searchStr) {
+        this.mSearchStr = searchStr;
     }
 
     private ActionMode getControlActionMode() {
@@ -475,5 +502,14 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             }
         });
     }
+
+    public boolean onBackPressed() {
+        if (mFamAdd.isOpened()) {
+            mFamAdd.close(true);
+            return true;
+        }
+        return mPresenter.backFolder();
+    }
+
 
 }

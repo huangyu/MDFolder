@@ -4,8 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingBottom="5dp"
-    android:paddingTop="5dp">
+    android:padding="5dp">
 
     <ImageView
         android:id="@+id/arrow"
@@ -22,10 +21,7 @@
         android:background="?android:attr/selectableItemBackground"
         android:focusable="true"
         android:maxLines="1"
-        android:paddingBottom="8dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:paddingTop="8dp"
+        android:padding="8dp"
         android:textColor="@android:color/white"
         android:textSize="14sp" />
 

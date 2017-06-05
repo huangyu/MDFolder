@@ -135,7 +135,7 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
             }
 
             public boolean onQueryTextChange(String text) {
-                mRxManager.post("search", text);
+                mRxManager.post("onSearch", text);
                 return false;
             }
         });
@@ -199,7 +199,7 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
         supportInvalidateOptionsMenu();
         mSearchView.onActionViewCollapsed();
         isSearchViewShow = false;
-//        mRxManager.post("search", "");
+//        mRxManager.post("onSearch", "");
     }
 
     @AfterPermissionGranted(PERMISSION_ACCESS_FILES)
