@@ -73,7 +73,7 @@ public class RetrofitManager {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .readTimeout(READ_TIME_OUT, TimeUnit.MILLISECONDS)
                 .connectTimeout(CONNECT_TIME_OUT, TimeUnit.MILLISECONDS)
-                .addNetworkInterceptor(new RewriteCacheControlInterceptor(CACHE_STALE_SEC))
+//                .addNetworkInterceptor(new RewriteCacheControlInterceptor(CACHE_STALE_SEC))
                 .addInterceptor(new HeaderIntercepter())
                 .addInterceptor(new GzipInterceptor())
                 .addInterceptor(logInterceptor)
