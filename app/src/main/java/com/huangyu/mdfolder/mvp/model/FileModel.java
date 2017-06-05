@@ -22,25 +22,39 @@ public class FileModel implements IBaseModel {
      *
      * @param file
      */
-    public void openFile(Context context, File file) {
+    public boolean openFile(Context context, File file) {
         if (file != null && !file.isDirectory() && file.exists()) {
-            Intent intent = new Intent();
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setAction(Intent.ACTION_VIEW);
-            Uri uri;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                uri = FileProvider.getUriForFile(context, "com.huangyu.mdfolder.fileprovider", file);
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            if (file.canExecute()) {
+                Intent intent = new Intent();
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setAction(Intent.ACTION_VIEW);
+                Uri uri;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    uri = FileProvider.getUriForFile(context, "com.huangyu.mdfolder.fileprovider", file);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                } else {
+                    uri = Uri.fromFile(file);
+                }
+                intent.setDataAndType(uri, getMIMEType(file));
+                context.startActivity(intent);
+                return true;
             } else {
-                uri = Uri.fromFile(file);
+                return false;
             }
-            intent.setDataAndType(uri, getMIMEType(file));
-            context.startActivity(intent);
         }
+        return false;
     }
 
     private String getMIMEType(File file) {
         return MimeTypeUtils.getMIMEType(file.getPath());
+    }
+
+    public boolean hasFilePermission(String path) {
+        return new File(path).canExecute();
+    }
+
+    public boolean hasFilePermission(File file) {
+        return file.canExecute();
     }
 
     public boolean isFileExists(String path) {

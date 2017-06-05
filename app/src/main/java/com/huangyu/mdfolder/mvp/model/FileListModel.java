@@ -1,5 +1,7 @@
 package com.huangyu.mdfolder.mvp.model;
 
+import android.os.Environment;
+
 import com.huangyu.library.mvp.IBaseModel;
 import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.utils.SDCardUtils;
@@ -28,6 +30,10 @@ public class FileListModel implements IBaseModel {
 
     public List<File> getFileList(String path, String searchStr) {
         return FileUtils.listFilesInDirWithFilter(path, new SearchFilter(searchStr), false);
+    }
+
+    public String getRootPath() {
+        return Environment.getRootDirectory().getPath();
     }
 
     public String getSDCardPath() {

@@ -89,4 +89,11 @@ public class TabView extends HorizontalScrollView {
         return false;
     }
 
+    public void removeAllTabs() {
+        int count = mLayout.getChildCount();
+        if (count > 0) {
+            mLayout.removeAllViews();
+        }
+    }
+
 }

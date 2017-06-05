@@ -39,6 +39,18 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * @return
      */
     public List<File> getRootFileList() {
+        mCurrentPath = mFileListModel.getRootPath();
+        mView.addTab(mCurrentPath);
+        mFileStack.push(new File(mCurrentPath));
+        return getCurrentFileList();
+    }
+
+    /**
+     * 获取存储器文件列表
+     *
+     * @return
+     */
+    public List<File> getStorageFileList() {
         mCurrentPath = mFileListModel.getSDCardPath();
         mView.addTab(mCurrentPath);
         mFileStack.push(new File(mCurrentPath));
@@ -114,8 +126,16 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         return false;
     }
 
-    public void openFile(Context context, File file) {
-        mFileModel.openFile(context, file);
+    public boolean hasFilePermission(String path) {
+        return mFileModel.hasFilePermission(path);
+    }
+
+    public boolean hasFilePermission(File file) {
+        return mFileModel.hasFilePermission(file);
+    }
+
+    public boolean openFile(Context context, File file) {
+        return mFileModel.openFile(context, file);
     }
 
     public boolean isFileExists(String path) {

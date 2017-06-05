@@ -164,6 +164,12 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.nav_root:
+                mRxManager.post("toRoot", "");
+                break;
+            case R.id.nav_storage:
+                mRxManager.post("toStorage", "");
+                break;
             case R.id.nav_music:
                 // TODO
                 break;
@@ -193,7 +199,7 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
         supportInvalidateOptionsMenu();
         mSearchView.onActionViewCollapsed();
         isSearchViewShow = false;
-        mRxManager.post("search", "");
+//        mRxManager.post("search", "");
     }
 
     @AfterPermissionGranted(PERMISSION_ACCESS_FILES)

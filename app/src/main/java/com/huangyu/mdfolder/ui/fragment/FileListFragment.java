@@ -88,7 +88,9 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     if (file.isDirectory()) {
                         mPresenter.enterFolder(file);
                     } else {
-                        mPresenter.openFile(getContext(), file);
+                        if (!mPresenter.openFile(getContext(), file)) {
+                            AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_no_permission_to_access_file));
+                        }
                     }
 
                     if (mPresenter.mEditMode == Constants.EditType.NONE) {
@@ -153,6 +155,12 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         String fileName = editText.getText().toString();
                         String filePath = mPresenter.mCurrentPath + File.separator + fileName;
 
+                        if (!mPresenter.hasFilePermission(filePath)) {
+                            AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_no_permission_to_access_file));
+                            dialog.dismiss();
+                            return;
+                        }
+
                         if (mPresenter.isFileExists(filePath)) {
                             AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_file_exist));
                         } else if (mPresenter.isFolderExists(filePath)) {
@@ -199,6 +207,12 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         String fileName = editText.getText().toString();
                         String filePath = mPresenter.mCurrentPath + File.separator + fileName;
 
+                        if (!mPresenter.hasFilePermission(filePath)) {
+                            AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_no_permission_to_access_file));
+                            dialog.dismiss();
+                            return;
+                        }
+
                         if (mPresenter.isFileExists(filePath)) {
                             AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_file_exist));
                         } else if (mPresenter.isFolderExists(filePath)) {
@@ -228,13 +242,37 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             }
         });
 
-        mAdapter.setData(mPresenter.getRootFileList());
+        mAdapter.setData(mPresenter.getStorageFileList());
 
+        initRxManagerActions();
+    }
+
+    private void initRxManagerActions() {
         mRxManager.on("search", new Action1<String>() {
             @Override
             public void call(String text) {
                 mSearchStr = text;
                 refreshData(true);
+            }
+        });
+
+        mRxManager.on("toRoot", new Action1<String>() {
+            @Override
+            public void call(String text) {
+                removeAllTabs();
+                finishAction();
+                mAdapter.clearData(true);
+                mAdapter.setData(mPresenter.getRootFileList());
+            }
+        });
+
+        mRxManager.on("toStorage", new Action1<String>() {
+            @Override
+            public void call(String text) {
+                removeAllTabs();
+                finishAction();
+                mAdapter.clearData(true);
+                mAdapter.setData(mPresenter.getStorageFileList());
             }
         });
     }
@@ -259,6 +297,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     @Override
     public boolean removeTab() {
         return mTabView.removeTab();
+    }
+
+    public void removeAllTabs() {
+        mTabView.removeAllTabs();
     }
 
     @Override

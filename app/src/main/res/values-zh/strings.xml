@@ -9,6 +9,8 @@
     <string name="navigation_drawer_close">关闭导航栏</string>
 
     <string name="menu_other">其他</string>
+    <string name="menu_root">系统目录</string>
+    <string name="menu_storage">存储器</string>
     <string name="menu_photo">照片</string>
     <string name="menu_music">音乐</string>
     <string name="menu_video">视频</string>
@@ -50,4 +52,6 @@
     <string name="tips_folder_exist">文件夹已存在</string>
     <string name="tips_add_file_error">新增文件失败</string>
     <string name="tips_add_folder_error">新增文件夹失败</string>
+    <string name="tips_no_permission_to_access_file">没有权限访问文件</string>
+
 </resources>

@@ -8,6 +8,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="menu_other">Other</string>
+    <string name="menu_root">System</string>
+    <string name="menu_storage">Storage</string>
     <string name="menu_photo">Photo</string>
     <string name="menu_music">Music</string>
     <string name="menu_video">Video</string>
@@ -49,5 +51,6 @@
     <string name="tips_folder_exist">Folder is exist.</string>
     <string name="tips_add_file_error">Add file error.</string>
     <string name="tips_add_folder_error">Add folder error.</string>
+    <string name="tips_no_permission_to_access_file">No permission to access file.</string>
 
 </resources>
