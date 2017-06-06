@@ -42,7 +42,7 @@
     <string name="tips_add_folder">请输入文件夹名</string>
     <string name="tips_delete_files">是否删除这些文件？</string>
     <string name="tips_copy_files">是否复制这些文件?</string>
-    <string name="tips_move_files">是否剪切这些文件?</string>
+    <string name="tips_cut_files">是否剪切这些文件?</string>
     <string name="tips_delete_successfully">删除成功</string>
     <string name="tips_delete_in_error">删除失败</string>
     <string name="tips_copy_successfully">复制成功</string>
@@ -53,6 +53,8 @@
     <string name="tips_folder_exist">文件夹已存在</string>
     <string name="tips_add_file_error">新增文件失败</string>
     <string name="tips_add_folder_error">新增文件夹失败</string>
+    <string name="tips_add_file_successfully">新增文件成功</string>
+    <string name="tips_add_folder_successfully">新增文件夹成功</string>
     <string name="tips_no_permission_to_access_file">没有权限访问文件</string>
 
 </resources>

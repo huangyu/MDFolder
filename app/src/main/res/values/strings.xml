@@ -41,7 +41,7 @@
     <string name="tips_add_folder">Please input folder name.</string>
     <string name="tips_delete_files">Delete these files?</string>
     <string name="tips_copy_files">Copy these files?</string>
-    <string name="tips_move_files">Move these files?</string>
+    <string name="tips_cut_files">Cut these files?</string>
     <string name="tips_delete_successfully">Delete successfully.</string>
     <string name="tips_delete_in_error">Delete in error.</string>
     <string name="tips_copy_successfully">Copy successfully.</string>
@@ -52,6 +52,8 @@
     <string name="tips_folder_exist">Folder is exist.</string>
     <string name="tips_add_file_error">Add file error.</string>
     <string name="tips_add_folder_error">Add folder error.</string>
+    <string name="tips_add_file_successfully">Add file successfully.</string>
+    <string name="tips_add_folder_successfully">Add folder successfully.</string>
     <string name="tips_no_permission_to_access_file">No permission to access file.</string>
 
 </resources>

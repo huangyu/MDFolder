@@ -1,8 +1,12 @@
 package com.huangyu.mdfolder.mvp.presenter;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.view.View;
+import android.widget.EditText;
 
 import com.huangyu.library.mvp.BasePresenter;
+import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
@@ -17,6 +21,10 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.functions.Func3;
+import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
 
 /**
@@ -29,7 +37,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     private FileModel mFileModel;
     private Stack<File> mFileStack;
 
-    public String mCurrentPath; // 当前路径
+    private String mCurrentPath; // 当前路径
     public int mEditMode;   // 当前编辑状态
 
     @Override
@@ -42,22 +50,22 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
     /**
      * 获取根目录文件列表
-     *
-     * @return
      */
     public void onLoadRootFileList() {
-        Subscription subscription = Observable.create(new Observable.OnSubscribe<String>() {
-            @Override
-            public void call(Subscriber<? super String> subscriber) {
-                mCurrentPath = mFileListModel.getRootPath();
-                mFileStack.clear();
-                mFileStack.push(new File(mCurrentPath));
-                subscriber.onNext(mCurrentPath);
-                subscriber.onCompleted();
-            }
-        }).delay(500, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.io())
+        Subscription subscription = Observable.just(null)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .doOnNext(new Action1<Object>() {
+                    @Override
+                    public void call(Object o) {
+                        mCurrentPath = mFileListModel.getRootPath();
+                        mFileStack.clear();
+                        mFileStack.push(new File(mCurrentPath));
+                    }
+                })
+                .delay(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<String>() {
+                .subscribe(new Subscriber<Object>() {
                     @Override
                     public void onStart() {
                         mView.startRefresh();
@@ -66,7 +74,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     }
 
                     @Override
-                    public void onNext(String currentPath) {
+                    public void onNext(Object o) {
                         mView.addTab(mCurrentPath);
                         mView.refreshData(true);
                     }
@@ -86,22 +94,22 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
     /**
      * 获取存储器文件列表
-     *
-     * @return
      */
     public void onLoadStorageFileList() {
-        Subscription subscription = Observable.create(new Observable.OnSubscribe<String>() {
-            @Override
-            public void call(Subscriber<? super String> subscriber) {
-                mCurrentPath = mFileListModel.getSDCardPath();
-                mFileStack.clear();
-                mFileStack.push(new File(mCurrentPath));
-                subscriber.onNext(mCurrentPath);
-                subscriber.onCompleted();
-            }
-        }).delay(500, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.io())
+        Subscription subscription = Observable.just(null)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .doOnNext(new Action1<Object>() {
+                    @Override
+                    public void call(Object o) {
+                        mCurrentPath = mFileListModel.getSDCardPath();
+                        mFileStack.clear();
+                        mFileStack.push(new File(mCurrentPath));
+                    }
+                })
+                .delay(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<String>() {
+                .subscribe(new Subscriber<Object>() {
                     @Override
                     public void onStart() {
                         mView.startRefresh();
@@ -110,7 +118,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     }
 
                     @Override
-                    public void onNext(String currentPath) {
+                    public void onNext(Object o) {
                         mView.addTab(mCurrentPath);
                         mView.refreshData(true);
                     }
@@ -132,21 +140,17 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 刷新界面
      */
     public void onRefresh() {
-        Subscription subscription = Observable.create(new Observable.OnSubscribe<String>() {
-            @Override
-            public void call(Subscriber<? super String> subscriber) {
-                subscriber.onCompleted();
-            }
-        }).delay(500, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.io())
+        Subscription subscription = Observable.empty()
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<String>() {
+                .subscribe(new Subscriber<Object>() {
                     @Override
                     public void onStart() {
                         mView.startRefresh();
                     }
 
                     @Override
-                    public void onNext(String text) {
+                    public void onNext(Object text) {
                         mView.refreshData(false);
                     }
 
@@ -172,13 +176,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * @param text 查询文字信息
      */
     public void onSearch(final String text) {
-        Subscription subscription = Observable.create(new Observable.OnSubscribe<String>() {
-            @Override
-            public void call(Subscriber<? super String> subscriber) {
-                subscriber.onNext(text);
-                subscriber.onCompleted();
-            }
-        }).delay(500, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.io())
+        Subscription subscription = Observable.just(text)
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<String>() {
                     @Override
@@ -206,19 +206,359 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     }
 
     /**
+     * 新增文件
+     */
+    public void onAddFile() {
+        final View view = mView.inflateAlertDialogLayout();
+        final EditText editText = mView.findAlertDialogEditText(view);
+        mView.showKeyboard(mView.findAlertDialogEditText(view));
+        mView.showAlert(view, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Subscription subscription = Observable.just(editText.getText().toString())
+                        .subscribeOn(AndroidSchedulers.mainThread())
+                        .observeOn(Schedulers.io())
+                        .map(new Func1<String, String>() {
+                            @Override
+                            public String call(String fileName) {
+                                return mCurrentPath + File.separator + fileName;
+                            }
+                        })
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap(new Func1<String, Observable<String>>() {
+                            @Override
+                            public Observable<String> call(String filePath) {
+                                Observable<Boolean> observable1 = Observable.just(filePath).exists(new Func1<String, Boolean>() {
+                                    @Override
+                                    public Boolean call(String filePath) {
+                                        return isFileExists(filePath);
+                                    }
+                                });
+
+                                Observable<Boolean> observable2 = Observable.just(filePath).exists(new Func1<String, Boolean>() {
+                                    @Override
+                                    public Boolean call(String filePath) {
+                                        return isFolderExists(filePath);
+                                    }
+                                });
+
+                                Observable<String> observable3 = Observable.just(filePath);
+
+                                return Observable.zip(observable1, observable2, observable3, new Func3<Boolean, Boolean, String, String>() {
+                                    @Override
+                                    public String call(Boolean isFileExists, Boolean isFolderExists, String filePath) {
+                                        if (isFileExists) {
+                                            mView.showSnack(mView.getResString(R.string.tips_file_exist));
+                                        } else if (isFolderExists) {
+                                            mView.showSnack(mView.getResString(R.string.tips_folder_exist));
+                                        } else {
+                                            return filePath;
+                                        }
+                                        return null;
+                                    }
+                                });
+                            }
+                        })
+                        .subscribe(new Subscriber<String>() {
+                            @Override
+                            public void onNext(String filePath) {
+                                if (filePath == null) {
+                                    return;
+                                }
+                                if (addFile(filePath)) {
+                                    mView.showSnack(mView.getResString(R.string.tips_add_file_successfully));
+                                    mView.refreshData(false);
+                                } else {
+                                    mView.showSnack(mView.getResString(R.string.tips_add_file_error));
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                mView.showSnack(e.toString());
+                            }
+
+                            @Override
+                            public void onCompleted() {
+                                mView.hideKeyboard(mView.findAlertDialogEditText(view));
+                                mView.closeFloatingActionMenu();
+                            }
+                        });
+                mRxManager.add(subscription);
+            }
+        }, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+    }
+
+    /**
+     * 新增文件夹
+     */
+    public void onAddFolder() {
+        final View view = mView.inflateAlertDialogLayout();
+        final EditText editText = mView.findAlertDialogEditText(view);
+        mView.showKeyboard(mView.findAlertDialogEditText(view));
+        mView.showAlert(view, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Subscription subscription = Observable.just(editText.getText().toString())
+                        .subscribeOn(AndroidSchedulers.mainThread())
+                        .observeOn(Schedulers.io())
+                        .map(new Func1<String, String>() {
+                            @Override
+                            public String call(String fileName) {
+                                return mCurrentPath + File.separator + fileName;
+                            }
+                        })
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap(new Func1<String, Observable<String>>() {
+                            @Override
+                            public Observable<String> call(String filePath) {
+                                Observable<Boolean> observable1 = Observable.just(filePath).exists(new Func1<String, Boolean>() {
+                                    @Override
+                                    public Boolean call(String filePath) {
+                                        return isFileExists(filePath);
+                                    }
+                                });
+
+                                Observable<Boolean> observable2 = Observable.just(filePath).exists(new Func1<String, Boolean>() {
+                                    @Override
+                                    public Boolean call(String filePath) {
+                                        return isFolderExists(filePath);
+                                    }
+                                });
+
+                                Observable<String> observable3 = Observable.just(filePath);
+
+                                return Observable.zip(observable1, observable2, observable3, new Func3<Boolean, Boolean, String, String>() {
+                                    @Override
+                                    public String call(Boolean isFileExists, Boolean isFolderExists, String filePath) {
+                                        if (isFileExists) {
+                                            mView.showSnack(mView.getResString(R.string.tips_file_exist));
+                                        } else if (isFolderExists) {
+                                            mView.showSnack(mView.getResString(R.string.tips_folder_exist));
+                                        } else {
+                                            return filePath;
+                                        }
+                                        return null;
+                                    }
+                                });
+                            }
+                        })
+                        .subscribe(new Subscriber<String>() {
+                            @Override
+                            public void onNext(String filePath) {
+                                if (filePath == null) {
+                                    return;
+                                }
+                                if (addFolder(filePath)) {
+                                    mView.showSnack(mView.getResString(R.string.tips_add_folder_successfully));
+                                    mView.refreshData(false);
+                                } else {
+                                    mView.showSnack(mView.getResString(R.string.tips_add_folder_error));
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                mView.showSnack(e.toString());
+                            }
+
+                            @Override
+                            public void onCompleted() {
+                                mView.hideKeyboard(mView.findAlertDialogEditText(view));
+                                mView.closeFloatingActionMenu();
+                            }
+                        });
+                mRxManager.add(subscription);
+            }
+        }, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+    }
+
+    /**
+     * 删除文件
+     */
+    public void onDelete(final List<File> fileList) {
+        mView.showNormalAlert(mView.getResString(R.string.tips_delete_files), mView.getResString(R.string.act_delete), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Subscription subscription = Observable.from(fileList).groupBy(new Func1<File, Boolean>() {
+                    @Override
+                    public Boolean call(File file) {
+                        return file.isDirectory();
+                    }
+                }).subscribe(new Action1<GroupedObservable<Boolean, File>>() {
+                    @Override
+                    public void call(final GroupedObservable<Boolean, File> o) {
+                        Subscription subscription = o.all(new Func1<File, Boolean>() {
+                            @Override
+                            public Boolean call(File file) {
+                                boolean result;
+                                if (o.getKey()) {
+                                    result = deleteFolder(file.getPath());
+                                } else {
+                                    result = deleteFile(file.getPath());
+                                }
+                                return result;
+                            }
+                        }).subscribe(new Subscriber<Boolean>() {
+                            @Override
+                            public void onNext(Boolean result) {
+                                if (result) {
+                                    mView.showSnack(mView.getResString(R.string.tips_delete_successfully));
+                                } else {
+                                    mView.showSnack(mView.getResString(R.string.tips_delete_in_error));
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                mView.showSnack(e.toString());
+                            }
+
+                            @Override
+                            public void onCompleted() {
+                                mView.finishAction();
+                            }
+                        });
+                        mRxManager.add(subscription);
+                    }
+                });
+                mRxManager.add(subscription);
+            }
+        });
+    }
+
+    /**
+     * 复制文件
+     */
+    public void onCopy(final List<File> fileList) {
+        mView.showNormalAlert(mView.getResString(R.string.tips_copy_files), mView.getResString(R.string.act_copy), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Subscription subscription = Observable.from(fileList).groupBy(new Func1<File, Boolean>() {
+                    @Override
+                    public Boolean call(File file) {
+                        return file.isDirectory();
+                    }
+                }).subscribe(new Action1<GroupedObservable<Boolean, File>>() {
+                    @Override
+                    public void call(final GroupedObservable<Boolean, File> o) {
+                        Subscription subscription = o.all(new Func1<File, Boolean>() {
+                            @Override
+                            public Boolean call(File file) {
+                                boolean result;
+                                if (o.getKey()) {
+                                    result = copyFolder(file.getPath(), mCurrentPath + File.separator + file.getName());
+                                } else {
+                                    result = copyFile(file.getPath(), mCurrentPath + File.separator + file.getName());
+                                }
+                                return result;
+                            }
+                        }).subscribe(new Subscriber<Boolean>() {
+                            @Override
+                            public void onNext(Boolean result) {
+                                if (result) {
+                                    mView.showSnack(mView.getResString(R.string.tips_copy_successfully));
+                                } else {
+                                    mView.showSnack(mView.getResString(R.string.tips_copy_in_error));
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                mView.showSnack(e.toString());
+                            }
+
+                            @Override
+                            public void onCompleted() {
+                                mView.finishAction();
+                            }
+                        });
+                        mRxManager.add(subscription);
+                    }
+                });
+                mRxManager.add(subscription);
+            }
+        });
+    }
+
+    /**
+     * 剪切文件
+     */
+    public void onCut(final List<File> fileList) {
+        mView.showNormalAlert(mView.getResString(R.string.tips_cut_files), mView.getResString(R.string.act_cut), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Subscription subscription = Observable.from(fileList).groupBy(new Func1<File, Boolean>() {
+                    @Override
+                    public Boolean call(File file) {
+                        return file.isDirectory();
+                    }
+                }).subscribe(new Action1<GroupedObservable<Boolean, File>>() {
+                    @Override
+                    public void call(final GroupedObservable<Boolean, File> o) {
+                        Subscription subscription = o.all(new Func1<File, Boolean>() {
+                            @Override
+                            public Boolean call(File file) {
+                                boolean result;
+                                if (o.getKey()) {
+                                    result = cutFolder(file.getPath(), mCurrentPath + File.separator + file.getName());
+                                } else {
+                                    result = cutFile(file.getPath(), mCurrentPath + File.separator + file.getName());
+                                }
+                                return result;
+                            }
+                        }).subscribe(new Subscriber<Boolean>() {
+                            @Override
+                            public void onNext(Boolean result) {
+                                if (result) {
+                                    mView.showSnack(mView.getResString(R.string.tips_cut_successfully));
+                                } else {
+                                    mView.showSnack(mView.getResString(R.string.tips_cut_in_error));
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                mView.showSnack(e.toString());
+                            }
+
+                            @Override
+                            public void onCompleted() {
+                                mView.finishAction();
+                            }
+                        });
+                        mRxManager.add(subscription);
+                    }
+                });
+                mRxManager.add(subscription);
+            }
+        });
+    }
+
+    /**
      * 获取当前路径文件列表
      *
-     * @return
+     * @return 当前路径文件列表
      */
     public List<File> getCurrentFileList() {
         return mFileListModel.orderByType(mFileListModel.orderByAlphabet(mFileListModel.getFileList(mCurrentPath)));
     }
 
     /**
-     * 获取当前路径文件列表
+     * 获取当前路径文件列表（查询）
      *
      * @param searchStr 查询文字
-     * @return
+     * @return 当前路径文件列表
      */
     public List<File> getCurrentFileList(String searchStr) {
         return mFileListModel.orderByType(mFileListModel.orderByAlphabet(mFileListModel.getFileList(mCurrentPath, searchStr)));
@@ -227,7 +567,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     /**
      * 进入某个文件夹
      *
-     * @param file
+     * @param file 文件夹
      */
     public void enterFolder(File file) {
         mFileStack.push(file);
@@ -239,8 +579,8 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     /**
      * 点击路径进入某个文件夹
      *
-     * @param index
-     * @return
+     * @param index 文件层级
+     * @return 是否tab被移除
      */
     public boolean enterCertainFolder(int index) {
         boolean isRemoved = false;
@@ -260,7 +600,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     /**
      * 点击返回显示的文件夹
      *
-     * @return
+     * @return 是否返回
      */
     public boolean backFolder() {
         if (mFileStack.size() > 1) {
@@ -274,60 +614,48 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         return false;
     }
 
-    public boolean hasFilePermission(String path) {
-        return mFileModel.hasFilePermission(path);
-    }
-
-    public boolean hasFilePermission(File file) {
-        return mFileModel.hasFilePermission(file);
-    }
-
     public boolean openFile(Context context, File file) {
         return mFileModel.openFile(context, file);
     }
 
-    public boolean isFileExists(String path) {
+    private boolean isFileExists(String path) {
         return mFileModel.isFileExists(path);
     }
 
-    public boolean isFolderExists(String path) {
+    private boolean isFolderExists(String path) {
         return mFileModel.isFolderExists(path);
     }
 
-    public boolean addFile(String filePath) {
+    private boolean addFile(String filePath) {
         return mFileModel.addFile(filePath);
     }
 
-    public boolean addFolder(String folderPath) {
+    private boolean addFolder(String folderPath) {
         return mFileModel.addFolder(folderPath);
     }
 
-    public boolean deleteFile(String filePath) {
+    private boolean deleteFile(String filePath) {
         return mFileModel.deleteFile(filePath);
     }
 
-    public boolean deleteFolder(String folderPath) {
+    private boolean deleteFolder(String folderPath) {
         return mFileModel.deleteFolder(folderPath);
     }
 
-    public boolean moveFile(String srcFilePath, String destFilePath) {
+    private boolean cutFile(String srcFilePath, String destFilePath) {
         return mFileModel.moveFile(srcFilePath, destFilePath);
     }
 
-    public boolean moveFolder(String srcFolderPath, String destFolderPath) {
+    private boolean cutFolder(String srcFolderPath, String destFolderPath) {
         return mFileModel.moveFolder(srcFolderPath, destFolderPath);
     }
 
-    public boolean copyFile(String srcFilePath, String destFilePath) {
+    private boolean copyFile(String srcFilePath, String destFilePath) {
         return mFileModel.copyFile(srcFilePath, destFilePath);
     }
 
-    public boolean copyFolder(String srcFolderPath, String destFolderPath) {
+    private boolean copyFolder(String srcFolderPath, String destFolderPath) {
         return mFileModel.copyFolder(srcFolderPath, destFolderPath);
-    }
-
-    public boolean renameFile(String filePath, String newName) {
-        return mFileModel.renameFile(filePath, newName);
     }
 
     @Override

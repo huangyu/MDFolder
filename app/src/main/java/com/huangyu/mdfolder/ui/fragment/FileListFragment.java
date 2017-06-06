@@ -3,8 +3,10 @@ package com.huangyu.mdfolder.ui.fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,11 +33,14 @@ import com.huangyu.mdfolder.ui.adapter.FileListAdapter;
 import com.huangyu.mdfolder.ui.widget.TabView;
 import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.KeyboardUtils;
+import com.jakewharton.rxbinding.view.RxView;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import rx.functions.Action1;
 
 /**
@@ -103,6 +108,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 }
             }
         });
+
         mAdapter.setOnItemLongClick(new CommonRecyclerViewAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, final int position) {
@@ -129,96 +135,17 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             }
         });
 
-        mFabAddFile.setOnClickListener(new View.OnClickListener() {
+        RxView.clicks(mFabAddFile).throttleFirst(1, TimeUnit.SECONDS).subscribe(new Action1<Void>() {
             @Override
-            public void onClick(View v) {
-                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                final View view = inflater.inflate(R.layout.dialog_add, new LinearLayout(getContext()), false);
-                final AppCompatEditText editText = (AppCompatEditText) view.findViewById(R.id.et_name);
-
-                showKeyboard(editText);
-
-                AlertUtils.showCustomAlert(getContext(), getString(R.string.tips_add_file), view, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String fileName = editText.getText().toString();
-                        String filePath = mPresenter.mCurrentPath + File.separator + fileName;
-
-                        if (!mPresenter.hasFilePermission(filePath)) {
-                            AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_no_permission_to_access_file));
-                            dialog.dismiss();
-                            return;
-                        }
-
-                        if (mPresenter.isFileExists(filePath)) {
-                            AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_file_exist));
-                        } else if (mPresenter.isFolderExists(filePath)) {
-                            AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_folder_exist));
-                        } else {
-                            if (mPresenter.addFile(filePath)) {
-                                refreshData(false);
-                            } else {
-                                AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_add_file_error));
-                            }
-                        }
-                        dialog.dismiss();
-                    }
-                }, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mCoordinatorLayout.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                KeyboardUtils.hideSoftInput(getContext(), editText);
-                            }
-                        }, 200);
-                        dialog.dismiss();
-                    }
-                });
+            public void call(Void aVoid) {
+                mPresenter.onAddFile();
             }
         });
-        mFabAddFolder.setOnClickListener(new View.OnClickListener() {
+
+        RxView.clicks(mFabAddFolder).throttleFirst(1, TimeUnit.SECONDS).subscribe(new Action1<Void>() {
             @Override
-            public void onClick(View v) {
-                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                final View view = inflater.inflate(R.layout.dialog_add, new LinearLayout(getContext()), false);
-                final AppCompatEditText editText = (AppCompatEditText) view.findViewById(R.id.et_name);
-
-                showKeyboard(editText);
-
-                AlertUtils.showCustomAlert(getContext(), getString(R.string.tips_add_folder), view, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String fileName = editText.getText().toString();
-                        String filePath = mPresenter.mCurrentPath + File.separator + fileName;
-
-                        if (!mPresenter.hasFilePermission(filePath)) {
-                            AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_no_permission_to_access_file));
-                            dialog.dismiss();
-                            return;
-                        }
-
-                        if (mPresenter.isFileExists(filePath)) {
-                            AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_file_exist));
-                        } else if (mPresenter.isFolderExists(filePath)) {
-                            AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_folder_exist));
-                        } else {
-                            if (mPresenter.addFolder(filePath)) {
-                                refreshData(false);
-                            } else {
-                                AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_add_folder_error));
-                            }
-                        }
-                        dialog.dismiss();
-                    }
-                }, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        hideKeyboard(editText);
-                        dialog.dismiss();
-                    }
-                });
-                mFamAdd.close(true);
+            public void call(Void aVoid) {
+                mPresenter.onAddFolder();
             }
         });
 
@@ -329,18 +256,28 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     @Override
-    public EditText inflateAlertDialogEditText(View view) {
-        return (AppCompatEditText) view.findViewById(R.id.et_name);
+    public EditText findAlertDialogEditText(View view) {
+        return (AppCompatEditText) ButterKnife.findById(view, R.id.et_name);
     }
 
     @Override
-    public void showAlert(View view, DialogInterface.OnClickListener onPositiveClickListener, DialogInterface.OnClickListener onNegativeClick) {
-        AlertUtils.showCustomAlert(getContext(), getString(R.string.tips_add_file), view, onPositiveClickListener, onNegativeClick);
+    public AlertDialog showAlert(View view, DialogInterface.OnClickListener onPositiveClickListener, DialogInterface.OnClickListener onNegativeClick) {
+        return AlertUtils.showCustomAlert(getContext(), getString(R.string.tips_add_file), view, onPositiveClickListener, onNegativeClick);
+    }
+
+    @Override
+    public void showNormalAlert(String message, String positiveString, DialogInterface.OnClickListener positiveClick) {
+        AlertUtils.showNormalAlert(getContext(), message, positiveString, positiveClick);
     }
 
     @Override
     public void closeFloatingActionMenu() {
         mFamAdd.close(true);
+    }
+
+    @Override
+    public String getResString(@StringRes int resId) {
+        return getContext().getString(resId);
     }
 
     public void finishAction() {
@@ -385,26 +322,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         mAdapter.mSelectedFileList = fileList;
                         break;
                     case R.id.action_delete:
-                        AlertUtils.showNormalAlert(getContext(), getString(R.string.tips_delete_files), getString(R.string.act_delete), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                boolean result = true;
-                                for (File file : fileList) {
-                                    if (file.isDirectory()) {
-                                        result = mPresenter.deleteFolder(file.getPath());
-                                    } else {
-                                        result = mPresenter.deleteFile(file.getPath());
-                                    }
-                                }
-                                if (result) {
-                                    AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_delete_successfully));
-                                } else {
-                                    AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_delete_in_error));
-                                }
-                                finishAction();
-                                dialog.dismiss();
-                            }
-                        });
+                        mPresenter.onDelete(fileList);
                         break;
                 }
                 return false;
@@ -445,47 +363,9 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 switch (item.getItemId()) {
                     case R.id.action_paste:
                         if (mPresenter.mEditMode == Constants.EditType.COPY) {
-                            AlertUtils.showNormalAlert(getContext(), getString(R.string.tips_copy_files), getString(R.string.act_copy), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    boolean result = true;
-                                    for (File file : fileList) {
-                                        if (file.isDirectory()) {
-                                            result = mPresenter.copyFolder(file.getPath(), mPresenter.mCurrentPath + File.separator + file.getName());
-                                        } else {
-                                            result = mPresenter.copyFile(file.getPath(), mPresenter.mCurrentPath + File.separator + file.getName());
-                                        }
-                                    }
-                                    if (result) {
-                                        AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_copy_successfully));
-                                    } else {
-                                        AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_copy_in_error));
-                                    }
-                                    finishAction();
-                                    dialog.dismiss();
-                                }
-                            });
+                            mPresenter.onCopy(fileList);
                         } else if (mPresenter.mEditMode == Constants.EditType.CUT) {
-                            AlertUtils.showNormalAlert(getContext(), getString(R.string.tips_move_files), getString(R.string.act_cut), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    boolean result = true;
-                                    for (File file : fileList) {
-                                        if (file.isDirectory()) {
-                                            result = mPresenter.moveFolder(file.getPath(), mPresenter.mCurrentPath + File.separator + file.getName());
-                                        } else {
-                                            result = mPresenter.moveFile(file.getPath(), mPresenter.mCurrentPath + File.separator + file.getName());
-                                        }
-                                    }
-                                    if (result) {
-                                        AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_cut_successfully));
-                                    } else {
-                                        AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_cut_in_error));
-                                    }
-                                    finishAction();
-                                    dialog.dismiss();
-                                }
-                            });
+                            mPresenter.onCut(fileList);
                         }
                         break;
                 }

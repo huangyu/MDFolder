@@ -1,6 +1,7 @@
 package com.huangyu.mdfolder.mvp.view;
 
 import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.EditText;
 
@@ -35,10 +36,14 @@ public interface IFileListView extends IBaseView {
 
     View inflateAlertDialogLayout();
 
-    EditText inflateAlertDialogEditText(View view);
+    EditText findAlertDialogEditText(View view);
 
-    void showAlert(View view, DialogInterface.OnClickListener onPositiveClickListener, DialogInterface.OnClickListener onNegativeClick);
+    AlertDialog showAlert(View view, DialogInterface.OnClickListener onPositiveClickListener, DialogInterface.OnClickListener onNegativeClick);
+
+    void showNormalAlert(String message, String positiveString, DialogInterface.OnClickListener positiveClick);
 
     void closeFloatingActionMenu();
+
+    String getResString(int resId);
 
 }
