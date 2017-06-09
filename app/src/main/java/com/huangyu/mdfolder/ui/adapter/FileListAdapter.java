@@ -9,6 +9,7 @@ import com.huangyu.library.ui.CommonRecyclerViewAdapter;
 import com.huangyu.library.ui.CommonRecyclerViewHolder;
 import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.R;
+import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.utils.DateUtils;
 
 import java.io.File;
@@ -20,6 +21,7 @@ import java.util.List;
 public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
 
     public List<File> mSelectedFileList;
+    public int mFileType;
 
     public FileListAdapter(Context context) {
         super(context);
@@ -35,13 +37,34 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
 
         mTvName.setText(file.getName());
 
-        if (file.isDirectory()) {
-            mTvSize.setText(mContext.getString(R.string.str_folder));
-            mIvIcon.setImageResource(R.mipmap.ic_folder);
-        } else {
-            mTvSize.setText(FileUtils.getFileSize(file));
-            mIvIcon.setImageResource(R.mipmap.ic_file);
+        switch (mFileType) {
+            case Constants.FileType.FILE:
+                if (file.isDirectory()) {
+                    mTvSize.setText(mContext.getString(R.string.str_folder));
+                    mIvIcon.setImageResource(R.mipmap.ic_folder);
+                } else {
+                    mTvSize.setText(FileUtils.getFileSize(file));
+                    mIvIcon.setImageResource(R.mipmap.ic_file);
+                }
+                break;
+            case Constants.FileType.APPS:
+                mTvSize.setText(FileUtils.getFileSize(file));
+                mIvIcon.setImageResource(R.mipmap.ic_apps);
+                break;
+            case Constants.FileType.MUSIC:
+                mTvSize.setText(FileUtils.getFileSize(file));
+                mIvIcon.setImageResource(R.mipmap.ic_music);
+                break;
+            case Constants.FileType.PHOTO:
+                mTvSize.setText(FileUtils.getFileSize(file));
+                mIvIcon.setImageResource(R.mipmap.ic_photo);
+                break;
+            case Constants.FileType.VIDEO:
+                mTvSize.setText(FileUtils.getFileSize(file));
+                mIvIcon.setImageResource(R.mipmap.ic_video);
+                break;
         }
+        mIvIcon.setColorFilter(mContext.getResources().getColor(R.color.colorDarkGray));
 
         mTvTime.setText(DateUtils.getFormatDate(file.lastModified()));
 

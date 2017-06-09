@@ -7,6 +7,9 @@ import android.widget.EditText;
 
 import com.huangyu.library.mvp.IBaseView;
 
+import java.io.File;
+import java.util.List;
+
 /**
  * Created by huangyu on 2017/5/22.
  */
@@ -24,9 +27,9 @@ public interface IFileListView extends IBaseView {
 
     void refreshData(boolean ifClearSelected);
 
-    void finishAction();
+    void refreshData(List<File> filesList, boolean ifClearSelected);
 
-    void setSearchText(String searchStr);
+    void finishAction();
 
     void showSnack(String message);
 
@@ -40,7 +43,7 @@ public interface IFileListView extends IBaseView {
 
     AlertDialog showAlert(View view, DialogInterface.OnClickListener onPositiveClickListener, DialogInterface.OnClickListener onNegativeClick);
 
-    void showNormalAlert(String message, String positiveString, DialogInterface.OnClickListener positiveClick);
+    AlertDialog showNormalAlert(String message, String positiveString, DialogInterface.OnClickListener positiveClick);
 
     void closeFloatingActionMenu();
 

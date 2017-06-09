@@ -15,13 +15,14 @@ import com.huangyu.mdfolder.mvp.view.IFileListView;
 import java.io.File;
 import java.util.List;
 import java.util.Stack;
-import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func3;
 import rx.observables.GroupedObservable;
@@ -38,45 +39,51 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     private Stack<File> mFileStack;
 
     private String mCurrentPath; // 当前路径
-    public int mEditMode;   // 当前编辑状态
+    public int mEditType;   // 当前编辑状态
+    public int mFileType;   // 当前文件类型
 
     @Override
     public void create() {
         mFileListModel = new FileListModel();
         mFileModel = new FileModel();
         mFileStack = new Stack<>();
-        mEditMode = Constants.EditType.NONE;
+        mEditType = Constants.EditType.NONE;
+        mFileType = Constants.FileType.FILE;
     }
 
     /**
      * 获取根目录文件列表
      */
-    public void onLoadRootFileList() {
-        Subscription subscription = Observable.just(null)
+    public void onLoadRootFileList(final String searchStr) {
+        Subscription subscription = Observable.defer(new Func0<Observable<List<File>>>() {
+            @Override
+            public Observable<List<File>> call() {
+                return Observable.just(getCurrentFileList(searchStr));
+            }
+        })
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
-                .doOnNext(new Action1<Object>() {
+                .doOnSubscribe(new Action0() {
                     @Override
-                    public void call(Object o) {
+                    public void call() {
                         mCurrentPath = mFileListModel.getRootPath();
                         mFileStack.clear();
                         mFileStack.push(new File(mCurrentPath));
                     }
                 })
-                .delay(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Object>() {
+                .subscribe(new Subscriber<List<File>>() {
                     @Override
                     public void onStart() {
                         mView.startRefresh();
-                        mView.removeAllTabs();
                         mView.finishAction();
                     }
 
                     @Override
-                    public void onNext(Object o) {
+                    public void onNext(List<File> fileList) {
+                        mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
-                        mView.refreshData(true);
+                        mView.refreshData(fileList, true);
                     }
 
                     @Override
@@ -95,32 +102,220 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     /**
      * 获取存储器文件列表
      */
-    public void onLoadStorageFileList() {
-        Subscription subscription = Observable.just(null)
+    public void onLoadStorageFileList(final String searchStr) {
+        Subscription subscription = Observable.defer(new Func0<Observable<List<File>>>() {
+            @Override
+            public Observable<List<File>> call() {
+                return Observable.just(getCurrentFileList(searchStr));
+            }
+        })
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
-                .doOnNext(new Action1<Object>() {
+                .doOnSubscribe(new Action0() {
                     @Override
-                    public void call(Object o) {
+                    public void call() {
                         mCurrentPath = mFileListModel.getSDCardPath();
                         mFileStack.clear();
                         mFileStack.push(new File(mCurrentPath));
                     }
                 })
-                .delay(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Object>() {
+                .subscribe(new Subscriber<List<File>>() {
                     @Override
                     public void onStart() {
                         mView.startRefresh();
-                        mView.removeAllTabs();
                         mView.finishAction();
                     }
 
                     @Override
-                    public void onNext(Object o) {
+                    public void onNext(List<File> fileList) {
+                        mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
-                        mView.refreshData(true);
+                        mView.refreshData(fileList, true);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showSnack(e.toString());
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        mView.stopRefresh();
+                    }
+                });
+        mRxManager.add(subscription);
+    }
+
+    /**
+     * 获取应用安装文件列表
+     */
+    public void onLoadAppsFileList(final String searchStr) {
+        Subscription subscription = Observable.defer(new Func0<Observable<List<File>>>() {
+            @Override
+            public Observable<List<File>> call() {
+                return Observable.just(getCurrentFileList(searchStr));
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        mFileStack.clear();
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<List<File>>() {
+                    @Override
+                    public void onStart() {
+                        mView.startRefresh();
+                        mView.finishAction();
+                    }
+
+                    @Override
+                    public void onNext(List<File> fileList) {
+                        mView.removeAllTabs();
+                        mView.addTab(mView.getResString(R.string.menu_apps));
+                        mView.refreshData(fileList, true);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showSnack(e.toString());
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        mView.stopRefresh();
+                    }
+                });
+        mRxManager.add(subscription);
+    }
+
+    /**
+     * 获取图片文件列表
+     */
+    public void onLoadPhotoFileList(final String searchStr) {
+        Subscription subscription = Observable.defer(new Func0<Observable<List<File>>>() {
+            @Override
+            public Observable<List<File>> call() {
+                return Observable.just(getCurrentFileList(searchStr));
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        mFileStack.clear();
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<List<File>>() {
+                    @Override
+                    public void onStart() {
+                        mView.startRefresh();
+                        mView.finishAction();
+                    }
+
+                    @Override
+                    public void onNext(List<File> fileList) {
+                        mView.removeAllTabs();
+                        mView.addTab(mView.getResString(R.string.menu_photo));
+                        mView.refreshData(fileList, true);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showSnack(e.toString());
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        mView.stopRefresh();
+                    }
+                });
+        mRxManager.add(subscription);
+    }
+
+    /**
+     * 获取音乐文件列表
+     */
+    public void onLoadMusicFileList(final String searchStr) {
+        Subscription subscription = Observable.defer(new Func0<Observable<List<File>>>() {
+            @Override
+            public Observable<List<File>> call() {
+                return Observable.just(getCurrentFileList(searchStr));
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        mFileStack.clear();
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<List<File>>() {
+                    @Override
+                    public void onStart() {
+                        mView.startRefresh();
+                        mView.finishAction();
+                    }
+
+                    @Override
+                    public void onNext(List<File> fileList) {
+                        mView.removeAllTabs();
+                        mView.addTab(mView.getResString(R.string.menu_music));
+                        mView.refreshData(fileList, true);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showSnack(e.toString());
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        mView.stopRefresh();
+                    }
+                });
+        mRxManager.add(subscription);
+    }
+
+    /**
+     * 获取视频文件列表
+     */
+    public void onLoadVideoFileList(final String searchStr) {
+        Subscription subscription = Observable.defer(new Func0<Observable<List<File>>>() {
+            @Override
+            public Observable<List<File>> call() {
+                return Observable.just(getCurrentFileList(searchStr));
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        mFileStack.clear();
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<List<File>>() {
+                    @Override
+                    public void onStart() {
+                        mView.startRefresh();
+                        mView.finishAction();
+                    }
+
+                    @Override
+                    public void onNext(List<File> fileList) {
+                        mView.removeAllTabs();
+                        mView.addTab(mView.getResString(R.string.menu_video));
+                        mView.refreshData(fileList, true);
                     }
 
                     @Override
@@ -139,19 +334,24 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     /**
      * 刷新界面
      */
-    public void onRefresh() {
-        Subscription subscription = Observable.empty()
+    public void onRefresh(final String searchStr, final boolean ifClearSelected) {
+        Subscription subscription = Observable.defer(new Func0<Observable<List<File>>>() {
+            @Override
+            public Observable<List<File>> call() {
+                return Observable.just(getCurrentFileList(searchStr));
+            }
+        })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Object>() {
+                .subscribe(new Subscriber<List<File>>() {
                     @Override
                     public void onStart() {
                         mView.startRefresh();
                     }
 
                     @Override
-                    public void onNext(Object text) {
-                        mView.refreshData(false);
+                    public void onNext(List<File> fileList) {
+                        mView.refreshData(fileList, ifClearSelected);
                     }
 
                     @Override
@@ -161,44 +361,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                     @Override
                     public void onCompleted() {
-                        if (mEditMode == Constants.EditType.NONE) {
+                        if (mEditType == Constants.EditType.NONE) {
                             mView.finishAction();
                         }
-                        mView.stopRefresh();
-                    }
-                });
-        mRxManager.add(subscription);
-    }
-
-    /**
-     * 查询
-     *
-     * @param text 查询文字信息
-     */
-    public void onSearch(final String text) {
-        Subscription subscription = Observable.just(text)
-                .debounce(500, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<String>() {
-                    @Override
-                    public void onStart() {
-                        mView.startRefresh();
-                    }
-
-                    @Override
-                    public void onNext(String text) {
-                        mView.setSearchText(text);
-                        mView.refreshData(true);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mView.showSnack(e.toString());
-                    }
-
-                    @Override
-                    public void onCompleted() {
                         mView.stopRefresh();
                     }
                 });
@@ -209,6 +374,11 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 新增文件
      */
     public void onAddFile() {
+        if (mFileType != Constants.FileType.FILE) {
+            mView.showSnack(mView.getResString(R.string.tips_add_file_error));
+            return;
+        }
+
         final View view = mView.inflateAlertDialogLayout();
         final EditText editText = mView.findAlertDialogEditText(view);
         mView.showKeyboard(mView.findAlertDialogEditText(view));
@@ -298,6 +468,11 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 新增文件夹
      */
     public void onAddFolder() {
+        if (mFileType != Constants.FileType.FILE) {
+            mView.showSnack(mView.getResString(R.string.tips_add_folder_error));
+            return;
+        }
+
         final View view = mView.inflateAlertDialogLayout();
         final EditText editText = mView.findAlertDialogEditText(view);
         mView.showKeyboard(mView.findAlertDialogEditText(view));
@@ -548,19 +723,22 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     /**
      * 获取当前路径文件列表
      *
-     * @return 当前路径文件列表
-     */
-    public List<File> getCurrentFileList() {
-        return mFileListModel.orderByType(mFileListModel.orderByAlphabet(mFileListModel.getFileList(mCurrentPath)));
-    }
-
-    /**
-     * 获取当前路径文件列表（查询）
-     *
      * @param searchStr 查询文字
      * @return 当前路径文件列表
      */
     public List<File> getCurrentFileList(String searchStr) {
+        switch (mFileType) {
+            case Constants.FileType.FILE:
+                break;
+            case Constants.FileType.APPS:
+                return mFileListModel.orderByType(mFileListModel.orderByAlphabet(mFileListModel.getAppsFileList(searchStr)));
+            case Constants.FileType.MUSIC:
+                return mFileListModel.orderByType(mFileListModel.orderByAlphabet(mFileListModel.getMusicFileList(searchStr)));
+            case Constants.FileType.PHOTO:
+                return mFileListModel.orderByType(mFileListModel.orderByAlphabet(mFileListModel.getPhotoFileList(searchStr)));
+            case Constants.FileType.VIDEO:
+                return mFileListModel.orderByType(mFileListModel.orderByAlphabet(mFileListModel.getVideoFileList(searchStr)));
+        }
         return mFileListModel.orderByType(mFileListModel.orderByAlphabet(mFileListModel.getFileList(mCurrentPath, searchStr)));
     }
 

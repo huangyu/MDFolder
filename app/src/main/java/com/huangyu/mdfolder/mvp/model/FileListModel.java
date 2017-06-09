@@ -8,8 +8,11 @@ import com.huangyu.mdfolder.utils.SDCardUtils;
 import com.huangyu.mdfolder.utils.comparator.AlphabetComparator;
 import com.huangyu.mdfolder.utils.comparator.TimeComparator;
 import com.huangyu.mdfolder.utils.comparator.TypeComparator;
-import com.huangyu.mdfolder.utils.filter.HiddenFilter;
+import com.huangyu.mdfolder.utils.filter.ApkFilter;
+import com.huangyu.mdfolder.utils.filter.MusicFilter;
+import com.huangyu.mdfolder.utils.filter.PhotoFilter;
 import com.huangyu.mdfolder.utils.filter.SearchFilter;
+import com.huangyu.mdfolder.utils.filter.VideoFilter;
 
 import java.io.File;
 import java.util.Collections;
@@ -24,18 +27,40 @@ public class FileListModel implements IBaseModel {
 
     }
 
-    public List<File> getFileList(String path) {
-        return FileUtils.listFilesInDirWithFilter(path, new HiddenFilter(), false);
-    }
-
     public List<File> getFileList(String path, String searchStr) {
         return FileUtils.listFilesInDirWithFilter(path, new SearchFilter(searchStr), false);
     }
 
+    public List<File> getAppsFileList(String searchStr) {
+        return FileUtils.listFilesInDirWithFilter(getSDCardPath(), new ApkFilter(searchStr), true);
+    }
+
+    public List<File> getMusicFileList(String searchStr) {
+        return FileUtils.listFilesInDirWithFilter(getSDCardPath(), new MusicFilter(searchStr), true);
+    }
+
+    public List<File> getPhotoFileList(String searchStr) {
+        return FileUtils.listFilesInDirWithFilter(getSDCardPath(), new PhotoFilter(searchStr), true);
+    }
+
+    public List<File> getVideoFileList(String searchStr) {
+        return FileUtils.listFilesInDirWithFilter(getSDCardPath(), new VideoFilter(searchStr), true);
+    }
+
+    /**
+     * 获取根目录文件路径
+     *
+     * @return
+     */
     public String getRootPath() {
         return Environment.getRootDirectory().getPath();
     }
 
+    /**
+     * 获取sd卡目录路径
+     *
+     * @return
+     */
     public String getSDCardPath() {
         return SDCardUtils.getSDCardPath();
     }

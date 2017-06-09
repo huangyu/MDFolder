@@ -6,22 +6,21 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 /**
- * Created by huangyu on 2017-5-24.
+ * Created by huangyu on 2017-6-9.
  */
-public class SearchFilter implements FilenameFilter {
+public class ApkFilter implements FilenameFilter {
 
     private String mSearchStr;
 
-    public SearchFilter(String searchStr) {
+    public ApkFilter(String searchStr) {
         this.mSearchStr = searchStr;
     }
 
     @Override
     public boolean accept(File dir, String name) {
         if (TextUtils.isEmpty(mSearchStr)) {
-            return !name.startsWith(".");
+            return !name.startsWith(".") && name.endsWith(".apk");
         }
-        return name.contains(mSearchStr) && !name.startsWith(".");
+        return name.contains(mSearchStr) && !name.startsWith(".") && name.endsWith(".apk");
     }
-
 }

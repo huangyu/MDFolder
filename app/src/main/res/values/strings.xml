@@ -14,6 +14,7 @@
     <string name="menu_music">Music</string>
     <string name="menu_video">Video</string>
     <string name="menu_apps">Apps</string>
+    <string name="menu_download">Download</string>
     <string name="menu_share">Share</string>
     <string name="menu_help">Help</string>
     <string name="menu_copy">Copy</string>
@@ -55,5 +56,6 @@
     <string name="tips_add_file_successfully">Add file successfully.</string>
     <string name="tips_add_folder_successfully">Add folder successfully.</string>
     <string name="tips_no_permission_to_access_file">No permission to access file.</string>
+    <string name="tips_no_file">No file.</string>
 
 </resources>

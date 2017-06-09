@@ -27,6 +27,10 @@
             android:id="@+id/nav_apps"
             android:icon="@mipmap/ic_apps"
             android:title="@string/menu_apps" />
+        <item
+            android:id="@+id/nav_download"
+            android:icon="@mipmap/ic_download"
+            android:title="@string/menu_download" />
     </group>
 
     <item android:title="@string/menu_other">

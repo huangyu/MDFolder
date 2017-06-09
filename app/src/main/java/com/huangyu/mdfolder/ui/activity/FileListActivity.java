@@ -171,16 +171,16 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
                 mRxManager.post("toStorage", "");
                 break;
             case R.id.nav_music:
-                // TODO
+                mRxManager.post("toMusic", "");
                 break;
             case R.id.nav_photo:
-                // TODO
+                mRxManager.post("toPhoto", "");
                 break;
             case R.id.nav_video:
-                // TODO
+                mRxManager.post("toVideo", "");
                 break;
             case R.id.nav_apps:
-                // TODO
+                mRxManager.post("toApps", "");
                 break;
             case R.id.nav_share:
                 // TODO
@@ -191,7 +191,7 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
         }
 
         mDrawerLayout.closeDrawer(GravityCompat.START);
-        resetSearch();
+//        resetSearch();
         return true;
     }
 
@@ -199,7 +199,6 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
         supportInvalidateOptionsMenu();
         mSearchView.onActionViewCollapsed();
         isSearchViewShow = false;
-//        mRxManager.post("onSearch", "");
     }
 
     @AfterPermissionGranted(PERMISSION_ACCESS_FILES)

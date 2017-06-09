@@ -12,13 +12,13 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
-import android.text.TextUtils;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -60,6 +60,12 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     @Bind(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
+    @Bind(R.id.ll_empty)
+    LinearLayout mLlEmpty;
+
+    @Bind(R.id.iv_center)
+    ImageView mIvCenter;
+
     @Bind(R.id.fam_add)
     FloatingActionMenu mFamAdd;
 
@@ -85,11 +91,13 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
     @Override
     protected void initView(Bundle savedInstanceState) {
+        mIvCenter.setColorFilter(getResources().getColor(R.color.colorDarkGray));
+
         mAdapter = new FileListAdapter(getContext());
         mAdapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                if (mPresenter.mEditMode == Constants.EditType.NONE || mPresenter.mEditMode == Constants.EditType.COPY || mPresenter.mEditMode == Constants.EditType.CUT) {
+                if (mPresenter.mEditType == Constants.EditType.NONE || mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT) {
                     File file = mAdapter.getItem(position);
                     if (file.isDirectory()) {
                         mPresenter.enterFolder(file);
@@ -99,11 +107,11 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         }
                     }
 
-                    if (mPresenter.mEditMode == Constants.EditType.NONE) {
+                    if (mPresenter.mEditType == Constants.EditType.NONE) {
                         finishAction();
                     }
                 } else {
-                    mPresenter.mEditMode = Constants.EditType.SELECT;
+                    mPresenter.mEditType = Constants.EditType.SELECT;
                     mAdapter.switchSelectedState(position);
                 }
             }
@@ -112,10 +120,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mAdapter.setOnItemLongClick(new CommonRecyclerViewAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, final int position) {
-                if (mPresenter.mEditMode == Constants.EditType.COPY || mPresenter.mEditMode == Constants.EditType.CUT) {
+                if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT) {
                     return;
                 }
-                mPresenter.mEditMode = Constants.EditType.SELECT;
+                mPresenter.mEditType = Constants.EditType.SELECT;
                 mAdapter.switchSelectedState(position);
                 if (mActionMode == null) {
                     mActionMode = getControlActionMode();
@@ -131,7 +139,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mPresenter.onRefresh();
+                mPresenter.onRefresh(mSearchStr, false);
             }
         });
 
@@ -149,7 +157,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             }
         });
 
-        mPresenter.onLoadStorageFileList();
+        mPresenter.onLoadStorageFileList(mSearchStr);
 
         initRxManagerActions();
     }
@@ -158,21 +166,64 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mRxManager.on("onSearch", new Action1<String>() {
             @Override
             public void call(String text) {
-                mPresenter.onSearch(text);
+                mPresenter.onRefresh(text, false);
+                mSearchStr = text;
             }
         });
 
         mRxManager.on("toRoot", new Action1<String>() {
             @Override
             public void call(String text) {
-                mPresenter.onLoadRootFileList();
+                mPresenter.mFileType = Constants.FileType.FILE;
+                mPresenter.onLoadRootFileList(mSearchStr);
             }
         });
 
         mRxManager.on("toStorage", new Action1<String>() {
             @Override
             public void call(String text) {
-                mPresenter.onLoadStorageFileList();
+                mPresenter.mFileType = Constants.FileType.FILE;
+                mPresenter.onLoadStorageFileList(mSearchStr);
+            }
+        });
+
+        mRxManager.on("toPhoto", new Action1<String>() {
+            @Override
+            public void call(String s) {
+                mPresenter.mFileType = Constants.FileType.PHOTO;
+                mPresenter.onLoadPhotoFileList(mSearchStr);
+            }
+        });
+
+        mRxManager.on("toMusic", new Action1<String>() {
+            @Override
+            public void call(String s) {
+                mPresenter.mFileType = Constants.FileType.MUSIC;
+                mPresenter.onLoadMusicFileList(mSearchStr);
+            }
+        });
+
+        mRxManager.on("toVideo", new Action1<String>() {
+            @Override
+            public void call(String s) {
+                mPresenter.mFileType = Constants.FileType.VIDEO;
+                mPresenter.onLoadVideoFileList(mSearchStr);
+            }
+        });
+
+        mRxManager.on("toApps", new Action1<String>() {
+            @Override
+            public void call(String s) {
+                mPresenter.mFileType = Constants.FileType.APPS;
+                mPresenter.onLoadAppsFileList(mSearchStr);
+            }
+        });
+
+        mRxManager.on("toApps", new Action1<String>() {
+            @Override
+            public void call(String s) {
+                mPresenter.mFileType = Constants.FileType.APPS;
+                mPresenter.onLoadAppsFileList(mSearchStr);
             }
         });
     }
@@ -197,7 +248,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     int index = (Integer) tag;
                     mPresenter.enterCertainFolder(index);
                 }
-                if (mPresenter.mEditMode != Constants.EditType.COPY && mPresenter.mEditMode != Constants.EditType.CUT) {
+                if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT) {
                     finishAction();
                 }
             }
@@ -216,11 +267,19 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
     @Override
     public void refreshData(boolean ifClearSelected) {
+        mPresenter.onRefresh(mSearchStr, ifClearSelected);
+    }
+
+    @Override
+    public void refreshData(List<File> filesList, boolean ifClearSelected) {
         mAdapter.clearData(ifClearSelected);
-        if (TextUtils.isEmpty(mSearchStr)) {
-            mAdapter.setData(mPresenter.getCurrentFileList());
+        mAdapter.mFileType = mPresenter.mFileType;
+
+        if (filesList == null || filesList.isEmpty()) {
+            mLlEmpty.setVisibility(View.VISIBLE);
         } else {
-            mAdapter.setData(mPresenter.getCurrentFileList(mSearchStr));
+            mLlEmpty.setVisibility(View.GONE);
+            mAdapter.setData(filesList);
         }
     }
 
@@ -266,8 +325,8 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     @Override
-    public void showNormalAlert(String message, String positiveString, DialogInterface.OnClickListener positiveClick) {
-        AlertUtils.showNormalAlert(getContext(), message, positiveString, positiveClick);
+    public AlertDialog showNormalAlert(String message, String positiveString, DialogInterface.OnClickListener positiveClick) {
+        return AlertUtils.showNormalAlert(getContext(), message, positiveString, positiveClick);
     }
 
     @Override
@@ -284,12 +343,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         if (mActionMode != null) {
             mActionMode.finish();
         }
-        mPresenter.mEditMode = Constants.EditType.NONE;
-    }
-
-    @Override
-    public void setSearchText(String searchStr) {
-        this.mSearchStr = searchStr;
+        mPresenter.mEditType = Constants.EditType.NONE;
     }
 
     private ActionMode getControlActionMode() {
@@ -312,12 +366,12 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 final List<File> fileList = mAdapter.getSelectedDataList();
                 switch (item.getItemId()) {
                     case R.id.action_copy:
-                        mPresenter.mEditMode = Constants.EditType.COPY;
+                        mPresenter.mEditType = Constants.EditType.COPY;
                         mActionMode = getPasteActonMode();
                         mAdapter.mSelectedFileList = fileList;
                         break;
                     case R.id.action_cut:
-                        mPresenter.mEditMode = Constants.EditType.CUT;
+                        mPresenter.mEditType = Constants.EditType.CUT;
                         mActionMode = getPasteActonMode();
                         mAdapter.mSelectedFileList = fileList;
                         break;
@@ -330,11 +384,11 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
-                if (mPresenter.mEditMode != Constants.EditType.COPY && mPresenter.mEditMode != Constants.EditType.CUT) {
+                if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT) {
                     refreshData(true);
                     getActivity().supportInvalidateOptionsMenu();
                     mActionMode = null;
-                    mPresenter.mEditMode = Constants.EditType.NONE;
+                    mPresenter.mEditType = Constants.EditType.NONE;
                 } else {
                     refreshData(false);
                 }
@@ -362,9 +416,9 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 final List<File> fileList = mAdapter.mSelectedFileList;
                 switch (item.getItemId()) {
                     case R.id.action_paste:
-                        if (mPresenter.mEditMode == Constants.EditType.COPY) {
+                        if (mPresenter.mEditType == Constants.EditType.COPY) {
                             mPresenter.onCopy(fileList);
-                        } else if (mPresenter.mEditMode == Constants.EditType.CUT) {
+                        } else if (mPresenter.mEditType == Constants.EditType.CUT) {
                             mPresenter.onCut(fileList);
                         }
                         break;
@@ -377,7 +431,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 refreshData(true);
                 getActivity().supportInvalidateOptionsMenu();
                 mActionMode = null;
-                mPresenter.mEditMode = Constants.EditType.NONE;
+                mPresenter.mEditType = Constants.EditType.NONE;
                 mAdapter.mSelectedFileList = null;
             }
         });

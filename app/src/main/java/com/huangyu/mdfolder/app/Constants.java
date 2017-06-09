@@ -20,4 +20,16 @@ public class Constants extends BaseConstants {
         public static final int CUT = 3;
     }
 
+    public static class FileType {
+        public static final int FILE = 10;
+
+        public static final int PHOTO = 11;
+
+        public static final int MUSIC = 12;
+
+        public static final int VIDEO = 13;
+
+        public static final int APPS = 14;
+    }
+
 }

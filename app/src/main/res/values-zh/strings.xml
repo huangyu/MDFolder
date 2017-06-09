@@ -14,7 +14,8 @@
     <string name="menu_photo">照片</string>
     <string name="menu_music">音乐</string>
     <string name="menu_video">视频</string>
-    <string name="menu_apps">应用</string>
+    <string name="menu_apps">安装文件</string>
+    <string name="menu_download">下载</string>
     <string name="menu_share">分享</string>
     <string name="menu_help">帮助</string>
     <string name="menu_copy">复制</string>
@@ -56,5 +57,6 @@
     <string name="tips_add_file_successfully">新增文件成功</string>
     <string name="tips_add_folder_successfully">新增文件夹成功</string>
     <string name="tips_no_permission_to_access_file">没有权限访问文件</string>
+    <string name="tips_no_file">没有找到文件</string>
 
 </resources>
