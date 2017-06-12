@@ -38,7 +38,7 @@ public class ActivityManager {
      */
     public void addActivity(Activity activity) {
         if (mActivityStack == null) {
-            mActivityStack = new Stack<Activity>();
+            mActivityStack = new Stack<>();
         }
         mActivityStack.add(activity);
     }
@@ -181,7 +181,7 @@ public class ActivityManager {
      * 退出应用程序
      */
     @SuppressWarnings("deprecation")
-    public void AppExitAndRestart(Context mContext) {
+    public void AppExitAndRestart(Context context) {
         ActivityManager.getInstance().finishAllActivity();
         android.os.Process.killProcess(android.os.Process.myPid());  //结束进程之前可以把你程序的注销或者退出代码放在这段代码之前
     }

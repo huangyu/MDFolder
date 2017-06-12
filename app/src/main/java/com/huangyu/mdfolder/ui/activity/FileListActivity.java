@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import com.huangyu.library.app.ActivityManager;
 import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.library.ui.BaseActivity;
 import com.huangyu.mdfolder.R;
@@ -98,7 +99,7 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
         }
 
         if (isDoubleCheck()) {
-            finish();
+            ActivityManager.getInstance().AppExit(FileListActivity.this, false);
         } else {
             mCurrentTime = System.currentTimeMillis();
             AlertUtils.showSnack(ButterKnife.findById(this, R.id.cl_main), getString(R.string.tips_leave));
@@ -230,7 +231,7 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
         AlertUtils.showSnack(mRelativeLayout, getString(R.string.tips_no_permissions), getString(R.string.act_exit), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                ActivityManager.getInstance().AppExit(FileListActivity.this, false);
             }
         });
 

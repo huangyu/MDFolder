@@ -23,7 +23,7 @@ public final class SizeUtils {
      * @return px值
      */
     public static int dp2px(float dpValue) {
-        final float scale = BaseApplication.getAppContext().getResources().getDisplayMetrics().density;
+        final float scale = BaseApplication.getInstance().getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
     }
 
@@ -34,7 +34,7 @@ public final class SizeUtils {
      * @return dp值
      */
     public static int px2dp(float pxValue) {
-        final float scale = BaseApplication.getAppContext().getResources().getDisplayMetrics().density;
+        final float scale = BaseApplication.getInstance().getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
     }
 
@@ -45,7 +45,7 @@ public final class SizeUtils {
      * @return px值
      */
     public static int sp2px(float spValue) {
-        final float fontScale = BaseApplication.getAppContext().getResources().getDisplayMetrics().scaledDensity;
+        final float fontScale = BaseApplication.getInstance().getResources().getDisplayMetrics().scaledDensity;
         return (int) (spValue * fontScale + 0.5f);
     }
 
@@ -56,7 +56,7 @@ public final class SizeUtils {
      * @return sp值
      */
     public static int px2sp(float pxValue) {
-        final float fontScale = BaseApplication.getAppContext().getResources().getDisplayMetrics().scaledDensity;
+        final float fontScale = BaseApplication.getInstance().getResources().getDisplayMetrics().scaledDensity;
         return (int) (pxValue / fontScale + 0.5f);
     }
 

@@ -67,7 +67,7 @@ public class RetrofitManager {
         final HttpLoggingInterceptor logInterceptor = new HttpLoggingInterceptor();
         logInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         // 缓存
-        File cacheFile = new File(BaseApplication.getAppContext().getCacheDir(), "cache");
+        File cacheFile = new File(BaseApplication.getInstance().getCacheDir(), "cache");
         Cache cache = new Cache(cacheFile, 1024 * 1024 * 100); // 100Mb
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder()

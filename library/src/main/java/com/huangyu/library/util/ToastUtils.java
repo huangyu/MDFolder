@@ -111,7 +111,7 @@ public final class ToastUtils {
      * @param duration 显示时长
      */
     private static void showToast(@StringRes int resId, int duration) {
-        showToast(BaseApplication.getAppContext().getResources().getText(resId).toString(), duration);
+        showToast(BaseApplication.getInstance().getResources().getText(resId).toString(), duration);
     }
 
     /**
@@ -122,7 +122,7 @@ public final class ToastUtils {
      * @param args     参数
      */
     private static void showToast(@StringRes int resId, int duration, Object... args) {
-        showToast(String.format(BaseApplication.getAppContext().getResources().getString(resId), args), duration);
+        showToast(String.format(BaseApplication.getInstance().getResources().getString(resId), args), duration);
     }
 
     /**
@@ -147,7 +147,7 @@ public final class ToastUtils {
             cancelToast();
         }
         if (sToast == null) {
-            sToast = Toast.makeText(BaseApplication.getAppContext(), text, duration);
+            sToast = Toast.makeText(BaseApplication.getInstance(), text, duration);
         } else {
             sToast.setText(text);
             sToast.setDuration(duration);

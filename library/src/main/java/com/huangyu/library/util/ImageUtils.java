@@ -699,7 +699,7 @@ public final class ImageUtils {
         canvas.scale(scale, scale);
         canvas.drawBitmap(scaleBitmap, 0, 0, paint);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            scaleBitmap = renderScriptBlur(BaseApplication.getAppContext(), scaleBitmap, radius);
+            scaleBitmap = renderScriptBlur(BaseApplication.getInstance(), scaleBitmap, radius);
         } else {
             scaleBitmap = stackBlur(scaleBitmap, (int) radius, recycle);
         }

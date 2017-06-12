@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:gravity="center_horizontal"
+    android:visibility="gone"
     android:orientation="vertical">
 
     <ImageView

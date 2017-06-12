@@ -10,7 +10,7 @@ import java.io.File;
  */
 public class BaseConstants {
 
-    public static final String ROOT_PATH = Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) ? Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "EasyFramework" + File.separator : BaseApplication.getAppContext().getCacheDir() + File.separator;
+    public static final String ROOT_PATH = Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) ? Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "EasyFramework" + File.separator : BaseApplication.getInstance().getCacheDir() + File.separator;
 
     public static final String LOG_PATH = ROOT_PATH + "Log" + File.separator;
 

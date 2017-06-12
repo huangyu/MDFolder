@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.huangyu.library.app.BaseApplication;
 import com.huangyu.library.mvp.BasePresenter;
 import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.library.rx.RxManager;
@@ -64,7 +65,10 @@ public abstract class BaseFragment<V extends IBaseView, P extends BasePresenter<
         if (mPresenter != null) {
             mPresenter.destroy();
         }
-        mRxManager.clear();
+        if (mRxManager != null) {
+            mRxManager.clear();
+        }
+        BaseApplication.getRefWatcher().watch(this);
         super.onDestroy();
     }
 
