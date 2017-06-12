@@ -24,7 +24,7 @@ public class FileModel implements IBaseModel {
      */
     public boolean openFile(Context context, File file) {
         if (file != null && !file.isDirectory() && file.exists()) {
-            if (file.canExecute()) {
+            try {
                 Intent intent = new Intent();
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.setAction(Intent.ACTION_VIEW);
@@ -38,7 +38,7 @@ public class FileModel implements IBaseModel {
                 intent.setDataAndType(uri, getMIMEType(file));
                 context.startActivity(intent);
                 return true;
-            } else {
+            } catch (Exception e) {
                 return false;
             }
         }

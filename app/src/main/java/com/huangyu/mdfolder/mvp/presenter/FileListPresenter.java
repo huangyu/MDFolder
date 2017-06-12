@@ -148,9 +148,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     }
 
     /**
-     * 获取应用安装文件列表
+     * 获取下载文件列表
      */
-    public void onLoadAppsFileList(final String searchStr) {
+    public void onLoadDownloadFileList(final String searchStr) {
         Subscription subscription = Observable.defer(new Func0<Observable<List<File>>>() {
             @Override
             public Observable<List<File>> call() {
@@ -162,7 +162,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 .doOnSubscribe(new Action0() {
                     @Override
                     public void call() {
+                        mCurrentPath = mFileListModel.getDownloadPath();
                         mFileStack.clear();
+                        mFileStack.push(new File(mCurrentPath));
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -176,7 +178,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     @Override
                     public void onNext(List<File> fileList) {
                         mView.removeAllTabs();
-                        mView.addTab(mView.getResString(R.string.menu_apps));
+                        mView.addTab(mCurrentPath);
                         mView.refreshData(fileList, true);
                     }
 
@@ -194,9 +196,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     }
 
     /**
-     * 获取图片文件列表
+     * 获取不同类型文件列表
      */
-    public void onLoadPhotoFileList(final String searchStr) {
+    public void onLoadMultiTypeFileList(final String searchStr, final int fileType) {
         Subscription subscription = Observable.defer(new Func0<Observable<List<File>>>() {
             @Override
             public Observable<List<File>> call() {
@@ -222,99 +224,20 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     @Override
                     public void onNext(List<File> fileList) {
                         mView.removeAllTabs();
-                        mView.addTab(mView.getResString(R.string.menu_photo));
-                        mView.refreshData(fileList, true);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mView.showSnack(e.toString());
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        mView.stopRefresh();
-                    }
-                });
-        mRxManager.add(subscription);
-    }
-
-    /**
-     * 获取音乐文件列表
-     */
-    public void onLoadMusicFileList(final String searchStr) {
-        Subscription subscription = Observable.defer(new Func0<Observable<List<File>>>() {
-            @Override
-            public Observable<List<File>> call() {
-                return Observable.just(getCurrentFileList(searchStr));
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .doOnSubscribe(new Action0() {
-                    @Override
-                    public void call() {
-                        mFileStack.clear();
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<File>>() {
-                    @Override
-                    public void onStart() {
-                        mView.startRefresh();
-                        mView.finishAction();
-                    }
-
-                    @Override
-                    public void onNext(List<File> fileList) {
-                        mView.removeAllTabs();
-                        mView.addTab(mView.getResString(R.string.menu_music));
-                        mView.refreshData(fileList, true);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mView.showSnack(e.toString());
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        mView.stopRefresh();
-                    }
-                });
-        mRxManager.add(subscription);
-    }
-
-    /**
-     * 获取视频文件列表
-     */
-    public void onLoadVideoFileList(final String searchStr) {
-        Subscription subscription = Observable.defer(new Func0<Observable<List<File>>>() {
-            @Override
-            public Observable<List<File>> call() {
-                return Observable.just(getCurrentFileList(searchStr));
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .doOnSubscribe(new Action0() {
-                    @Override
-                    public void call() {
-                        mFileStack.clear();
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<File>>() {
-                    @Override
-                    public void onStart() {
-                        mView.startRefresh();
-                        mView.finishAction();
-                    }
-
-                    @Override
-                    public void onNext(List<File> fileList) {
-                        mView.removeAllTabs();
-                        mView.addTab(mView.getResString(R.string.menu_video));
+                        switch (fileType) {
+                            case Constants.FileType.APPS:
+                                mView.addTab(mView.getResString(R.string.menu_apps));
+                                break;
+                            case Constants.FileType.PHOTO:
+                                mView.addTab(mView.getResString(R.string.menu_photo));
+                                break;
+                            case Constants.FileType.MUSIC:
+                                mView.addTab(mView.getResString(R.string.menu_music));
+                                break;
+                            case Constants.FileType.VIDEO:
+                                mView.addTab(mView.getResString(R.string.menu_video));
+                                break;
+                        }
                         mView.refreshData(fileList, true);
                     }
 
@@ -729,6 +652,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     public List<File> getCurrentFileList(String searchStr) {
         switch (mFileType) {
             case Constants.FileType.FILE:
+            case Constants.FileType.DOWNLOAD:
                 break;
             case Constants.FileType.APPS:
                 return mFileListModel.orderByType(mFileListModel.orderByAlphabet(mFileListModel.getAppsFileList(searchStr)));

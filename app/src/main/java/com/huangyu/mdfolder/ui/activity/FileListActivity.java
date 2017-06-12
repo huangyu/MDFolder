@@ -182,6 +182,9 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
             case R.id.nav_apps:
                 mRxManager.post("toApps", "");
                 break;
+            case R.id.nav_download:
+                mRxManager.post("toDownload", "");
+                break;
             case R.id.nav_share:
                 // TODO
                 break;

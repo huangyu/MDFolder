@@ -191,7 +191,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public void call(String s) {
                 mPresenter.mFileType = Constants.FileType.PHOTO;
-                mPresenter.onLoadPhotoFileList(mSearchStr);
+                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mFileType);
             }
         });
 
@@ -199,7 +199,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public void call(String s) {
                 mPresenter.mFileType = Constants.FileType.MUSIC;
-                mPresenter.onLoadMusicFileList(mSearchStr);
+                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mFileType);
             }
         });
 
@@ -207,7 +207,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public void call(String s) {
                 mPresenter.mFileType = Constants.FileType.VIDEO;
-                mPresenter.onLoadVideoFileList(mSearchStr);
+                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mFileType);
             }
         });
 
@@ -215,15 +215,15 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public void call(String s) {
                 mPresenter.mFileType = Constants.FileType.APPS;
-                mPresenter.onLoadAppsFileList(mSearchStr);
+                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mFileType);
             }
         });
 
-        mRxManager.on("toApps", new Action1<String>() {
+        mRxManager.on("toDownload", new Action1<String>() {
             @Override
             public void call(String s) {
-                mPresenter.mFileType = Constants.FileType.APPS;
-                mPresenter.onLoadAppsFileList(mSearchStr);
+                mPresenter.mFileType = Constants.FileType.DOWNLOAD;
+                mPresenter.onLoadDownloadFileList(mSearchStr);
             }
         });
     }

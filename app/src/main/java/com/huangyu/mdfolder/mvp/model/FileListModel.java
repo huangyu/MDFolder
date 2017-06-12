@@ -66,6 +66,15 @@ public class FileListModel implements IBaseModel {
     }
 
     /**
+     * 获取sd卡目录路径
+     *
+     * @return
+     */
+    public String getDownloadPath() {
+        return SDCardUtils.getSDCardPath() + "Download";
+    }
+
+    /**
      * 按字母排序
      */
     public List<File> orderByAlphabet(List<File> fileList) {
