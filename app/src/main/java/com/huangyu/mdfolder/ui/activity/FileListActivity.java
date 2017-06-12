@@ -186,10 +186,10 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
                 mRxManager.post("toDownload", "");
                 break;
             case R.id.nav_share:
-                // TODO
+                AlertUtils.showSnack(ButterKnife.findById(mRelativeLayout, R.id.cl_main), getString(R.string.tips_not_complete));
                 break;
             case R.id.nav_settings:
-                // TODO
+                AlertUtils.showSnack(ButterKnife.findById(mRelativeLayout, R.id.cl_main), getString(R.string.tips_not_complete));
                 break;
         }
 

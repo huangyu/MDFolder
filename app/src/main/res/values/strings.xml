@@ -57,5 +57,6 @@
     <string name="tips_add_folder_successfully">Add folder successfully.</string>
     <string name="tips_no_permission_to_access_file">No permission to access file.</string>
     <string name="tips_no_file">No file.</string>
+    <string name="tips_not_complete">This function is not complete.</string>
 
 </resources>
