@@ -38,6 +38,7 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
         mTvName.setText(file.getName());
 
         switch (mFileType) {
+            case Constants.FileType.DOWNLOAD:
             case Constants.FileType.FILE:
                 if (file.isDirectory()) {
                     mTvSize.setText(mContext.getString(R.string.str_folder));

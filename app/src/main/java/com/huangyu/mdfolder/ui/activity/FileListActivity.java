@@ -99,7 +99,7 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
         }
 
         if (isDoubleCheck()) {
-            ActivityManager.getInstance().finishAllActivity();
+            ActivityManager.getInstance().AppExit(this);
         } else {
             mCurrentTime = System.currentTimeMillis();
             AlertUtils.showSnack(ButterKnife.findById(this, R.id.cl_main), getString(R.string.tips_leave));
