@@ -655,15 +655,15 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
             case Constants.FileType.DOWNLOAD:
                 break;
             case Constants.FileType.APPS:
-                return mFileListModel.orderByType(mFileListModel.orderByAlphabet(mFileListModel.getAppsFileList(searchStr)));
+                return mFileListModel.orderByType(mFileListModel.getAppsFileList(searchStr));
             case Constants.FileType.MUSIC:
-                return mFileListModel.orderByType(mFileListModel.orderByAlphabet(mFileListModel.getMusicFileList(searchStr)));
+                return mFileListModel.orderByType(mFileListModel.getMusicFileList(searchStr));
             case Constants.FileType.PHOTO:
-                return mFileListModel.orderByType(mFileListModel.orderByAlphabet(mFileListModel.getPhotoFileList(searchStr)));
+                return mFileListModel.orderByType(mFileListModel.getPhotoFileList(searchStr));
             case Constants.FileType.VIDEO:
-                return mFileListModel.orderByType(mFileListModel.orderByAlphabet(mFileListModel.getVideoFileList(searchStr)));
+                return mFileListModel.orderByType(mFileListModel.getVideoFileList(searchStr));
         }
-        return mFileListModel.orderByType(mFileListModel.orderByAlphabet(mFileListModel.getFileList(mCurrentPath, searchStr)));
+        return mFileListModel.orderByType(mFileListModel.getFileList(mCurrentPath, searchStr));
     }
 
     /**
@@ -758,12 +758,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
     private boolean copyFolder(String srcFolderPath, String destFolderPath) {
         return mFileModel.copyFolder(srcFolderPath, destFolderPath);
-    }
-
-    @Override
-    public void destroy() {
-        mView.stopRefresh();
-        super.destroy();
     }
 
 }

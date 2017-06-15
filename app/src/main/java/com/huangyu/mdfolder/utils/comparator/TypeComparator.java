@@ -8,11 +8,17 @@ import java.util.Comparator;
  */
 public class TypeComparator implements Comparator<File> {
 
+
+    public TypeComparator() {
+    }
+
     public int compare(File file1, File file2) {
-        if (!file1.isDirectory() && file2.isDirectory()) {
-            return 1;
-        } else if (file1.isDirectory() && !file2.isDirectory()) {
+        if (file1.isDirectory() && !file2.isDirectory()) {
             return -1;
+        } else if (file1.isDirectory() && file2.isDirectory() || !file1.isDirectory() && !file2.isDirectory()) {
+            return file1.getName().compareToIgnoreCase(file2.getName());
+        } else if (!file1.isDirectory() && file2.isDirectory()) {
+            return 1;
         } else {
             return 0;
         }
