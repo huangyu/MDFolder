@@ -1,0 +1,26 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/pref_appearance">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="pref_theme"
+            android:summary="@string/pref_dark"
+            android:title="@string/pref_theme" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_about">
+
+        <Preference
+            android:capitalize="words"
+            android:inputType="none"
+            android:key="pref_about"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="@string/pref_github"
+            android:title="@string/pref_project" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

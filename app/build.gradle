@@ -9,6 +9,7 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         debug {
@@ -29,10 +30,12 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(":library")
+
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-
     compile 'pub.devrel:easypermissions:0.4.0'
     compile 'com.github.clans:fab:1.6.4'
+    compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.android.support:support-vector-drawable:25.3.1'
 }

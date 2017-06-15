@@ -60,4 +60,13 @@
     <string name="tips_no_file">没有找到文件</string>
     <string name="tips_not_complete">此功能尚未实现</string>
 
+    <string name="pref_settings">设置</string>
+    <string name="pref_appearance">外观</string>
+    <string name="pref_theme">主题</string>
+    <string name="pref_dark">当前使用深色主题</string>
+    <string name="pref_light">当前使用浅色主题</string>
+    <string name="pref_about">关于</string>
+    <string name="pref_project">项目地址</string>
+    <string name="pref_github">https://github.com/huangyu0522/MDFolder</string>
+
 </resources>

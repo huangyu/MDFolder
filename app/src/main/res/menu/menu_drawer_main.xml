@@ -12,6 +12,10 @@
             android:icon="@mipmap/ic_root"
             android:title="@string/menu_root" />
         <item
+            android:id="@+id/nav_download"
+            android:icon="@mipmap/ic_download"
+            android:title="@string/menu_download" />
+        <item
             android:id="@+id/nav_photo"
             android:icon="@mipmap/ic_photo"
             android:title="@string/menu_photo" />
@@ -27,18 +31,14 @@
             android:id="@+id/nav_apps"
             android:icon="@mipmap/ic_apps"
             android:title="@string/menu_apps" />
-        <item
-            android:id="@+id/nav_download"
-            android:icon="@mipmap/ic_download"
-            android:title="@string/menu_download" />
     </group>
 
     <item android:title="@string/menu_other">
         <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@mipmap/ic_share"
-                android:title="@string/menu_share" />
+            <!--<item-->
+                <!--android:id="@+id/nav_share"-->
+                <!--android:icon="@mipmap/ic_share"-->
+                <!--android:title="@string/menu_share" />-->
             <item
                 android:id="@+id/nav_settings"
                 android:icon="@mipmap/ic_settings"
