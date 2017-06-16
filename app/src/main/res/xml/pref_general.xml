@@ -5,7 +5,6 @@
         <SwitchPreference
             android:defaultValue="true"
             android:key="pref_theme"
-            android:summary="@string/pref_dark"
             android:title="@string/pref_theme" />
 
     </PreferenceCategory>

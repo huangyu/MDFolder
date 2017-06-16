@@ -11,7 +11,7 @@ import android.view.MenuItem;
 
 import com.huangyu.mdfolder.R;
 
-public class SettingsActivity extends AppCompatPreferenceActivity {
+public class SettingsActivity extends ThematicSettingsActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,9 +24,22 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         prefTheme.setOnPreferenceChangeListener(new SwitchPreference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                return false;
+                boolean isLight = (Boolean) newValue;
+                if (isLight) {
+                    prefTheme.setSummary(getString(R.string.pref_light));
+                } else {
+                    prefTheme.setSummary(getString(R.string.pref_dark));
+                }
+                recreate();
+                return true;
             }
         });
+
+        if (isLightMode()) {
+            prefTheme.setSummary(getString(R.string.pref_light));
+        } else {
+            prefTheme.setSummary(getString(R.string.pref_dark));
+        }
 
         final Preference prefAbout = findPreference("pref_about");
         prefAbout.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -36,7 +49,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 intent.setAction("android.intent.action.VIEW");
                 intent.setData(Uri.parse(prefAbout.getSummary().toString()));
                 startActivity(intent);
-                return false;
+                return true;
             }
         });
     }

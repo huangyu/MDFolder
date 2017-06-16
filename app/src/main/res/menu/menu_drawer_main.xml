@@ -35,10 +35,6 @@
 
     <item android:title="@string/menu_other">
         <menu>
-            <!--<item-->
-                <!--android:id="@+id/nav_share"-->
-                <!--android:icon="@mipmap/ic_share"-->
-                <!--android:title="@string/menu_share" />-->
             <item
                 android:id="@+id/nav_settings"
                 android:icon="@mipmap/ic_settings"

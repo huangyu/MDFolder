@@ -93,7 +93,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     protected void initView(Bundle savedInstanceState) {
         mIvCenter.setColorFilter(getResources().getColor(R.color.colorDarkGray));
 
-        mAdapter = new FileListAdapter(getContext());
+        mAdapter = new FileListAdapter(getActivity());
         mAdapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {

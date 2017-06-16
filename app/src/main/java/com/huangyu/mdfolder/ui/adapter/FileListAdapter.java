@@ -10,6 +10,7 @@ import com.huangyu.library.ui.CommonRecyclerViewHolder;
 import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.Constants;
+import com.huangyu.mdfolder.ui.activity.FileListActivity;
 import com.huangyu.mdfolder.utils.DateUtils;
 
 import java.io.File;
@@ -37,35 +38,77 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
 
         mTvName.setText(file.getName());
 
+        FileListActivity activity = (FileListActivity) mContext;
+        if (activity.isLightMode()) {
+            holder.itemView.setBackgroundResource(R.drawable.select_item);
+            mTvName.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryText));
+            mTvSize.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryText));
+            mTvTime.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryText));
+            mVDivider.setBackgroundResource(R.color.colorDivider);
+        } else {
+            holder.itemView.setBackgroundResource(R.drawable.select_item_dark);
+            mTvName.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryTextWhite));
+            mTvSize.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryTextWhite));
+            mTvTime.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryTextWhite));
+            mVDivider.setBackgroundResource(R.color.colorDividerWhite);
+        }
+
         switch (mFileType) {
             case Constants.FileType.DOWNLOAD:
             case Constants.FileType.FILE:
                 if (file.isDirectory()) {
                     mTvSize.setText(mContext.getString(R.string.str_folder));
-                    mIvIcon.setImageResource(R.mipmap.ic_folder);
+                    if (activity.isLightMode()) {
+                        mIvIcon.setImageResource(R.mipmap.ic_folder);
+                    } else {
+                        mIvIcon.setImageResource(R.mipmap.ic_folder_white);
+                    }
                 } else {
                     mTvSize.setText(FileUtils.getFileSize(file));
-                    mIvIcon.setImageResource(R.mipmap.ic_file);
+                    if (activity.isLightMode()) {
+                        mIvIcon.setImageResource(R.mipmap.ic_file);
+                    } else {
+                        mIvIcon.setImageResource(R.mipmap.ic_file_white);
+                    }
                 }
                 break;
             case Constants.FileType.APPS:
                 mTvSize.setText(FileUtils.getFileSize(file));
-                mIvIcon.setImageResource(R.mipmap.ic_apps);
+                if (activity.isLightMode()) {
+                    mIvIcon.setImageResource(R.mipmap.ic_apps);
+                } else {
+                    mIvIcon.setImageResource(R.mipmap.ic_apps_white);
+                }
                 break;
             case Constants.FileType.MUSIC:
                 mTvSize.setText(FileUtils.getFileSize(file));
-                mIvIcon.setImageResource(R.mipmap.ic_music);
+                if (activity.isLightMode()) {
+                    mIvIcon.setImageResource(R.mipmap.ic_music);
+                } else {
+                    mIvIcon.setImageResource(R.mipmap.ic_music_white);
+                }
                 break;
             case Constants.FileType.PHOTO:
                 mTvSize.setText(FileUtils.getFileSize(file));
-                mIvIcon.setImageResource(R.mipmap.ic_photo);
+                if (activity.isLightMode()) {
+                    mIvIcon.setImageResource(R.mipmap.ic_photo);
+                } else {
+                    mIvIcon.setImageResource(R.mipmap.ic_photo_white);
+                }
                 break;
             case Constants.FileType.VIDEO:
                 mTvSize.setText(FileUtils.getFileSize(file));
-                mIvIcon.setImageResource(R.mipmap.ic_video);
+                if (activity.isLightMode()) {
+                    mIvIcon.setImageResource(R.mipmap.ic_video);
+                } else {
+                    mIvIcon.setImageResource(R.mipmap.ic_video_white);
+                }
                 break;
         }
-        mIvIcon.setColorFilter(mContext.getResources().getColor(R.color.colorDarkGray));
+
+        if (activity.isLightMode()) {
+            mIvIcon.setColorFilter(mContext.getResources().getColor(R.color.colorDarkGray));
+        }
 
         mTvTime.setText(DateUtils.getFormatDate(file.lastModified()));
 

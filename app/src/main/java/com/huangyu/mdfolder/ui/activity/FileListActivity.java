@@ -17,7 +17,6 @@ import android.widget.RelativeLayout;
 
 import com.huangyu.library.app.ActivityManager;
 import com.huangyu.library.mvp.IBaseView;
-import com.huangyu.library.ui.BaseActivity;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.ui.fragment.FileListFragment;
 import com.huangyu.mdfolder.utils.AlertUtils;
@@ -31,7 +30,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 import static com.huangyu.mdfolder.app.Constants.PERMISSION_ACCESS_FILES;
 
-public class FileListActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
+public class FileListActivity extends ThematicActivity implements NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -72,6 +71,14 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
         mNavigationView.setNavigationItemSelectedListener(this);
 
         requirePermissions();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isChanged()) {
+            replaceFragment();
+        }
     }
 
     private void replaceFragment() {
@@ -186,17 +193,12 @@ public class FileListActivity extends BaseActivity implements NavigationView.OnN
             case R.id.nav_download:
                 mRxManager.post("toDownload", "");
                 break;
-//            case R.id.nav_share:
-//                AlertUtils.showSnack(ButterKnife.findById(mRelativeLayout, R.id.cl_main), getString(R.string.tips_not_complete));
-//                break;
             case R.id.nav_settings:
                 startActivity(SettingsActivity.class);
-//                AlertUtils.showSnack(ButterKnife.findById(mRelativeLayout, R.id.cl_main), getString(R.string.tips_not_complete));
                 break;
         }
 
         mDrawerLayout.closeDrawer(GravityCompat.START);
-//        resetSearch();
         return true;
     }
 
