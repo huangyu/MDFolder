@@ -108,6 +108,8 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
 
         if (activity.isLightMode()) {
             mIvIcon.setColorFilter(mContext.getResources().getColor(R.color.colorDarkGray));
+        } else {
+            mIvIcon.setColorFilter(mContext.getResources().getColor(R.color.colorLightGray));
         }
 
         mTvTime.setText(DateUtils.getFormatDate(file.lastModified()));
