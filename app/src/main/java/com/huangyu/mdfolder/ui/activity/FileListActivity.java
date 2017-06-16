@@ -106,7 +106,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
         }
 
         if (isDoubleCheck()) {
-            ActivityManager.getInstance().AppExit(this);
+            ActivityManager.getInstance().finishAllActivity();
         } else {
             mCurrentTime = System.currentTimeMillis();
             AlertUtils.showSnack(ButterKnife.findById(this, R.id.cl_main), getString(R.string.tips_leave));
