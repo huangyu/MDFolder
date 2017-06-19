@@ -29,7 +29,7 @@ public class Constants extends BaseConstants {
 
         public static final int VIDEO = 13;
 
-        public static final int APPS = 14;
+        public static final int DOCUMENT = 14;
 
         public static final int DOWNLOAD = 15;
     }

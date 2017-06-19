@@ -5,23 +5,22 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.huangyu.library.ui.CommonRecyclerViewAdapter;
 import com.huangyu.library.ui.CommonRecyclerViewHolder;
-import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.Constants;
+import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.ui.activity.FileListActivity;
-import com.huangyu.mdfolder.utils.DateUtils;
 
-import java.io.File;
 import java.util.List;
 
 /**
  * Created by huangyu on 2017-5-23.
  */
-public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
+public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
 
-    public List<File> mSelectedFileList;
+    public List<FileItem> mSelectedFileList;
     public int mFileType;
 
     public FileListAdapter(Context context) {
@@ -29,14 +28,14 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
     }
 
     @Override
-    public void convert(CommonRecyclerViewHolder holder, File file, int position) {
+    public void convert(CommonRecyclerViewHolder holder, FileItem fileItem, int position) {
         ImageView mIvIcon = holder.getView(R.id.iv_icon);
         TextView mTvName = holder.getView(R.id.tv_name);
         TextView mTvSize = holder.getView(R.id.tv_size);
         TextView mTvTime = holder.getView(R.id.tv_time);
         View mVDivider = holder.getView(R.id.v_divider);
 
-        mTvName.setText(file.getName());
+        mTvName.setText(fileItem.getName());
 
         FileListActivity activity = (FileListActivity) mContext;
         if (activity.isLightMode()) {
@@ -56,7 +55,8 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
         switch (mFileType) {
             case Constants.FileType.DOWNLOAD:
             case Constants.FileType.FILE:
-                if (file.isDirectory()) {
+            case Constants.FileType.DOCUMENT:
+                if (fileItem.isDirectory()) {
                     mTvSize.setText(mContext.getString(R.string.str_folder));
                     if (activity.isLightMode()) {
                         mIvIcon.setImageResource(R.mipmap.ic_folder);
@@ -64,7 +64,7 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
                         mIvIcon.setImageResource(R.mipmap.ic_folder_white);
                     }
                 } else {
-                    mTvSize.setText(FileUtils.getFileSize(file));
+                    mTvSize.setText(fileItem.getSize());
                     if (activity.isLightMode()) {
                         mIvIcon.setImageResource(R.mipmap.ic_file);
                     } else {
@@ -72,16 +72,8 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
                     }
                 }
                 break;
-            case Constants.FileType.APPS:
-                mTvSize.setText(FileUtils.getFileSize(file));
-                if (activity.isLightMode()) {
-                    mIvIcon.setImageResource(R.mipmap.ic_apps);
-                } else {
-                    mIvIcon.setImageResource(R.mipmap.ic_apps_white);
-                }
-                break;
             case Constants.FileType.MUSIC:
-                mTvSize.setText(FileUtils.getFileSize(file));
+                mTvSize.setText(fileItem.getSize());
                 if (activity.isLightMode()) {
                     mIvIcon.setImageResource(R.mipmap.ic_music);
                 } else {
@@ -89,15 +81,11 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
                 }
                 break;
             case Constants.FileType.PHOTO:
-                mTvSize.setText(FileUtils.getFileSize(file));
-                if (activity.isLightMode()) {
-                    mIvIcon.setImageResource(R.mipmap.ic_photo);
-                } else {
-                    mIvIcon.setImageResource(R.mipmap.ic_photo_white);
-                }
+                mTvSize.setText(fileItem.getSize());
+                Glide.with(mContext).load(fileItem.getPath()).into(mIvIcon);
                 break;
             case Constants.FileType.VIDEO:
-                mTvSize.setText(FileUtils.getFileSize(file));
+                mTvSize.setText(fileItem.getSize());
                 if (activity.isLightMode()) {
                     mIvIcon.setImageResource(R.mipmap.ic_video);
                 } else {
@@ -106,13 +94,17 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<File> {
                 break;
         }
 
-        if (activity.isLightMode()) {
-            mIvIcon.setColorFilter(mContext.getResources().getColor(R.color.colorDarkGray));
+        if (mFileType == Constants.FileType.PHOTO) {
+            mIvIcon.setColorFilter(null);
         } else {
-            mIvIcon.setColorFilter(mContext.getResources().getColor(R.color.colorLightGray));
+            if (activity.isLightMode()) {
+                mIvIcon.setColorFilter(mContext.getResources().getColor(R.color.colorDarkGray));
+            } else {
+                mIvIcon.setColorFilter(mContext.getResources().getColor(R.color.colorLightGray));
+            }
         }
 
-        mTvTime.setText(DateUtils.getFormatDate(file.lastModified()));
+        mTvTime.setText(fileItem.getDate());
 
         if (position == getItemCount() - 1) {
             mVDivider.setVisibility(View.GONE);

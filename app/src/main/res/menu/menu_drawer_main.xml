@@ -28,9 +28,9 @@
             android:icon="@mipmap/ic_video"
             android:title="@string/menu_video" />
         <item
-            android:id="@+id/nav_apps"
-            android:icon="@mipmap/ic_apps"
-            android:title="@string/menu_apps" />
+            android:id="@+id/nav_document"
+            android:icon="@mipmap/ic_document"
+            android:title="@string/menu_document" />
     </group>
 
     <item android:title="@string/menu_other">

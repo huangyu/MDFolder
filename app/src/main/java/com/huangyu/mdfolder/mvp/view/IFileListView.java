@@ -6,8 +6,8 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.huangyu.library.mvp.IBaseView;
+import com.huangyu.mdfolder.bean.FileItem;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -27,7 +27,7 @@ public interface IFileListView extends IBaseView {
 
     void refreshData(boolean ifClearSelected);
 
-    void refreshData(List<File> filesList, boolean ifClearSelected);
+    void refreshData(List<FileItem> filesList, boolean ifClearSelected);
 
     void finishAction();
 

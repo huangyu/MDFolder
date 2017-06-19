@@ -27,6 +27,7 @@ import com.huangyu.library.ui.BaseFragment;
 import com.huangyu.library.ui.CommonRecyclerViewAdapter;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.Constants;
+import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.mvp.presenter.FileListPresenter;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
 import com.huangyu.mdfolder.ui.adapter.FileListAdapter;
@@ -98,11 +99,11 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public void onItemClick(View view, int position) {
                 if (mPresenter.mEditType == Constants.EditType.NONE || mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT) {
-                    File file = mAdapter.getItem(position);
+                    FileItem file = mAdapter.getItem(position);
                     if (file.isDirectory()) {
                         mPresenter.enterFolder(file);
                     } else {
-                        if (!mPresenter.openFile(getContext(), file)) {
+                        if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
                             AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_no_permission_to_access_file));
                         }
                     }
@@ -211,10 +212,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             }
         });
 
-        mRxManager.on("toApps", new Action1<String>() {
+        mRxManager.on("toDocument", new Action1<String>() {
             @Override
             public void call(String s) {
-                mPresenter.mFileType = Constants.FileType.APPS;
+                mPresenter.mFileType = Constants.FileType.DOCUMENT;
                 mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mFileType);
             }
         });
@@ -271,7 +272,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     @Override
-    public void refreshData(List<File> filesList, boolean ifClearSelected) {
+    public void refreshData(List<FileItem> filesList, boolean ifClearSelected) {
         mAdapter.clearData(ifClearSelected);
         mAdapter.mFileType = mPresenter.mFileType;
 
@@ -350,20 +351,28 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         return getActivity().startActionMode(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                mode.getMenuInflater().inflate(R.menu.menu_control, menu);
+                if (mPresenter.mFileType == Constants.FileType.FILE || mPresenter.mFileType == Constants.FileType.DOWNLOAD) {
+                    mode.getMenuInflater().inflate(R.menu.menu_control, menu);
+                } else {
+                    mode.getMenuInflater().inflate(R.menu.menu_control_delete, menu);
+                }
                 return true;
             }
 
             @Override
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
                 menu.clear();
-                mode.getMenuInflater().inflate(R.menu.menu_control, menu);
+                if (mPresenter.mFileType == Constants.FileType.FILE || mPresenter.mFileType == Constants.FileType.DOWNLOAD) {
+                    mode.getMenuInflater().inflate(R.menu.menu_control, menu);
+                } else {
+                    mode.getMenuInflater().inflate(R.menu.menu_control_delete, menu);
+                }
                 return true;
             }
 
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                final List<File> fileList = mAdapter.getSelectedDataList();
+                final List<FileItem> fileList = mAdapter.getSelectedDataList();
                 switch (item.getItemId()) {
                     case R.id.action_copy:
                         mPresenter.mEditType = Constants.EditType.COPY;
@@ -413,7 +422,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                final List<File> fileList = mAdapter.mSelectedFileList;
+                final List<FileItem> fileList = mAdapter.mSelectedFileList;
                 switch (item.getItemId()) {
                     case R.id.action_paste:
                         if (mPresenter.mEditType == Constants.EditType.COPY) {

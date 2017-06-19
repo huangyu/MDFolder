@@ -6,13 +6,17 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.huangyu.library.mvp.BasePresenter;
+import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.Constants;
+import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
+import com.huangyu.mdfolder.utils.DateUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -36,7 +40,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
     private FileListModel mFileListModel;
     private FileModel mFileModel;
-    private Stack<File> mFileStack;
+    private Stack<String> mFileStack;   // 文件路径栈
 
     private String mCurrentPath; // 当前路径
     public int mEditType;   // 当前编辑状态
@@ -55,9 +59,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 获取根目录文件列表
      */
     public void onLoadRootFileList(final String searchStr) {
-        Subscription subscription = Observable.defer(new Func0<Observable<List<File>>>() {
+        Subscription subscription = Observable.defer(new Func0<Observable<List<FileItem>>>() {
             @Override
-            public Observable<List<File>> call() {
+            public Observable<List<FileItem>> call() {
                 return Observable.just(getCurrentFileList(searchStr));
             }
         })
@@ -68,11 +72,11 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void call() {
                         mCurrentPath = mFileListModel.getRootPath();
                         mFileStack.clear();
-                        mFileStack.push(new File(mCurrentPath));
+                        mFileStack.push(mCurrentPath);
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<File>>() {
+                .subscribe(new Subscriber<List<FileItem>>() {
                     @Override
                     public void onStart() {
                         mView.startRefresh();
@@ -80,7 +84,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     }
 
                     @Override
-                    public void onNext(List<File> fileList) {
+                    public void onNext(List<FileItem> fileList) {
                         mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
                         mView.refreshData(fileList, true);
@@ -103,9 +107,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 获取存储器文件列表
      */
     public void onLoadStorageFileList(final String searchStr) {
-        Subscription subscription = Observable.defer(new Func0<Observable<List<File>>>() {
+        Subscription subscription = Observable.defer(new Func0<Observable<List<FileItem>>>() {
             @Override
-            public Observable<List<File>> call() {
+            public Observable<List<FileItem>> call() {
                 return Observable.just(getCurrentFileList(searchStr));
             }
         })
@@ -116,11 +120,11 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void call() {
                         mCurrentPath = mFileListModel.getSDCardPath();
                         mFileStack.clear();
-                        mFileStack.push(new File(mCurrentPath));
+                        mFileStack.push(mCurrentPath);
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<File>>() {
+                .subscribe(new Subscriber<List<FileItem>>() {
                     @Override
                     public void onStart() {
                         mView.startRefresh();
@@ -128,7 +132,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     }
 
                     @Override
-                    public void onNext(List<File> fileList) {
+                    public void onNext(List<FileItem> fileList) {
                         mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
                         mView.refreshData(fileList, true);
@@ -151,9 +155,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 获取下载文件列表
      */
     public void onLoadDownloadFileList(final String searchStr) {
-        Subscription subscription = Observable.defer(new Func0<Observable<List<File>>>() {
+        Subscription subscription = Observable.defer(new Func0<Observable<List<FileItem>>>() {
             @Override
-            public Observable<List<File>> call() {
+            public Observable<List<FileItem>> call() {
                 return Observable.just(getCurrentFileList(searchStr));
             }
         })
@@ -164,11 +168,11 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void call() {
                         mCurrentPath = mFileListModel.getDownloadPath();
                         mFileStack.clear();
-                        mFileStack.push(new File(mCurrentPath));
+                        mFileStack.push(mCurrentPath);
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<File>>() {
+                .subscribe(new Subscriber<List<FileItem>>() {
                     @Override
                     public void onStart() {
                         mView.startRefresh();
@@ -176,7 +180,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     }
 
                     @Override
-                    public void onNext(List<File> fileList) {
+                    public void onNext(List<FileItem> fileList) {
                         mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
                         mView.refreshData(fileList, true);
@@ -199,9 +203,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 获取不同类型文件列表
      */
     public void onLoadMultiTypeFileList(final String searchStr, final int fileType) {
-        Subscription subscription = Observable.defer(new Func0<Observable<List<File>>>() {
+        Subscription subscription = Observable.defer(new Func0<Observable<List<FileItem>>>() {
             @Override
-            public Observable<List<File>> call() {
+            public Observable<List<FileItem>> call() {
                 return Observable.just(getCurrentFileList(searchStr));
             }
         })
@@ -214,7 +218,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<File>>() {
+                .subscribe(new Subscriber<List<FileItem>>() {
                     @Override
                     public void onStart() {
                         mView.startRefresh();
@@ -222,11 +226,11 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     }
 
                     @Override
-                    public void onNext(List<File> fileList) {
+                    public void onNext(List<FileItem> fileList) {
                         mView.removeAllTabs();
                         switch (fileType) {
-                            case Constants.FileType.APPS:
-                                mView.addTab(mView.getResString(R.string.menu_apps));
+                            case Constants.FileType.DOCUMENT:
+                                mView.addTab(mView.getResString(R.string.menu_document));
                                 break;
                             case Constants.FileType.PHOTO:
                                 mView.addTab(mView.getResString(R.string.menu_photo));
@@ -258,22 +262,23 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 刷新界面
      */
     public void onRefresh(final String searchStr, final boolean ifClearSelected) {
-        Subscription subscription = Observable.defer(new Func0<Observable<List<File>>>() {
+        Subscription subscription = Observable.defer(new Func0<Observable<List<FileItem>>>() {
             @Override
-            public Observable<List<File>> call() {
+            public Observable<List<FileItem>> call() {
                 return Observable.just(getCurrentFileList(searchStr));
             }
         })
                 .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<File>>() {
+                .subscribe(new Subscriber<List<FileItem>>() {
                     @Override
                     public void onStart() {
                         mView.startRefresh();
                     }
 
                     @Override
-                    public void onNext(List<File> fileList) {
+                    public void onNext(List<FileItem> fileList) {
                         mView.refreshData(fileList, ifClearSelected);
                     }
 
@@ -484,21 +489,21 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     /**
      * 删除文件
      */
-    public void onDelete(final List<File> fileList) {
+    public void onDelete(final List<FileItem> fileList) {
         mView.showNormalAlert(mView.getResString(R.string.tips_delete_files), mView.getResString(R.string.act_delete), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Subscription subscription = Observable.from(fileList).groupBy(new Func1<File, Boolean>() {
+                Subscription subscription = Observable.from(fileList).groupBy(new Func1<FileItem, Boolean>() {
                     @Override
-                    public Boolean call(File file) {
+                    public Boolean call(FileItem file) {
                         return file.isDirectory();
                     }
-                }).subscribe(new Action1<GroupedObservable<Boolean, File>>() {
+                }).subscribe(new Action1<GroupedObservable<Boolean, FileItem>>() {
                     @Override
-                    public void call(final GroupedObservable<Boolean, File> o) {
-                        Subscription subscription = o.all(new Func1<File, Boolean>() {
+                    public void call(final GroupedObservable<Boolean, FileItem> o) {
+                        Subscription subscription = o.all(new Func1<FileItem, Boolean>() {
                             @Override
-                            public Boolean call(File file) {
+                            public Boolean call(FileItem file) {
                                 boolean result;
                                 if (o.getKey()) {
                                     result = deleteFolder(file.getPath());
@@ -538,21 +543,21 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     /**
      * 复制文件
      */
-    public void onCopy(final List<File> fileList) {
+    public void onCopy(final List<FileItem> fileList) {
         mView.showNormalAlert(mView.getResString(R.string.tips_copy_files), mView.getResString(R.string.act_copy), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Subscription subscription = Observable.from(fileList).groupBy(new Func1<File, Boolean>() {
+                Subscription subscription = Observable.from(fileList).groupBy(new Func1<FileItem, Boolean>() {
                     @Override
-                    public Boolean call(File file) {
+                    public Boolean call(FileItem file) {
                         return file.isDirectory();
                     }
-                }).subscribe(new Action1<GroupedObservable<Boolean, File>>() {
+                }).subscribe(new Action1<GroupedObservable<Boolean, FileItem>>() {
                     @Override
-                    public void call(final GroupedObservable<Boolean, File> o) {
-                        Subscription subscription = o.all(new Func1<File, Boolean>() {
+                    public void call(final GroupedObservable<Boolean, FileItem> o) {
+                        Subscription subscription = o.all(new Func1<FileItem, Boolean>() {
                             @Override
-                            public Boolean call(File file) {
+                            public Boolean call(FileItem file) {
                                 boolean result;
                                 if (o.getKey()) {
                                     result = copyFolder(file.getPath(), mCurrentPath + File.separator + file.getName());
@@ -592,21 +597,21 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     /**
      * 剪切文件
      */
-    public void onCut(final List<File> fileList) {
+    public void onCut(final List<FileItem> fileList) {
         mView.showNormalAlert(mView.getResString(R.string.tips_cut_files), mView.getResString(R.string.act_cut), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Subscription subscription = Observable.from(fileList).groupBy(new Func1<File, Boolean>() {
+                Subscription subscription = Observable.from(fileList).groupBy(new Func1<FileItem, Boolean>() {
                     @Override
-                    public Boolean call(File file) {
+                    public Boolean call(FileItem file) {
                         return file.isDirectory();
                     }
-                }).subscribe(new Action1<GroupedObservable<Boolean, File>>() {
+                }).subscribe(new Action1<GroupedObservable<Boolean, FileItem>>() {
                     @Override
-                    public void call(final GroupedObservable<Boolean, File> o) {
-                        Subscription subscription = o.all(new Func1<File, Boolean>() {
+                    public void call(final GroupedObservable<Boolean, FileItem> o) {
+                        Subscription subscription = o.all(new Func1<FileItem, Boolean>() {
                             @Override
-                            public Boolean call(File file) {
+                            public Boolean call(FileItem file) {
                                 boolean result;
                                 if (o.getKey()) {
                                     result = cutFolder(file.getPath(), mCurrentPath + File.separator + file.getName());
@@ -649,21 +654,41 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * @param searchStr 查询文字
      * @return 当前路径文件列表
      */
-    public List<File> getCurrentFileList(String searchStr) {
+    private List<FileItem> getCurrentFileList(String searchStr) {
         switch (mFileType) {
+            case Constants.FileType.DOCUMENT:
+                return mFileListModel.orderByType(mFileListModel.getDocumentList(mContext.getContentResolver()));
+            case Constants.FileType.MUSIC:
+                return mFileListModel.orderByType(mFileListModel.getAudioList(mContext.getContentResolver()));
+            case Constants.FileType.PHOTO:
+                return mFileListModel.orderByType(mFileListModel.getImageList(mContext.getContentResolver()));
+            case Constants.FileType.VIDEO:
+                return mFileListModel.orderByType(mFileListModel.getVideoList(mContext.getContentResolver()));
             case Constants.FileType.FILE:
             case Constants.FileType.DOWNLOAD:
+                List<File> fileList = mFileListModel.getFileList(mCurrentPath, searchStr);
+                if (fileList != null && fileList.size() > 0) {
+                    List<FileItem> fileItemList = new ArrayList<>();
+                    FileItem fileItem;
+                    for (File file : fileList) {
+                        fileItem = new FileItem();
+                        fileItem.setName(file.getName());
+                        fileItem.setPath(file.getPath());
+                        if (file.isDirectory()) {
+                            fileItem.setSize(mContext.getString(R.string.str_folder));
+                        } else {
+                            fileItem.setSize(FileUtils.getFileSize(file));
+                        }
+                        fileItem.setDate(DateUtils.getFormatDate(file.lastModified()));
+                        fileItem.setIsDirectory(file.isDirectory());
+                        fileItem.setParent(file.getParent());
+                        fileItemList.add(fileItem);
+                    }
+                    return mFileListModel.orderByType(fileItemList);
+                }
                 break;
-            case Constants.FileType.APPS:
-                return mFileListModel.orderByType(mFileListModel.getAppsFileList(searchStr));
-            case Constants.FileType.MUSIC:
-                return mFileListModel.orderByType(mFileListModel.getMusicFileList(searchStr));
-            case Constants.FileType.PHOTO:
-                return mFileListModel.orderByType(mFileListModel.getPhotoFileList(searchStr));
-            case Constants.FileType.VIDEO:
-                return mFileListModel.orderByType(mFileListModel.getVideoFileList(searchStr));
         }
-        return mFileListModel.orderByType(mFileListModel.getFileList(mCurrentPath, searchStr));
+        return null;
     }
 
     /**
@@ -671,8 +696,8 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      *
      * @param file 文件夹
      */
-    public void enterFolder(File file) {
-        mFileStack.push(file);
+    public void enterFolder(FileItem file) {
+        mFileStack.push(file.getPath());
         mView.addTab(file.getName());
         mCurrentPath = file.getPath();
         mView.refreshData(false);
@@ -692,8 +717,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
             isRemoved = true;
         }
         if (isRemoved) {
-            File file = mFileStack.peek();
-            mCurrentPath = file.getPath();
+            mCurrentPath = mFileStack.peek();
             mView.refreshData(false);
         }
         return isRemoved;
@@ -708,8 +732,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         if (mFileStack.size() > 1) {
             mFileStack.pop();
             mView.removeTab();
-            File file = mFileStack.peek();
-            mCurrentPath = file.getPath();
+            mCurrentPath = mFileStack.peek();
             mView.refreshData(false);
             return true;
         }

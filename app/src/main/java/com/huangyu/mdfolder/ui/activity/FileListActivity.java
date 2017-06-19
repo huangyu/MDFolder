@@ -187,8 +187,8 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             case R.id.nav_video:
                 mRxManager.post("toVideo", "");
                 break;
-            case R.id.nav_apps:
-                mRxManager.post("toApps", "");
+            case R.id.nav_document:
+                mRxManager.post("toDocument", "");
                 break;
             case R.id.nav_download:
                 mRxManager.post("toDownload", "");
