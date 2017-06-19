@@ -5,7 +5,6 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowActionModeOverlay">true</item>
-        <item name="android:actionModeBackground">@color/colorPrimary</item>
         <item name="actionModeBackground">@color/colorPrimary</item>
     </style>
 
@@ -14,18 +13,15 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowActionModeOverlay">true</item>
-        <item name="android:actionModeBackground">@color/colorPrimary</item>
         <item name="actionModeBackground">@color/colorPrimary</item>
     </style>
 
     <style name="SettingsTheme" parent="AppTheme">
-        <item name="windowActionBar">true</item>
-        <item name="windowNoTitle">false</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <style name="SettingsThemeDark" parent="AppThemeDark">
-        <item name="windowActionBar">true</item>
-        <item name="windowNoTitle">false</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <style name="MainTheme" parent="AppTheme">

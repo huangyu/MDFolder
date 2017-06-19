@@ -24,7 +24,7 @@ public class BaseApplication extends MultiDexApplication {
         super.onCreate();
         INSTANCE = this;
 
-        CrashHandler.getInstance().init(this);
+//        CrashHandler.getInstance().init(this);
         LogUtils.init(isApkInDebug(this));
         if (LeakCanary.isInAnalyzerProcess(this)) {
             return;

@@ -2,7 +2,7 @@
 
     <PreferenceCategory android:title="@string/pref_appearance">
 
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="pref_theme"
             android:title="@string/pref_theme" />

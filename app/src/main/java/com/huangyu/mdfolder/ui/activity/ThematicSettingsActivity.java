@@ -14,7 +14,7 @@ public abstract class ThematicSettingsActivity extends AppCompatPreferenceActivi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mThemeUtils = new ThemeUtils(this);
-        setTheme(mThemeUtils.getCurrent());
+        setTheme(mThemeUtils.getCurrentBySettings());
         super.onCreate(savedInstanceState);
     }
 
@@ -27,7 +27,7 @@ public abstract class ThematicSettingsActivity extends AppCompatPreferenceActivi
         }
     }
 
-    protected boolean isLightMode() {
+    public boolean isLightMode() {
         return mThemeUtils.isLightMode();
     }
 
