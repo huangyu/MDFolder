@@ -25,11 +25,13 @@ import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.huangyu.library.ui.BaseFragment;
 import com.huangyu.library.ui.CommonRecyclerViewAdapter;
+import com.huangyu.library.util.LogUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.mvp.presenter.FileListPresenter;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
+import com.huangyu.mdfolder.ui.activity.FileListActivity;
 import com.huangyu.mdfolder.ui.adapter.FileListAdapter;
 import com.huangyu.mdfolder.ui.widget.TabView;
 import com.huangyu.mdfolder.utils.AlertUtils;
@@ -93,6 +95,12 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     @Override
     protected void initView(Bundle savedInstanceState) {
         mIvCenter.setColorFilter(getResources().getColor(R.color.colorDarkGray));
+
+        if (((FileListActivity) getActivity()).isLightMode()) {
+            mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        } else {
+            mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+        }
 
         mAdapter = new FileListAdapter(getActivity());
         mAdapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
@@ -285,8 +293,9 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     @Override
-    public void showSnack(String message) {
-        AlertUtils.showSnack(mCoordinatorLayout, message);
+    public void showError(String message) {
+        LogUtils.logd(message);
+        AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_error));
     }
 
     @Override

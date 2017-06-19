@@ -31,7 +31,7 @@ public interface IFileListView extends IBaseView {
 
     void finishAction();
 
-    void showSnack(String message);
+    void showError(String message);
 
     void showKeyboard(EditText editText);
 

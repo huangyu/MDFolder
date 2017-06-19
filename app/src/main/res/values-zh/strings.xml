@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">MDFolder</string>
 
+    <string name="str_activity_settings">设置</string>
     <string name="str_folder">文件夹</string>
     <string name="str_image">图片</string>
 
@@ -12,7 +13,7 @@
     <string name="menu_root">系统目录</string>
     <string name="menu_storage">存储器</string>
     <string name="menu_photo">照片</string>
-    <string name="menu_music">音乐</string>
+    <string name="menu_audio">音频</string>
     <string name="menu_video">视频</string>
     <string name="menu_document">文档</string>
     <string name="menu_download">下载</string>
@@ -59,6 +60,7 @@
     <string name="tips_no_permission_to_access_file">没有权限访问文件</string>
     <string name="tips_no_file">没有找到文件</string>
     <string name="tips_not_complete">此功能尚未实现</string>
+    <string name="tips_error">操作失败</string>
 
     <string name="pref_settings">设置</string>
     <string name="pref_appearance">外观</string>

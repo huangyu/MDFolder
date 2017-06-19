@@ -22,7 +22,7 @@
 
         <activity
             android:name=".ui.activity.SettingsActivity"
-            android:label="@string/title_activity_settings"
+            android:label="@string/str_activity_settings"
             android:theme="@style/SettingsTheme" />
 
         <provider

@@ -92,7 +92,8 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showSnack(e.toString());
+                        mView.showError(e.getMessage());
+                        onCompleted();
                     }
 
                     @Override
@@ -140,7 +141,8 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showSnack(e.toString());
+                        mView.showError(e.getMessage());
+                        onCompleted();
                     }
 
                     @Override
@@ -188,7 +190,8 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showSnack(e.toString());
+                        mView.showError(e.getMessage());
+                        onCompleted();
                     }
 
                     @Override
@@ -236,7 +239,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                 mView.addTab(mView.getResString(R.string.menu_photo));
                                 break;
                             case Constants.FileType.MUSIC:
-                                mView.addTab(mView.getResString(R.string.menu_music));
+                                mView.addTab(mView.getResString(R.string.menu_audio));
                                 break;
                             case Constants.FileType.VIDEO:
                                 mView.addTab(mView.getResString(R.string.menu_video));
@@ -247,7 +250,8 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showSnack(e.toString());
+                        mView.showError(e.getMessage());
+                        onCompleted();
                     }
 
                     @Override
@@ -284,7 +288,8 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                     @Override
                     public void onError(Throwable e) {
-                        mView.showSnack(e.toString());
+                        mView.showError(e.getMessage());
+                        onCompleted();
                     }
 
                     @Override
@@ -303,7 +308,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      */
     public void onAddFile() {
         if (mFileType != Constants.FileType.FILE) {
-            mView.showSnack(mView.getResString(R.string.tips_add_file_error));
+            mView.showError(mView.getResString(R.string.tips_add_file_error));
             return;
         }
 
@@ -346,9 +351,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     @Override
                                     public String call(Boolean isFileExists, Boolean isFolderExists, String filePath) {
                                         if (isFileExists) {
-                                            mView.showSnack(mView.getResString(R.string.tips_file_exist));
+                                            mView.showError(mView.getResString(R.string.tips_file_exist));
                                         } else if (isFolderExists) {
-                                            mView.showSnack(mView.getResString(R.string.tips_folder_exist));
+                                            mView.showError(mView.getResString(R.string.tips_folder_exist));
                                         } else {
                                             return filePath;
                                         }
@@ -364,16 +369,17 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     return;
                                 }
                                 if (addFile(filePath)) {
-                                    mView.showSnack(mView.getResString(R.string.tips_add_file_successfully));
+                                    mView.showError(mView.getResString(R.string.tips_add_file_successfully));
                                     mView.refreshData(false);
                                 } else {
-                                    mView.showSnack(mView.getResString(R.string.tips_add_file_error));
+                                    mView.showError(mView.getResString(R.string.tips_add_file_error));
                                 }
                             }
 
                             @Override
                             public void onError(Throwable e) {
-                                mView.showSnack(e.toString());
+                                mView.showError(e.getMessage());
+                                onCompleted();
                             }
 
                             @Override
@@ -397,7 +403,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      */
     public void onAddFolder() {
         if (mFileType != Constants.FileType.FILE) {
-            mView.showSnack(mView.getResString(R.string.tips_add_folder_error));
+            mView.showError(mView.getResString(R.string.tips_add_folder_error));
             return;
         }
 
@@ -440,9 +446,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     @Override
                                     public String call(Boolean isFileExists, Boolean isFolderExists, String filePath) {
                                         if (isFileExists) {
-                                            mView.showSnack(mView.getResString(R.string.tips_file_exist));
+                                            mView.showError(mView.getResString(R.string.tips_file_exist));
                                         } else if (isFolderExists) {
-                                            mView.showSnack(mView.getResString(R.string.tips_folder_exist));
+                                            mView.showError(mView.getResString(R.string.tips_folder_exist));
                                         } else {
                                             return filePath;
                                         }
@@ -458,16 +464,17 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     return;
                                 }
                                 if (addFolder(filePath)) {
-                                    mView.showSnack(mView.getResString(R.string.tips_add_folder_successfully));
+                                    mView.showError(mView.getResString(R.string.tips_add_folder_successfully));
                                     mView.refreshData(false);
                                 } else {
-                                    mView.showSnack(mView.getResString(R.string.tips_add_folder_error));
+                                    mView.showError(mView.getResString(R.string.tips_add_folder_error));
                                 }
                             }
 
                             @Override
                             public void onError(Throwable e) {
-                                mView.showSnack(e.toString());
+                                mView.showError(e.getMessage());
+                                onCompleted();
                             }
 
                             @Override
@@ -516,15 +523,16 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             @Override
                             public void onNext(Boolean result) {
                                 if (result) {
-                                    mView.showSnack(mView.getResString(R.string.tips_delete_successfully));
+                                    mView.showError(mView.getResString(R.string.tips_delete_successfully));
                                 } else {
-                                    mView.showSnack(mView.getResString(R.string.tips_delete_in_error));
+                                    mView.showError(mView.getResString(R.string.tips_delete_in_error));
                                 }
                             }
 
                             @Override
                             public void onError(Throwable e) {
-                                mView.showSnack(e.toString());
+                                mView.showError(e.getMessage());
+                                onCompleted();
                             }
 
                             @Override
@@ -570,15 +578,16 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             @Override
                             public void onNext(Boolean result) {
                                 if (result) {
-                                    mView.showSnack(mView.getResString(R.string.tips_copy_successfully));
+                                    mView.showError(mView.getResString(R.string.tips_copy_successfully));
                                 } else {
-                                    mView.showSnack(mView.getResString(R.string.tips_copy_in_error));
+                                    mView.showError(mView.getResString(R.string.tips_copy_in_error));
                                 }
                             }
 
                             @Override
                             public void onError(Throwable e) {
-                                mView.showSnack(e.toString());
+                                mView.showError(e.getMessage());
+                                onCompleted();
                             }
 
                             @Override
@@ -624,15 +633,16 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             @Override
                             public void onNext(Boolean result) {
                                 if (result) {
-                                    mView.showSnack(mView.getResString(R.string.tips_cut_successfully));
+                                    mView.showError(mView.getResString(R.string.tips_cut_successfully));
                                 } else {
-                                    mView.showSnack(mView.getResString(R.string.tips_cut_in_error));
+                                    mView.showError(mView.getResString(R.string.tips_cut_in_error));
                                 }
                             }
 
                             @Override
                             public void onError(Throwable e) {
-                                mView.showSnack(e.toString());
+                                mView.showError(e.getMessage());
+                                onCompleted();
                             }
 
                             @Override
@@ -657,13 +667,13 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     private List<FileItem> getCurrentFileList(String searchStr) {
         switch (mFileType) {
             case Constants.FileType.DOCUMENT:
-                return mFileListModel.orderByType(mFileListModel.getDocumentList(mContext.getContentResolver()));
+                return mFileListModel.orderByType(mFileListModel.getDocumentList(searchStr, mContext.getContentResolver()));
             case Constants.FileType.MUSIC:
-                return mFileListModel.orderByType(mFileListModel.getAudioList(mContext.getContentResolver()));
+                return mFileListModel.orderByType(mFileListModel.getAudioList(searchStr, mContext.getContentResolver()));
             case Constants.FileType.PHOTO:
-                return mFileListModel.orderByType(mFileListModel.getImageList(mContext.getContentResolver()));
+                return mFileListModel.orderByType(mFileListModel.getImageList(searchStr, mContext.getContentResolver()));
             case Constants.FileType.VIDEO:
-                return mFileListModel.orderByType(mFileListModel.getVideoList(mContext.getContentResolver()));
+                return mFileListModel.orderByType(mFileListModel.getVideoList(searchStr, mContext.getContentResolver()));
             case Constants.FileType.FILE:
             case Constants.FileType.DOWNLOAD:
                 List<File> fileList = mFileListModel.getFileList(mCurrentPath, searchStr);

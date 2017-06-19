@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 
 import com.huangyu.library.mvp.IBaseModel;
 import com.huangyu.library.util.FileUtils;
@@ -54,7 +55,7 @@ public class FileListModel implements IBaseModel {
         return FileUtils.listFilesInDirWithFilter(getSDCardPath(), new VideoFilter(searchStr), true);
     }
 
-    public List<FileItem> getDocumentList(ContentResolver contentResolver) {
+    public List<FileItem> getDocumentList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{MediaStore.Files.FileColumns.DATA,
                 MediaStore.Files.FileColumns.TITLE, MediaStore.Files.FileColumns.SIZE,
                 MediaStore.Files.FileColumns.DATE_MODIFIED};
@@ -66,12 +67,10 @@ public class FileListModel implements IBaseModel {
                 + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
                 + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
                 + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
-                + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
                 + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? ";
 
-        // 分别对应 txt doc pdf ppt xls wps docx pptx xlsx 类型的文档
+        // 分别对应 doc pdf ppt xls wps docx pptx xlsx 类型的文档
         String[] selectionArgs = new String[]{
-                "text/plain",
                 "application/msword",
                 "application/pdf",
                 "application/vnd.ms-powerpoint",
@@ -85,11 +84,10 @@ public class FileListModel implements IBaseModel {
                 selection, selectionArgs, MediaStore.Files.FileColumns.DATE_MODIFIED + " desc");
 
         if (cursor != null) {
-            ArrayList<FileItem> mDocuments = new ArrayList<>();
+            ArrayList<FileItem> documentList = new ArrayList<>();
             while (cursor.moveToNext()) {
                 String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.TITLE));
                 String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA));
-//                String size = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.SIZE));
                 String date = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATE_MODIFIED));
 
                 if (FileUtils.isFileExists(filePath)) {
@@ -100,16 +98,18 @@ public class FileListModel implements IBaseModel {
                     fileItem.setDate(DateUtils.getFormatDate(Long.valueOf(date) * 1000));
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(false);
-                    mDocuments.add(fileItem);
+                    if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
+                        documentList.add(fileItem);
+                    }
                 }
             }
             cursor.close();
-            return mDocuments;
+            return documentList;
         }
         return null;
     }
 
-    public List<FileItem> getVideoList(ContentResolver contentResolver) {
+    public List<FileItem> getVideoList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{MediaStore.Video.VideoColumns.DATA,
                 MediaStore.Video.VideoColumns.DISPLAY_NAME, MediaStore.Video.VideoColumns.SIZE,
                 MediaStore.Video.VideoColumns.DATE_MODIFIED};
@@ -119,11 +119,10 @@ public class FileListModel implements IBaseModel {
                 null, null, MediaStore.Video.VideoColumns.DATE_MODIFIED + " desc");
 
         if (cursor != null) {
-            ArrayList<FileItem> mVideos = new ArrayList<>();
+            ArrayList<FileItem> videoList = new ArrayList<>();
             while (cursor.moveToNext()) {
                 String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DISPLAY_NAME));
                 String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DATA));
-//                String size = cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.SIZE));
                 String date = cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DATE_MODIFIED));
 
                 if (FileUtils.isFileExists(filePath)) {
@@ -134,16 +133,18 @@ public class FileListModel implements IBaseModel {
                     fileItem.setDate(DateUtils.getFormatDate(Long.valueOf(date) * 1000));
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(false);
-                    mVideos.add(fileItem);
+                    if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
+                        videoList.add(fileItem);
+                    }
                 }
             }
             cursor.close();
-            return mVideos;
+            return videoList;
         }
         return null;
     }
 
-    public List<FileItem> getImageList(ContentResolver contentResolver) {
+    public List<FileItem> getImageList(String searchStr, ContentResolver contentResolver) {
         Uri imageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         String[] projection = new String[]{MediaStore.Images.ImageColumns.DATA,
                 MediaStore.Images.ImageColumns.DISPLAY_NAME,
@@ -152,11 +153,10 @@ public class FileListModel implements IBaseModel {
         Cursor cursor = contentResolver.query(imageUri, projection, null, null,
                 MediaStore.Images.ImageColumns.DATE_MODIFIED + " desc");
         if (cursor != null) {
-            ArrayList<FileItem> mImages = new ArrayList<>();
+            ArrayList<FileItem> imageList = new ArrayList<>();
             while (cursor.moveToNext()) {
                 String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA));
                 String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME));
-//                String size = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE));
                 String date = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED));
 
                 if (FileUtils.isFileExists(filePath)) {
@@ -167,16 +167,18 @@ public class FileListModel implements IBaseModel {
                     fileItem.setDate(DateUtils.getFormatDate(Long.valueOf(date) * 1000));
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(false);
-                    mImages.add(fileItem);
+                    if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
+                        imageList.add(fileItem);
+                    }
                 }
             }
             cursor.close();
-            return mImages;
+            return imageList;
         }
         return null;
     }
 
-    public List<FileItem> getAudioList(ContentResolver contentResolver) {
+    public List<FileItem> getAudioList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{MediaStore.Audio.AudioColumns.DATA,
                 MediaStore.Audio.AudioColumns.DISPLAY_NAME, MediaStore.Audio.AudioColumns.SIZE,
                 MediaStore.Audio.AudioColumns.DATE_MODIFIED};
@@ -185,11 +187,10 @@ public class FileListModel implements IBaseModel {
                 projection, null, null, MediaStore.Audio.AudioColumns.DATE_MODIFIED + " desc");
 
         if (cursor != null) {
-            ArrayList<FileItem> mAudios = new ArrayList<>();
+            ArrayList<FileItem> audioList = new ArrayList<>();
             while (cursor.moveToNext()) {
                 String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DISPLAY_NAME));
                 String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATA));
-//                String size = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.SIZE));
                 String date = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATE_MODIFIED));
 
                 if (FileUtils.isFileExists(filePath)) {
@@ -200,11 +201,13 @@ public class FileListModel implements IBaseModel {
                     fileItem.setDate(DateUtils.getFormatDate(Long.valueOf(date) * 1000));
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(false);
-                    mAudios.add(fileItem);
+                    if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
+                        audioList.add(fileItem);
+                    }
                 }
             }
             cursor.close();
-            return mAudios;
+            return audioList;
         }
         return null;
     }
