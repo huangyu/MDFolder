@@ -81,12 +81,18 @@ public class FileListActivity extends ThematicActivity implements NavigationView
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+//        outState.putString("WORKAROUND_FOR_BUG_19917_KEY", "WORKAROUND_FOR_BUG_19917_VALUE");
+//        super.onSaveInstanceState(outState);
+    }
+
     private void replaceFragment() {
         mFileListFragment = new FileListFragment();
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.rl_content, mFileListFragment)
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     @Override

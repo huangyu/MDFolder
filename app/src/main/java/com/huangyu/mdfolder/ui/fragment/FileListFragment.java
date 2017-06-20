@@ -175,7 +175,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mRxManager.on("onSearch", new Action1<String>() {
             @Override
             public void call(String text) {
-                mPresenter.onRefresh(text, false);
+                mPresenter.onSearch(text, false);
                 mSearchStr = text;
             }
         });

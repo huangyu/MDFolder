@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -75,6 +76,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                         mFileStack.push(mCurrentPath);
                     }
                 })
+                .delay(250, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<FileItem>>() {
                     @Override
@@ -124,6 +126,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                         mFileStack.push(mCurrentPath);
                     }
                 })
+                .delay(250, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<FileItem>>() {
                     @Override
@@ -173,6 +176,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                         mFileStack.push(mCurrentPath);
                     }
                 })
+                .delay(250, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<FileItem>>() {
                     @Override
@@ -220,6 +224,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                         mFileStack.clear();
                     }
                 })
+                .delay(250, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<FileItem>>() {
                     @Override
@@ -273,7 +278,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
             }
         })
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
+                .delay(250, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<FileItem>>() {
                     @Override
@@ -298,6 +303,46 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             mView.finishAction();
                         }
                         mView.stopRefresh();
+                    }
+                });
+        mRxManager.add(subscription);
+    }
+
+    /**
+     * 查询
+     */
+    public void onSearch(final String searchStr, final boolean ifClearSelected) {
+        Subscription subscription = Observable.defer(new Func0<Observable<List<FileItem>>>() {
+            @Override
+            public Observable<List<FileItem>> call() {
+                return Observable.just(getCurrentFileList(searchStr));
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<List<FileItem>>() {
+                    @Override
+                    public void onStart() {
+//                        mView.startRefresh();
+                    }
+
+                    @Override
+                    public void onNext(List<FileItem> fileList) {
+                        mView.refreshData(fileList, ifClearSelected);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showError(e.getMessage());
+                        onCompleted();
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        if (mEditType == Constants.EditType.NONE) {
+                            mView.finishAction();
+                        }
+//                        mView.stopRefresh();
                     }
                 });
         mRxManager.add(subscription);

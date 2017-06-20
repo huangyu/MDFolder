@@ -2,6 +2,7 @@
 <resources>
     <color name="colorPrimary">#2196F3</color>
     <color name="colorPrimaryDark">#1976D2</color>
+    <color name="colorPrimaryDarker">#0D47A1</color>
     <color name="colorAccentLight">#FF80AB</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorAccentDark">#F50057</color>
@@ -14,6 +15,7 @@
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorDivider">#BDBDBD</color>
     <color name="colorPrimaryText">#212121</color>
+    <color name="colorPrimaryTextDark">#88FFFFFF</color>
     <color name="colorSecondaryText">#757575</color>
     <color name="colorPrimaryTextWhite">#EFEFEF</color>
     <color name="colorSecondaryTextWhite">#CACACA</color>

@@ -58,7 +58,7 @@ public class TabView extends HorizontalScrollView {
         } else {
             // 设置前一个的字体颜色
             TextView lastTitle = (TextView) mLayout.getChildAt(mLayout.getChildCount() - 1).findViewById(R.id.tv_name);
-            lastTitle.setTextColor(getContext().getResources().getColor(R.color.colorPrimaryTextWhite));
+            lastTitle.setTextColor(getContext().getResources().getColor(R.color.colorPrimaryTextDark));
         }
         mLayout.addView(view, mLayout.getChildCount());
 
