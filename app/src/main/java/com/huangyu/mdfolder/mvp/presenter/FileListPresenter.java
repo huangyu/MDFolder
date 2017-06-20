@@ -278,7 +278,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
             }
         })
                 .subscribeOn(Schedulers.io())
-                .delay(250, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<FileItem>>() {
                     @Override
