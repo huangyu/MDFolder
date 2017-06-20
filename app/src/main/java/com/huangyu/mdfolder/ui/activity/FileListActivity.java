@@ -200,7 +200,12 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                 mRxManager.post("toDownload", "");
                 break;
             case R.id.nav_settings:
-                startActivity(SettingsActivity.class);
+                mDrawerLayout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(SettingsActivity.class);
+                    }
+                }, 250);
                 break;
         }
 
