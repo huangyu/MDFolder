@@ -28,6 +28,7 @@ public abstract class BaseActivity<V extends IBaseView, P extends BasePresenter<
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+//        SMFrameCallback.getInstance().start();
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
         ActivityManager.getInstance().addActivity(this);
