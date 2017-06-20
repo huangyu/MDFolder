@@ -8,4 +8,6 @@
 /captures
 .externalNativeBuild
 keystore.properties
-android_key
+android.jks
+app/MDFolder.apk
+library/build/
