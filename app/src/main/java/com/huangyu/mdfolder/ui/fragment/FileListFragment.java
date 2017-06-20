@@ -107,12 +107,15 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     if (file.isDirectory()) {
                         mPresenter.enterFolder(file);
                     } else {
+                        // 进入图片浏览
                         if (file.isPhoto()) {
                             Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
                             intent.putStringArrayListExtra(getString(R.string.image_list), mPresenter.getImageList(mAdapter.getDataList()));
                             intent.putExtra(getString(R.string.image_position), position);
                             getActivity().startActivity(intent);
-                        } else if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
+                        }
+                        // 打开文件
+                        else if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
                             AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_no_permission_to_access_file));
                         }
                     }
