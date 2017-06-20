@@ -98,6 +98,7 @@ public class FileListModel implements IBaseModel {
                     fileItem.setDate(DateUtils.getFormatDate(Long.valueOf(date) * 1000));
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(false);
+                    fileItem.setIsPhoto(false);
                     if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
                         documentList.add(fileItem);
                     }
@@ -133,6 +134,7 @@ public class FileListModel implements IBaseModel {
                     fileItem.setDate(DateUtils.getFormatDate(Long.valueOf(date) * 1000));
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(false);
+                    fileItem.setIsPhoto(false);
                     if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
                         videoList.add(fileItem);
                     }
@@ -167,6 +169,7 @@ public class FileListModel implements IBaseModel {
                     fileItem.setDate(DateUtils.getFormatDate(Long.valueOf(date) * 1000));
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(false);
+                    fileItem.setIsPhoto(true);
                     if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
                         imageList.add(fileItem);
                     }
@@ -201,6 +204,7 @@ public class FileListModel implements IBaseModel {
                     fileItem.setDate(DateUtils.getFormatDate(Long.valueOf(date) * 1000));
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(false);
+                    fileItem.setIsPhoto(false);
                     if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
                         audioList.add(fileItem);
                     }

@@ -2,6 +2,7 @@ package com.huangyu.mdfolder.ui.fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
@@ -32,6 +33,7 @@ import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.mvp.presenter.FileListPresenter;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
 import com.huangyu.mdfolder.ui.activity.FileListActivity;
+import com.huangyu.mdfolder.ui.activity.ImageBrowserActivity;
 import com.huangyu.mdfolder.ui.adapter.FileListAdapter;
 import com.huangyu.mdfolder.ui.widget.TabView;
 import com.huangyu.mdfolder.utils.AlertUtils;
@@ -96,12 +98,6 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     protected void initView(Bundle savedInstanceState) {
         mIvCenter.setColorFilter(getResources().getColor(R.color.colorDarkGray));
 
-        if (((FileListActivity) getActivity()).isLightMode()) {
-            mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-        } else {
-            mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
-        }
-
         mAdapter = new FileListAdapter(getActivity());
         mAdapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
             @Override
@@ -111,7 +107,12 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     if (file.isDirectory()) {
                         mPresenter.enterFolder(file);
                     } else {
-                        if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
+                        if (file.isPhoto()) {
+                            Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
+                            intent.putStringArrayListExtra(getString(R.string.image_list), mPresenter.getImageList(mAdapter.getDataList()));
+                            intent.putExtra(getString(R.string.image_position), position);
+                            getActivity().startActivity(intent);
+                        } else if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
                             AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_no_permission_to_access_file));
                         }
                     }
@@ -144,11 +145,18 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         ((SimpleItemAnimator) mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
-        mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        if (((FileListActivity) getActivity()).isLightMode()) {
+            mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        } else {
+            mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+            mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryDark));
+        }
+
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mPresenter.onRefresh(mSearchStr, false);
+                mPresenter.onRefreshInSwipe(mSearchStr, false);
             }
         });
 
@@ -166,16 +174,16 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             }
         });
 
-        mPresenter.onLoadStorageFileList(mSearchStr);
-
         initRxManagerActions();
+
+        mPresenter.onLoadStorageFileList(mSearchStr);
     }
 
     private void initRxManagerActions() {
         mRxManager.on("onSearch", new Action1<String>() {
             @Override
             public void call(String text) {
-                mPresenter.onSearch(text, false);
+                mPresenter.onRefresh(text, false);
                 mSearchStr = text;
             }
         });
@@ -293,14 +301,19 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     @Override
-    public void showError(String message) {
-        LogUtils.logd(message);
+    public void showMessage(String message) {
+        AlertUtils.showSnack(mCoordinatorLayout, message);
+    }
+
+    @Override
+    public void showError(String error) {
+        LogUtils.logd(error);
         AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_error));
     }
 
     @Override
     public void showKeyboard(final EditText editText) {
-        mCoordinatorLayout.postDelayed(new Runnable() {
+        getActivity().getWindow().getDecorView().postDelayed(new Runnable() {
             @Override
             public void run() {
                 KeyboardUtils.showSoftInput(editText);
@@ -310,7 +323,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
     @Override
     public void hideKeyboard(final EditText editText) {
-        mCoordinatorLayout.postDelayed(new Runnable() {
+        getActivity().getWindow().getDecorView().postDelayed(new Runnable() {
             @Override
             public void run() {
                 KeyboardUtils.hideSoftInput(getContext(), editText);

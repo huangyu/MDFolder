@@ -22,8 +22,13 @@
 
         <activity
             android:name=".ui.activity.SettingsActivity"
-            android:label="@string/str_activity_settings"
+            android:label="@string/str_settings"
             android:theme="@style/SettingsTheme" />
+
+        <activity
+            android:name=".ui.activity.ImageBrowserActivity"
+            android:label="@string/str_image_browser"
+            android:theme="@style/ImageBrowserTheme" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

@@ -115,7 +115,10 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             ActivityManager.getInstance().finishAllActivity();
         } else {
             mCurrentTime = System.currentTimeMillis();
-            AlertUtils.showSnack(ButterKnife.findById(this, R.id.cl_main), getString(R.string.tips_leave));
+            View view = ButterKnife.findById(this, R.id.cl_main);
+            if (view != null) {
+                AlertUtils.showSnack(view, getString(R.string.tips_leave));
+            }
         }
     }
 
@@ -176,40 +179,40 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.nav_root:
-                mRxManager.post("toRoot", "");
-                break;
-            case R.id.nav_storage:
-                mRxManager.post("toStorage", "");
-                break;
-            case R.id.nav_music:
-                mRxManager.post("toMusic", "");
-                break;
-            case R.id.nav_photo:
-                mRxManager.post("toPhoto", "");
-                break;
-            case R.id.nav_video:
-                mRxManager.post("toVideo", "");
-                break;
-            case R.id.nav_document:
-                mRxManager.post("toDocument", "");
-                break;
-            case R.id.nav_download:
-                mRxManager.post("toDownload", "");
-                break;
-            case R.id.nav_settings:
-                mDrawerLayout.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        startActivity(SettingsActivity.class);
-                    }
-                }, 250);
-                break;
-        }
-
+    public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         mDrawerLayout.closeDrawer(GravityCompat.START);
+
+        getWindow().getDecorView().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                switch (item.getItemId()) {
+                    case R.id.nav_root:
+                        mRxManager.post("toRoot", "");
+                        break;
+                    case R.id.nav_storage:
+                        mRxManager.post("toStorage", "");
+                        break;
+                    case R.id.nav_music:
+                        mRxManager.post("toMusic", "");
+                        break;
+                    case R.id.nav_photo:
+                        mRxManager.post("toPhoto", "");
+                        break;
+                    case R.id.nav_video:
+                        mRxManager.post("toVideo", "");
+                        break;
+                    case R.id.nav_document:
+                        mRxManager.post("toDocument", "");
+                        break;
+                    case R.id.nav_download:
+                        mRxManager.post("toDownload", "");
+                        break;
+                    case R.id.nav_settings:
+                        startActivity(SettingsActivity.class);
+                        break;
+                }
+            }
+        }, 200);
         return true;
     }
 
@@ -230,7 +233,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
@@ -245,7 +248,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
         AlertUtils.showSnack(mRelativeLayout, getString(R.string.tips_no_permissions), getString(R.string.act_exit), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityManager.getInstance().AppExit(FileListActivity.this, false);
+                ActivityManager.getInstance().finishAllActivity();
             }
         });
 

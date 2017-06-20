@@ -61,6 +61,10 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
         notifyDataSetChanged();
     }
 
+    public List<T> getDataList() {
+        return mDataList;
+    }
+
     public boolean isSelected(int position) {
         return getSelectedItemList().contains(position);
     }
@@ -116,25 +120,26 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
 
         holder = CommonRecyclerViewHolder.getViewHolder(viewGroup, getLayoutResource());
 
-        if (mOnItemClick != null) {
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOnItemClick != null) {
                     CommonRecyclerViewHolder holder = (CommonRecyclerViewHolder) v.getTag();
                     mOnItemClick.onItemClick(v, holder.getLayoutPosition());
                 }
-            });
-        }
-        if (mOnItemLongClick != null) {
-            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
+            }
+        });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (mOnItemLongClick != null) {
                     CommonRecyclerViewHolder holder = (CommonRecyclerViewHolder) v.getTag();
                     mOnItemLongClick.onItemLongClick(v, holder.getLayoutPosition());
-                    return true;
                 }
-            });
-        }
+                return true;
+            }
+        });
 
         holder.itemView.setTag(holder);
         return holder;

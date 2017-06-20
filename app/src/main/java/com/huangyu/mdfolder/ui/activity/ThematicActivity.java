@@ -1,6 +1,8 @@
 package com.huangyu.mdfolder.ui.activity;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.huangyu.library.ui.BaseActivity;
 import com.huangyu.mdfolder.utils.ThemeUtils;
@@ -24,8 +26,22 @@ public abstract class ThematicActivity extends BaseActivity {
         super.onResume();
         if (mThemeUtils.isChanged()) {
             setTheme(mThemeUtils.getCurrent());
-            recreate();
+            recreateActivity();
         }
+    }
+
+    /**
+     * Delaying activity recreate by 1 millisecond. If the recreate is not delayed and is done
+     * immediately in onResume() you will get RuntimeException: Performing pause of activity that is not resumed
+     */
+    public void recreateActivity() {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                recreate();
+            }
+        }, 1);
     }
 
     protected boolean isChanged() {

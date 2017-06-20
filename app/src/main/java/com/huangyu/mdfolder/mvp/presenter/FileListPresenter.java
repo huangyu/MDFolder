@@ -19,7 +19,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -76,7 +75,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                         mFileStack.push(mCurrentPath);
                     }
                 })
-                .delay(250, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<FileItem>>() {
                     @Override
@@ -126,7 +124,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                         mFileStack.push(mCurrentPath);
                     }
                 })
-                .delay(250, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<FileItem>>() {
                     @Override
@@ -176,7 +173,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                         mFileStack.push(mCurrentPath);
                     }
                 })
-                .delay(250, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<FileItem>>() {
                     @Override
@@ -224,7 +220,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                         mFileStack.clear();
                     }
                 })
-                .delay(250, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<FileItem>>() {
                     @Override
@@ -270,7 +265,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     /**
      * 刷新界面
      */
-    public void onRefresh(final String searchStr, final boolean ifClearSelected) {
+    public void onRefreshInSwipe(final String searchStr, final boolean ifClearSelected) {
         Subscription subscription = Observable.defer(new Func0<Observable<List<FileItem>>>() {
             @Override
             public Observable<List<FileItem>> call() {
@@ -308,9 +303,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     }
 
     /**
-     * 查询
+     * 刷新界面
      */
-    public void onSearch(final String searchStr, final boolean ifClearSelected) {
+    public void onRefresh(final String searchStr, final boolean ifClearSelected) {
         Subscription subscription = Observable.defer(new Func0<Observable<List<FileItem>>>() {
             @Override
             public Observable<List<FileItem>> call() {
@@ -352,7 +347,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      */
     public void onAddFile() {
         if (mFileType != Constants.FileType.FILE) {
-            mView.showError(mView.getResString(R.string.tips_add_file_error));
+            mView.showMessage(mView.getResString(R.string.tips_add_file_error));
             return;
         }
 
@@ -395,9 +390,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     @Override
                                     public String call(Boolean isFileExists, Boolean isFolderExists, String filePath) {
                                         if (isFileExists) {
-                                            mView.showError(mView.getResString(R.string.tips_file_exist));
+                                            mView.showMessage(mView.getResString(R.string.tips_file_exist));
                                         } else if (isFolderExists) {
-                                            mView.showError(mView.getResString(R.string.tips_folder_exist));
+                                            mView.showMessage(mView.getResString(R.string.tips_folder_exist));
                                         } else {
                                             return filePath;
                                         }
@@ -413,10 +408,10 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     return;
                                 }
                                 if (addFile(filePath)) {
-                                    mView.showError(mView.getResString(R.string.tips_add_file_successfully));
+                                    mView.showMessage(mView.getResString(R.string.tips_add_file_successfully));
                                     mView.refreshData(false);
                                 } else {
-                                    mView.showError(mView.getResString(R.string.tips_add_file_error));
+                                    mView.showMessage(mView.getResString(R.string.tips_add_file_error));
                                 }
                             }
 
@@ -447,7 +442,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      */
     public void onAddFolder() {
         if (mFileType != Constants.FileType.FILE) {
-            mView.showError(mView.getResString(R.string.tips_add_folder_error));
+            mView.showMessage(mView.getResString(R.string.tips_add_folder_error));
             return;
         }
 
@@ -490,9 +485,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     @Override
                                     public String call(Boolean isFileExists, Boolean isFolderExists, String filePath) {
                                         if (isFileExists) {
-                                            mView.showError(mView.getResString(R.string.tips_file_exist));
+                                            mView.showMessage(mView.getResString(R.string.tips_file_exist));
                                         } else if (isFolderExists) {
-                                            mView.showError(mView.getResString(R.string.tips_folder_exist));
+                                            mView.showMessage(mView.getResString(R.string.tips_folder_exist));
                                         } else {
                                             return filePath;
                                         }
@@ -508,10 +503,10 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     return;
                                 }
                                 if (addFolder(filePath)) {
-                                    mView.showError(mView.getResString(R.string.tips_add_folder_successfully));
+                                    mView.showMessage(mView.getResString(R.string.tips_add_folder_successfully));
                                     mView.refreshData(false);
                                 } else {
-                                    mView.showError(mView.getResString(R.string.tips_add_folder_error));
+                                    mView.showMessage(mView.getResString(R.string.tips_add_folder_error));
                                 }
                             }
 
@@ -567,9 +562,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             @Override
                             public void onNext(Boolean result) {
                                 if (result) {
-                                    mView.showError(mView.getResString(R.string.tips_delete_successfully));
+                                    mView.showMessage(mView.getResString(R.string.tips_delete_successfully));
                                 } else {
-                                    mView.showError(mView.getResString(R.string.tips_delete_in_error));
+                                    mView.showMessage(mView.getResString(R.string.tips_delete_in_error));
                                 }
                             }
 
@@ -622,9 +617,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             @Override
                             public void onNext(Boolean result) {
                                 if (result) {
-                                    mView.showError(mView.getResString(R.string.tips_copy_successfully));
+                                    mView.showMessage(mView.getResString(R.string.tips_copy_successfully));
                                 } else {
-                                    mView.showError(mView.getResString(R.string.tips_copy_in_error));
+                                    mView.showMessage(mView.getResString(R.string.tips_copy_in_error));
                                 }
                             }
 
@@ -677,9 +672,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             @Override
                             public void onNext(Boolean result) {
                                 if (result) {
-                                    mView.showError(mView.getResString(R.string.tips_cut_successfully));
+                                    mView.showMessage(mView.getResString(R.string.tips_cut_successfully));
                                 } else {
-                                    mView.showError(mView.getResString(R.string.tips_cut_in_error));
+                                    mView.showMessage(mView.getResString(R.string.tips_cut_in_error));
                                 }
                             }
 
@@ -721,28 +716,47 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
             case Constants.FileType.FILE:
             case Constants.FileType.DOWNLOAD:
                 List<File> fileList = mFileListModel.getFileList(mCurrentPath, searchStr);
-                if (fileList != null && fileList.size() > 0) {
-                    List<FileItem> fileItemList = new ArrayList<>();
-                    FileItem fileItem;
-                    for (File file : fileList) {
-                        fileItem = new FileItem();
-                        fileItem.setName(file.getName());
-                        fileItem.setPath(file.getPath());
-                        if (file.isDirectory()) {
-                            fileItem.setSize(mContext.getString(R.string.str_folder));
-                        } else {
-                            fileItem.setSize(FileUtils.getFileSize(file));
-                        }
-                        fileItem.setDate(DateUtils.getFormatDate(file.lastModified()));
-                        fileItem.setIsDirectory(file.isDirectory());
-                        fileItem.setParent(file.getParent());
-                        fileItemList.add(fileItem);
-                    }
-                    return mFileListModel.orderByType(fileItemList);
-                }
-                break;
+                return transformFileList(fileList);
         }
         return null;
+    }
+
+    /**
+     * 转换文件列表，将List<File>转为List<FileItem>
+     *
+     * @param fileList 文件列表
+     * @return List<FileItem>
+     */
+    private List<FileItem> transformFileList(List<File> fileList) {
+        if (fileList != null && fileList.size() > 0) {
+            List<FileItem> fileItemList = new ArrayList<>();
+            FileItem fileItem;
+            for (File file : fileList) {
+                fileItem = new FileItem();
+                fileItem.setName(file.getName());
+                fileItem.setPath(file.getPath());
+                if (file.isDirectory()) {
+                    fileItem.setSize(mContext.getString(R.string.str_folder));
+                } else {
+                    fileItem.setSize(FileUtils.getFileSize(file));
+                }
+                fileItem.setDate(DateUtils.getFormatDate(file.lastModified()));
+                fileItem.setIsDirectory(file.isDirectory());
+                fileItem.setParent(file.getParent());
+                fileItem.setIsPhoto(false);
+                fileItemList.add(fileItem);
+            }
+            return mFileListModel.orderByType(fileItemList);
+        }
+        return null;
+    }
+
+    public ArrayList<String> getImageList(List<FileItem> fileItemList) {
+        ArrayList<String> imageList = new ArrayList<>();
+        for (FileItem fileItem : fileItemList) {
+            imageList.add(fileItem.getPath());
+        }
+        return imageList;
     }
 
     /**

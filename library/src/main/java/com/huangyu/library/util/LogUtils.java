@@ -15,7 +15,7 @@ public class LogUtils {
 
     private static final String TAG = "logger";
 
-    public static boolean DEBUG_ENABLE = true; // 是否调试模式
+    public static boolean DEBUG_ENABLE = false; // 是否调试模式
 
     /**
      * 在application调用初始化

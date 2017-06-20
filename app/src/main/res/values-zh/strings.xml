@@ -2,9 +2,12 @@
 <resources>
     <string name="app_name">MDFolder</string>
 
-    <string name="str_activity_settings">设置</string>
+    <string name="str_settings">设置</string>
+    <string name="str_image_browser">图片浏览</string>
     <string name="str_folder">文件夹</string>
     <string name="str_image">图片</string>
+    <string name="image_list">ImageList</string>
+    <string name="image_position">ImagePosition</string>
 
     <string name="navigation_drawer_open">打开导航栏</string>
     <string name="navigation_drawer_close">关闭导航栏</string>

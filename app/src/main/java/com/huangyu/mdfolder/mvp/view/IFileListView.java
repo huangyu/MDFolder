@@ -15,6 +15,7 @@ import java.util.List;
  */
 
 public interface IFileListView extends IBaseView {
+
     void startRefresh();
 
     void stopRefresh();
@@ -31,7 +32,9 @@ public interface IFileListView extends IBaseView {
 
     void finishAction();
 
-    void showError(String message);
+    void showMessage(String message);
+
+    void showError(String error);
 
     void showKeyboard(EditText editText);
 

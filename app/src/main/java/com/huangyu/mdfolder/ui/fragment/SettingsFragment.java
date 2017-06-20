@@ -27,7 +27,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 } else {
                     prefTheme.setSummary(getString(R.string.pref_dark));
                 }
-                getActivity().recreate();
+                ((SettingsActivity) getActivity()).recreateActivity();
                 return true;
             }
         });

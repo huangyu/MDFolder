@@ -1,5 +1,6 @@
 package com.huangyu.library.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
@@ -62,7 +63,7 @@ public abstract class BaseActivity<V extends IBaseView, P extends BasePresenter<
      *
      * @param cls
      **/
-    protected void startActivity(Class<?> cls) {
+    protected void startActivity(Class<Activity> cls) {
         startActivity(cls, null);
     }
 
@@ -72,7 +73,7 @@ public abstract class BaseActivity<V extends IBaseView, P extends BasePresenter<
      * @param cls
      * @param requestCode
      **/
-    protected void startActivityForResult(Class<?> cls, int requestCode) {
+    protected void startActivityForResult(Class<Activity> cls, int requestCode) {
         startActivityForResult(cls, null, requestCode);
     }
 
@@ -82,7 +83,7 @@ public abstract class BaseActivity<V extends IBaseView, P extends BasePresenter<
      * @param cls
      * @param bundle
      **/
-    protected void startActivity(Class<?> cls, Bundle bundle) {
+    protected void startActivity(Class<Activity> cls, Bundle bundle) {
         Intent intent = new Intent();
         intent.setClass(this, cls);
         if (bundle != null) {
@@ -98,7 +99,7 @@ public abstract class BaseActivity<V extends IBaseView, P extends BasePresenter<
      * @param bundle
      * @param requestCode
      **/
-    protected void startActivityForResult(Class<?> cls, Bundle bundle, int requestCode) {
+    protected void startActivityForResult(Class<Activity> cls, Bundle bundle, int requestCode) {
         Intent intent = new Intent();
         intent.setClass(this, cls);
         if (bundle != null) {

@@ -10,6 +10,7 @@ public class FileItem {
     private String size;
     private String date;
     private boolean isDirectory;
+    private boolean isPhoto;
     private String parent;
 
     public FileItem() {
@@ -54,6 +55,14 @@ public class FileItem {
 
     public void setIsDirectory(boolean isDirectory) {
         this.isDirectory = isDirectory;
+    }
+
+    public boolean isPhoto() {
+        return isPhoto;
+    }
+
+    public void setIsPhoto(boolean photo) {
+        isPhoto = photo;
     }
 
     public String getParent() {
