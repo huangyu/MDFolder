@@ -81,7 +81,7 @@
     <string name="tips_not_complete">此功能尚未实现</string>
     <string name="tips_error">操作失败</string>
     <string name="tips_choose_one_file">请只选择一个文件</string>
-    <string name="tips_selected">个文件被选择</string>
+    <string name="tips_selected">个文件被选中</string>
     <string name="tips_input_file_name">请输入文件名</string>
     <string name="tips_file_name_empty">文件名不能为空</string>
 
