@@ -8,17 +8,16 @@
     <android.support.design.widget.TextInputLayout
         android:id="@+id/til_tips"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_gravity="center_vertical|start"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
         android:hint="@string/tips_input_file_name"
-        android:layout_marginTop="16dp"
-        app:errorEnabled="true">
+        app:errorTextAppearance="@style/TextError"
+        app:hintTextAppearance="@style/TextLabel">
 
         <android.support.v7.widget.AppCompatEditText
             android:id="@+id/et_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
             android:padding="16dp" />
 
     </android.support.design.widget.TextInputLayout>

@@ -57,4 +57,17 @@
         <item name="android:textColor">@color/colorPrimaryText</item>
     </style>
 
+    <style name="TextLabel" parent="TextAppearance.AppCompat">
+        <item name="android:textColorHint">@color/colorAccent</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="TextError" parent="TextAppearance.AppCompat">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColorHint">@color/colorPrimaryDark</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
 </resources>

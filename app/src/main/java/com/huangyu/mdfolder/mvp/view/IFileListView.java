@@ -8,7 +8,6 @@ import android.widget.EditText;
 
 import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.mdfolder.bean.FileItem;
-import com.huangyu.mdfolder.listener.OnAlertButtonClick;
 
 import java.util.List;
 
@@ -52,7 +51,7 @@ public interface IFileListView extends IBaseView {
 
     EditText findAlertDialogEditText(View view);
 
-    AlertDialog showInputFileNameAlert(View view, OnAlertButtonClick onPositiveClickListener, OnAlertButtonClick onNegativeClick);
+    AlertDialog showInputFileNameAlert(View view, DialogInterface.OnShowListener onShowListener);
 
     AlertDialog showNormalAlert(String message, String positiveString, DialogInterface.OnClickListener positiveClick);
 

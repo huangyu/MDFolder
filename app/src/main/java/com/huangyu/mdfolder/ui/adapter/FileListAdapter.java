@@ -1,6 +1,7 @@
 package com.huangyu.mdfolder.ui.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -13,6 +14,7 @@ import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.ui.activity.FileListActivity;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -59,42 +61,47 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
                 if (fileItem.isDirectory()) {
                     mTvSize.setText(mContext.getString(R.string.str_folder));
                     if (activity.isLightMode()) {
-                        mIvIcon.setImageResource(R.mipmap.ic_folder);
+                        Glide.with(mContext).load(R.mipmap.ic_folder).error(R.mipmap.ic_folder).into(mIvIcon);
                     } else {
-                        mIvIcon.setImageResource(R.mipmap.ic_folder_white);
+                        Glide.with(mContext).load(R.mipmap.ic_folder_white).error(R.mipmap.ic_folder_white).into(mIvIcon);
                     }
                 } else {
                     mTvSize.setText(fileItem.getSize());
                     if (activity.isLightMode()) {
-                        mIvIcon.setImageResource(R.mipmap.ic_file);
+                        Glide.with(mContext).load(R.mipmap.ic_file).error(R.mipmap.ic_file).into(mIvIcon);
                     } else {
-                        mIvIcon.setImageResource(R.mipmap.ic_file_white);
+                        Glide.with(mContext).load(R.mipmap.ic_file_white).error(R.mipmap.ic_file_white).into(mIvIcon);
                     }
                 }
                 break;
             case Constants.FileType.MUSIC:
                 mTvSize.setText(fileItem.getSize());
                 if (activity.isLightMode()) {
-                    mIvIcon.setImageResource(R.mipmap.ic_music);
+                    Glide.with(mContext).load(R.mipmap.ic_music).error(R.mipmap.ic_music).into(mIvIcon);
                 } else {
-                    mIvIcon.setImageResource(R.mipmap.ic_music_white);
+                    Glide.with(mContext).load(R.mipmap.ic_music_white).error(R.mipmap.ic_music_white).into(mIvIcon);
                 }
                 break;
             case Constants.FileType.PHOTO:
                 mTvSize.setText(fileItem.getSize());
-                Glide.with(mContext).load(fileItem.getPath()).into(mIvIcon);
+                if (activity.isLightMode()) {
+                    Glide.with(mContext).load(fileItem.getPath()).error(R.mipmap.ic_photo).into(mIvIcon);
+                } else {
+                    Glide.with(mContext).load(fileItem.getPath()).error(R.mipmap.ic_photo_white).into(mIvIcon);
+                }
                 break;
             case Constants.FileType.VIDEO:
                 mTvSize.setText(fileItem.getSize());
                 if (activity.isLightMode()) {
-                    mIvIcon.setImageResource(R.mipmap.ic_video);
+                    Glide.with(mContext).load(Uri.fromFile(new File(fileItem.getPath()))).error(R.mipmap.ic_video).into(mIvIcon);
                 } else {
-                    mIvIcon.setImageResource(R.mipmap.ic_video_white);
+                    Glide.with(mContext).load(Uri.fromFile(new File(fileItem.getPath()))).error(R.mipmap.ic_video_white).into(mIvIcon);
+
                 }
                 break;
         }
 
-        if (mFileType == Constants.FileType.PHOTO) {
+        if (mFileType == Constants.FileType.PHOTO || mFileType == Constants.FileType.VIDEO) {
             mIvIcon.setColorFilter(null);
         } else {
             if (activity.isLightMode()) {

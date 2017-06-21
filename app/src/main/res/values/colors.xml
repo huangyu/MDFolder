@@ -6,6 +6,7 @@
     <color name="colorAccentLight">#FF80AB</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorAccentDark">#F50057</color>
+    <color name="colorAccentDarker">#C51162</color>
     <color name="colorShadow">#66000000</color>
     <color name="colorGray">#757575</color>
     <color name="colorDarkGray">#444444</color>

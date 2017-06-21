@@ -3,8 +3,10 @@ package com.huangyu.mdfolder.mvp.presenter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.huangyu.library.mvp.BasePresenter;
@@ -12,7 +14,6 @@ import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
-import com.huangyu.mdfolder.listener.OnAlertButtonClick;
 import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
@@ -22,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -320,7 +322,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 .subscribe(new Subscriber<List<FileItem>>() {
                     @Override
                     public void onStart() {
-//                        mView.startRefresh();
                     }
 
                     @Override
@@ -339,7 +340,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                         if (mEditType == Constants.EditType.NONE) {
                             mView.finishAction();
                         }
-//                        mView.stopRefresh();
                     }
                 });
         mRxManager.add(subscription);
@@ -358,93 +358,112 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         final TextInputLayout textInputLayout = mView.findTextInputLayout(view);
         final EditText editText = mView.findAlertDialogEditText(view);
         mView.showKeyboard(mView.findAlertDialogEditText(view));
-        mView.showInputFileNameAlert(view, new OnAlertButtonClick() {
+        mView.showInputFileNameAlert(view, new DialogInterface.OnShowListener() {
             @Override
-            public boolean onClick() {
-                final String filename = editText.getText().toString();
-                if (TextUtils.isEmpty(filename)) {
-                    textInputLayout.setError(mView.getResString(R.string.tips_input_file_name));
-                    return false;
-                }
-                Subscription subscription = Observable.just(editText.getText().toString())
-                        .subscribeOn(AndroidSchedulers.mainThread())
-                        .observeOn(Schedulers.io())
-                        .map(new Func1<String, String>() {
-                            @Override
-                            public String call(String fileName) {
-                                return mCurrentPath + File.separator + fileName;
-                            }
-                        })
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .flatMap(new Func1<String, Observable<String>>() {
-                            @Override
-                            public Observable<String> call(String filePath) {
-                                Observable<Boolean> observable1 = Observable.just(filePath).exists(new Func1<String, Boolean>() {
+            public void onShow(final DialogInterface dialog) {
+                Button positionButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                positionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final String filename = editText.getText().toString();
+                        if (TextUtils.isEmpty(filename)) {
+                            textInputLayout.setEnabled(true);
+                            textInputLayout.setError(mView.getResString(R.string.tips_file_name_empty));
+                            textInputLayout.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    textInputLayout.setError(null);
+                                    textInputLayout.setErrorEnabled(false);
+                                }
+                            }, 2000);
+                            return;
+                        }
+                        Subscription subscription = Observable.just(editText.getText().toString())
+                                .subscribeOn(AndroidSchedulers.mainThread())
+                                .observeOn(Schedulers.io())
+                                .map(new Func1<String, String>() {
                                     @Override
-                                    public Boolean call(String filePath) {
-                                        return isFileExists(filePath);
+                                    public String call(String fileName) {
+                                        return mCurrentPath + File.separator + fileName;
                                     }
-                                });
-
-                                Observable<Boolean> observable2 = Observable.just(filePath).exists(new Func1<String, Boolean>() {
+                                })
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .flatMap(new Func1<String, Observable<String>>() {
                                     @Override
-                                    public Boolean call(String filePath) {
-                                        return isFolderExists(filePath);
+                                    public Observable<String> call(String filePath) {
+                                        Observable<Boolean> observable1 = Observable.just(filePath).exists(new Func1<String, Boolean>() {
+                                            @Override
+                                            public Boolean call(String filePath) {
+                                                return isFileExists(filePath);
+                                            }
+                                        });
+
+                                        Observable<Boolean> observable2 = Observable.just(filePath).exists(new Func1<String, Boolean>() {
+                                            @Override
+                                            public Boolean call(String filePath) {
+                                                return isFolderExists(filePath);
+                                            }
+                                        });
+
+                                        Observable<String> observable3 = Observable.just(filePath);
+
+                                        return Observable.zip(observable1, observable2, observable3, new Func3<Boolean, Boolean, String, String>() {
+                                            @Override
+                                            public String call(Boolean isFileExists, Boolean isFolderExists, String filePath) {
+                                                if (isFileExists) {
+                                                    mView.showMessage(mView.getResString(R.string.tips_file_exist));
+                                                } else if (isFolderExists) {
+                                                    mView.showMessage(mView.getResString(R.string.tips_folder_exist));
+                                                } else {
+                                                    return filePath;
+                                                }
+                                                return null;
+                                            }
+                                        });
                                     }
-                                });
-
-                                Observable<String> observable3 = Observable.just(filePath);
-
-                                return Observable.zip(observable1, observable2, observable3, new Func3<Boolean, Boolean, String, String>() {
+                                })
+                                .subscribe(new Subscriber<String>() {
                                     @Override
-                                    public String call(Boolean isFileExists, Boolean isFolderExists, String filePath) {
-                                        if (isFileExists) {
-                                            mView.showMessage(mView.getResString(R.string.tips_file_exist));
-                                        } else if (isFolderExists) {
-                                            mView.showMessage(mView.getResString(R.string.tips_folder_exist));
-                                        } else {
-                                            return filePath;
+                                    public void onStart() {
+                                        dialog.dismiss();
+                                    }
+
+                                    @Override
+                                    public void onNext(String filePath) {
+                                        if (filePath == null) {
+                                            return;
                                         }
-                                        return null;
+                                        if (addFile(filePath)) {
+                                            mView.showMessage(mView.getResString(R.string.tips_add_file_successfully));
+                                            mView.refreshData(false);
+                                        } else {
+                                            mView.showMessage(mView.getResString(R.string.tips_add_file_error));
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        mView.showError(e.getMessage());
+                                        onCompleted();
+                                    }
+
+                                    @Override
+                                    public void onCompleted() {
+                                        mView.hideKeyboard(mView.findAlertDialogEditText(view));
+                                        mView.closeFloatingActionMenu();
                                     }
                                 });
-                            }
-                        })
-                        .subscribe(new Subscriber<String>() {
-                            @Override
-                            public void onNext(String filePath) {
-                                if (filePath == null) {
-                                    return;
-                                }
-                                if (addFile(filePath)) {
-                                    mView.showMessage(mView.getResString(R.string.tips_add_file_successfully));
-                                    mView.refreshData(false);
-                                } else {
-                                    mView.showMessage(mView.getResString(R.string.tips_add_file_error));
-                                }
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                mView.showError(e.getMessage());
-                                onCompleted();
-                            }
-
-                            @Override
-                            public void onCompleted() {
-                                mView.hideKeyboard(mView.findAlertDialogEditText(view));
-                                mView.closeFloatingActionMenu();
-                            }
-                        });
-                mRxManager.add(subscription);
-                return true;
-            }
-
-        }, new OnAlertButtonClick() {
-            @Override
-            public boolean onClick() {
-                mView.closeFloatingActionMenu();
-                return true;
+                        mRxManager.add(subscription);
+                    }
+                });
+                Button negativeButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
+                negativeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mView.closeFloatingActionMenu();
+                        dialog.dismiss();
+                    }
+                });
             }
         });
     }
@@ -462,92 +481,112 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         final TextInputLayout textInputLayout = mView.findTextInputLayout(view);
         final EditText editText = mView.findAlertDialogEditText(view);
         mView.showKeyboard(mView.findAlertDialogEditText(view));
-        mView.showInputFileNameAlert(view, new OnAlertButtonClick() {
+        mView.showInputFileNameAlert(view, new DialogInterface.OnShowListener() {
             @Override
-            public boolean onClick() {
-                final String filename = editText.getText().toString();
-                if (TextUtils.isEmpty(filename)) {
-                    textInputLayout.setError(mView.getResString(R.string.tips_input_file_name));
-                    return false;
-                }
-                Subscription subscription = Observable.just(editText.getText().toString())
-                        .subscribeOn(AndroidSchedulers.mainThread())
-                        .observeOn(Schedulers.io())
-                        .map(new Func1<String, String>() {
-                            @Override
-                            public String call(String fileName) {
-                                return mCurrentPath + File.separator + fileName;
-                            }
-                        })
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .flatMap(new Func1<String, Observable<String>>() {
-                            @Override
-                            public Observable<String> call(String filePath) {
-                                Observable<Boolean> observable1 = Observable.just(filePath).exists(new Func1<String, Boolean>() {
+            public void onShow(final DialogInterface dialog) {
+                Button positionButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                positionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final String filename = editText.getText().toString();
+                        if (TextUtils.isEmpty(filename)) {
+                            textInputLayout.setEnabled(true);
+                            textInputLayout.setError(mView.getResString(R.string.tips_file_name_empty));
+                            textInputLayout.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    textInputLayout.setError(null);
+                                    textInputLayout.setErrorEnabled(false);
+                                }
+                            }, 2000);
+                            return;
+                        }
+                        Subscription subscription = Observable.just(editText.getText().toString())
+                                .subscribeOn(AndroidSchedulers.mainThread())
+                                .observeOn(Schedulers.io())
+                                .map(new Func1<String, String>() {
                                     @Override
-                                    public Boolean call(String filePath) {
-                                        return isFileExists(filePath);
+                                    public String call(String fileName) {
+                                        return mCurrentPath + File.separator + fileName;
                                     }
-                                });
-
-                                Observable<Boolean> observable2 = Observable.just(filePath).exists(new Func1<String, Boolean>() {
+                                })
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .flatMap(new Func1<String, Observable<String>>() {
                                     @Override
-                                    public Boolean call(String filePath) {
-                                        return isFolderExists(filePath);
+                                    public Observable<String> call(String filePath) {
+                                        Observable<Boolean> observable1 = Observable.just(filePath).exists(new Func1<String, Boolean>() {
+                                            @Override
+                                            public Boolean call(String filePath) {
+                                                return isFileExists(filePath);
+                                            }
+                                        });
+
+                                        Observable<Boolean> observable2 = Observable.just(filePath).exists(new Func1<String, Boolean>() {
+                                            @Override
+                                            public Boolean call(String filePath) {
+                                                return isFolderExists(filePath);
+                                            }
+                                        });
+
+                                        Observable<String> observable3 = Observable.just(filePath);
+
+                                        return Observable.zip(observable1, observable2, observable3, new Func3<Boolean, Boolean, String, String>() {
+                                            @Override
+                                            public String call(Boolean isFileExists, Boolean isFolderExists, String filePath) {
+                                                if (isFileExists) {
+                                                    mView.showMessage(mView.getResString(R.string.tips_file_exist));
+                                                } else if (isFolderExists) {
+                                                    mView.showMessage(mView.getResString(R.string.tips_folder_exist));
+                                                } else {
+                                                    return filePath;
+                                                }
+                                                return null;
+                                            }
+                                        });
                                     }
-                                });
-
-                                Observable<String> observable3 = Observable.just(filePath);
-
-                                return Observable.zip(observable1, observable2, observable3, new Func3<Boolean, Boolean, String, String>() {
+                                })
+                                .subscribe(new Subscriber<String>() {
                                     @Override
-                                    public String call(Boolean isFileExists, Boolean isFolderExists, String filePath) {
-                                        if (isFileExists) {
-                                            mView.showMessage(mView.getResString(R.string.tips_file_exist));
-                                        } else if (isFolderExists) {
-                                            mView.showMessage(mView.getResString(R.string.tips_folder_exist));
-                                        } else {
-                                            return filePath;
+                                    public void onStart() {
+                                        dialog.dismiss();
+                                    }
+
+                                    @Override
+                                    public void onNext(String filePath) {
+                                        if (filePath == null) {
+                                            return;
                                         }
-                                        return null;
+                                        if (addFolder(filePath)) {
+                                            mView.showMessage(mView.getResString(R.string.tips_add_folder_successfully));
+                                            mView.refreshData(false);
+                                        } else {
+                                            mView.showMessage(mView.getResString(R.string.tips_add_folder_error));
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        mView.showError(e.getMessage());
+                                        onCompleted();
+                                    }
+
+                                    @Override
+                                    public void onCompleted() {
+                                        mView.hideKeyboard(mView.findAlertDialogEditText(view));
+                                        mView.closeFloatingActionMenu();
                                     }
                                 });
-                            }
-                        })
-                        .subscribe(new Subscriber<String>() {
-                            @Override
-                            public void onNext(String filePath) {
-                                if (filePath == null) {
-                                    return;
-                                }
-                                if (addFolder(filePath)) {
-                                    mView.showMessage(mView.getResString(R.string.tips_add_folder_successfully));
-                                    mView.refreshData(false);
-                                } else {
-                                    mView.showMessage(mView.getResString(R.string.tips_add_folder_error));
-                                }
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                mView.showError(e.getMessage());
-                                onCompleted();
-                            }
-
-                            @Override
-                            public void onCompleted() {
-                                mView.hideKeyboard(mView.findAlertDialogEditText(view));
-                                mView.closeFloatingActionMenu();
-                            }
-                        });
-                mRxManager.add(subscription);
-                return true;
-            }
-        }, new OnAlertButtonClick() {
-            @Override
-            public boolean onClick() {
-                mView.closeFloatingActionMenu();
-                return true;
+                        mRxManager.add(subscription);
+                    }
+                });
+                Button negativeButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
+                negativeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mView.closeFloatingActionMenu();
+                        dialog.dismiss();
+                    }
+                });
             }
         });
     }
@@ -569,52 +608,72 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
             editText.setText(filename);
             editText.setSelection(filename.length());
             mView.showKeyboard(mView.findAlertDialogEditText(view));
-            mView.showInputFileNameAlert(view, new OnAlertButtonClick() {
+            mView.showInputFileNameAlert(view, new DialogInterface.OnShowListener() {
                 @Override
-                public boolean onClick() {
-                    final String filename = editText.getText().toString();
-                    if (TextUtils.isEmpty(filename)) {
-                        textInputLayout.setError(mView.getResString(R.string.tips_input_file_name));
-                        return false;
-                    }
-                    Subscription subscription = Observable.create(new Observable.OnSubscribe<Boolean>() {
+                public void onShow(final DialogInterface dialog) {
+                    Button positionButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                    positionButton.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void call(Subscriber<? super Boolean> subscriber) {
-                            boolean result = mFileModel.renameFile(filePath, editText.getText().toString());
-                            subscriber.onNext(result);
-                            subscriber.onCompleted();
-                        }
-                    })
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new Subscriber<Boolean>() {
-                                @Override
-                                public void onNext(Boolean result) {
-                                    if (result) {
-                                        mView.showMessage(mView.getResString(R.string.tips_rename_successfully));
-                                    } else {
-                                        mView.showMessage(mView.getResString(R.string.tips_rename_in_error));
+                        public void onClick(View v) {
+                            final String filename = editText.getText().toString();
+                            if (TextUtils.isEmpty(filename)) {
+                                textInputLayout.setEnabled(true);
+                                textInputLayout.setError(mView.getResString(R.string.tips_file_name_empty));
+                                textInputLayout.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        textInputLayout.setError(null);
+                                        textInputLayout.setErrorEnabled(false);
                                     }
-                                }
-
+                                }, 2000);
+                                return;
+                            }
+                            Subscription subscription = Observable.create(new Observable.OnSubscribe<Boolean>() {
                                 @Override
-                                public void onError(Throwable e) {
-                                    mView.showError(e.getMessage());
-                                    onCompleted();
+                                public void call(Subscriber<? super Boolean> subscriber) {
+                                    boolean result = mFileModel.renameFile(filePath, editText.getText().toString());
+                                    subscriber.onNext(result);
+                                    subscriber.onCompleted();
                                 }
+                            })
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(new Subscriber<Boolean>() {
+                                        @Override
+                                        public void onStart() {
+                                            dialog.dismiss();
+                                        }
 
-                                @Override
-                                public void onCompleted() {
-                                    mView.finishAction();
-                                }
-                            });
-                    mRxManager.add(subscription);
-                    return true;
-                }
-            }, new OnAlertButtonClick() {
-                @Override
-                public boolean onClick() {
-                    return true;
+                                        @Override
+                                        public void onNext(Boolean result) {
+                                            if (result) {
+                                                mView.showMessage(mView.getResString(R.string.tips_rename_successfully));
+                                            } else {
+                                                mView.showMessage(mView.getResString(R.string.tips_rename_in_error));
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onError(Throwable e) {
+                                            mView.showError(e.getMessage());
+                                            onCompleted();
+                                        }
+
+                                        @Override
+                                        public void onCompleted() {
+                                            mView.finishAction();
+                                        }
+                                    });
+                            mRxManager.add(subscription);
+                        }
+                    });
+                    Button negativeButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
+                    negativeButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
                 }
             });
         }
@@ -693,58 +752,76 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 final View view = mView.inflateAlertDialogLayout();
                 final TextInputLayout textInputLayout = mView.findTextInputLayout(view);
                 final EditText editText = mView.findAlertDialogEditText(view);
-                mView.showInputFileNameAlert(view, new OnAlertButtonClick() {
+                mView.showKeyboard(mView.findAlertDialogEditText(view));
+                mView.showInputFileNameAlert(view, new DialogInterface.OnShowListener() {
                     @Override
-                    public boolean onClick() {
-                        final String filename = editText.getText().toString();
-                        if (TextUtils.isEmpty(filename)) {
-                            textInputLayout.setError(mView.getResString(R.string.tips_input_file_name));
-                            return false;
-                        }
-                        Subscription subscription = Observable.from(fileList).map(new Func1<FileItem, File>() {
+                    public void onShow(final DialogInterface dialog) {
+                        Button positionButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                        positionButton.setOnClickListener(new View.OnClickListener() {
                             @Override
-                            public File call(FileItem fileItem) {
-                                return new File(fileItem.getPath());
-                            }
-                        })
-                                .toList()
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new Subscriber<List<File>>() {
-                                    @Override
-                                    public void onStart() {
-                                        mView.showProgressDialog(mContext.getString(R.string.tips_zipping));
-                                    }
-
-                                    @Override
-                                    public void onNext(List<File> fileList) {
-                                        boolean result = mFileListModel.zipFileList(fileList, mCurrentPath + File.separator + filename);
-                                        if (result) {
-                                            mView.showMessage(mView.getResString(R.string.tips_zip_successfully));
-                                        } else {
-                                            mView.showMessage(mView.getResString(R.string.tips_zip_in_error));
+                            public void onClick(View v) {
+                                final String filename = editText.getText().toString();
+                                if (TextUtils.isEmpty(filename)) {
+                                    textInputLayout.setEnabled(true);
+                                    textInputLayout.setError(mView.getResString(R.string.tips_file_name_empty));
+                                    textInputLayout.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            textInputLayout.setError(null);
+                                            textInputLayout.setErrorEnabled(false);
                                         }
-                                    }
-
+                                    }, 2000);
+                                    return;
+                                }
+                                Subscription subscription = Observable.from(fileList).map(new Func1<FileItem, File>() {
                                     @Override
-                                    public void onError(Throwable e) {
-                                        mView.showError(e.getMessage());
-                                        onCompleted();
+                                    public File call(FileItem fileItem) {
+                                        return new File(fileItem.getPath());
                                     }
+                                })
+                                        .toList()
+                                        .delay(1000, TimeUnit.MILLISECONDS)
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(new Subscriber<List<File>>() {
+                                            @Override
+                                            public void onStart() {
+                                                dialog.dismiss();
+                                                mView.showProgressDialog(mContext.getString(R.string.tips_zipping));
+                                            }
 
-                                    @Override
-                                    public void onCompleted() {
-                                        mView.hideProgressDialog();
-                                        mView.finishAction();
-                                    }
-                                });
-                        mRxManager.add(subscription);
-                        return true;
-                    }
-                }, new OnAlertButtonClick() {
-                    @Override
-                    public boolean onClick() {
-                        return true;
+                                            @Override
+                                            public void onNext(List<File> fileList) {
+                                                boolean result = mFileListModel.zipFileList(fileList, mCurrentPath + File.separator + filename + ".zip");
+                                                if (result) {
+                                                    mView.showMessage(mView.getResString(R.string.tips_zip_successfully) + fileList.size());
+                                                } else {
+                                                    mView.showMessage(mView.getResString(R.string.tips_zip_in_error));
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onError(Throwable e) {
+                                                mView.showError(e.getMessage());
+                                                onCompleted();
+                                            }
+
+                                            @Override
+                                            public void onCompleted() {
+                                                mView.hideProgressDialog();
+                                                mView.finishAction();
+                                            }
+                                        });
+                                mRxManager.add(subscription);
+                            }
+                        });
+                        Button negativeButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
+                        negativeButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
                     }
                 });
             }
@@ -756,68 +833,50 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      *
      * @param fileList 文件列表
      */
+
     public void onUnzip(final List<FileItem> fileList) {
         mView.showNormalAlert(mView.getResString(R.string.tips_unzip_files), mView.getResString(R.string.act_unzip), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                final View view = mView.inflateAlertDialogLayout();
-                final TextInputLayout textInputLayout = mView.findTextInputLayout(view);
-                final EditText editText = mView.findAlertDialogEditText(view);
-                mView.showInputFileNameAlert(view, new OnAlertButtonClick() {
+                Subscription subscription = Observable.from(fileList).map(new Func1<FileItem, File>() {
                     @Override
-                    public boolean onClick() {
-                        final String filename = editText.getText().toString();
-                        if (TextUtils.isEmpty(filename)) {
-                            textInputLayout.setError(mView.getResString(R.string.tips_input_file_name));
-                            return false;
-                        }
-                        Subscription subscription = Observable.from(fileList).map(new Func1<FileItem, File>() {
+                    public File call(FileItem fileItem) {
+                        return new File(fileItem.getPath());
+                    }
+                })
+                        .toList()
+                        .delay(1000, TimeUnit.MILLISECONDS)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<List<File>>() {
                             @Override
-                            public File call(FileItem fileItem) {
-                                return new File(fileItem.getPath());
+                            public void onStart() {
+                                mView.showProgressDialog(mContext.getString(R.string.tips_unzipping));
                             }
-                        })
-                                .toList()
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new Subscriber<List<File>>() {
-                                    @Override
-                                    public void onStart() {
-                                        mView.showProgressDialog(mContext.getString(R.string.tips_unzipping));
-                                    }
 
-                                    @Override
-                                    public void onNext(List<File> fileList) {
-                                        boolean result = mFileListModel.unzipFileList(fileList, mCurrentPath + File.separator + filename);
-                                        if (result) {
-                                            mView.showMessage(mView.getResString(R.string.tips_unzip_successfully));
-                                        } else {
-                                            mView.showMessage(mView.getResString(R.string.tips_unzip_in_error));
-                                        }
-                                    }
+                            @Override
+                            public void onNext(List<File> fileList) {
+                                boolean result = mFileListModel.unzipFileList(fileList, mCurrentPath);
+                                if (result) {
+                                    mView.showMessage(mView.getResString(R.string.tips_unzip_successfully));
+                                } else {
+                                    mView.showMessage(mView.getResString(R.string.tips_unzip_in_error));
+                                }
+                            }
 
-                                    @Override
-                                    public void onError(Throwable e) {
-                                        mView.showError(e.getMessage());
-                                        onCompleted();
-                                    }
+                            @Override
+                            public void onError(Throwable e) {
+                                mView.showError(e.getMessage());
+                                onCompleted();
+                            }
 
-                                    @Override
-                                    public void onCompleted() {
-                                        mView.hideProgressDialog();
-                                        mView.finishAction();
-                                    }
-                                });
-                        mRxManager.add(subscription);
-                        return true;
-                    }
-                }, new OnAlertButtonClick() {
-                    @Override
-                    public boolean onClick() {
-                        return true;
-                    }
-                });
-
+                            @Override
+                            public void onCompleted() {
+                                mView.hideProgressDialog();
+                                mView.finishAction();
+                            }
+                        });
+                mRxManager.add(subscription);
             }
         });
     }

@@ -6,11 +6,9 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.huangyu.mdfolder.R;
-import com.huangyu.mdfolder.listener.OnAlertButtonClick;
 
 /**
  * Created by huangyu on 2017-5-22.
@@ -96,38 +94,14 @@ public class AlertUtils {
     /**
      * 显示自定义View提示框
      *
-     * @param context       context
-     * @param title         标题
-     * @param positiveClick 肯定按钮事件
+     * @param context        context
+     * @param title          标题
+     * @param onShowListener 显示按钮事件
      * @return
      */
-    public static AlertDialog showCustomAlert(final Context context, String title, View view, final OnAlertButtonClick positiveClick, final OnAlertButtonClick negativeClick) {
-//        final AlertDialog alertDialog = new CustomAlertDialogBuilder(context).setTitle(title).setView(view).setPositiveButton(context.getString(R.string.act_confirm), null).setNegativeButton(context.getString(R.string.act_cancel), null).show();
+    public static AlertDialog showCustomAlert(final Context context, String title, View view, DialogInterface.OnShowListener onShowListener) {
         final AlertDialog alertDialog = new AlertDialog.Builder(context).setTitle(title).setView(view).setPositiveButton(context.getString(R.string.act_confirm), null).setNegativeButton(context.getString(R.string.act_cancel), null).create();
-        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-
-            @Override
-            public void onShow(DialogInterface dialog) {
-                Button positionButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
-                positionButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (positiveClick.onClick()) {
-                            alertDialog.dismiss();
-                        }
-                    }
-                });
-                Button negativeButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
-                negativeButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (negativeClick.onClick()) {
-                            alertDialog.dismiss();
-                        }
-                    }
-                });
-            }
-        });
+        alertDialog.setOnShowListener(onShowListener);
         alertDialog.show();
         return alertDialog;
     }

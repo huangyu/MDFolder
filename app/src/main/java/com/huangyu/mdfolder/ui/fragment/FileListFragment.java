@@ -32,7 +32,6 @@ import com.huangyu.library.util.LogUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
-import com.huangyu.mdfolder.listener.OnAlertButtonClick;
 import com.huangyu.mdfolder.mvp.presenter.FileListPresenter;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
 import com.huangyu.mdfolder.ui.activity.FileListActivity;
@@ -357,8 +356,8 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     @Override
-    public AlertDialog showInputFileNameAlert(View view, OnAlertButtonClick onPositiveClickListener, OnAlertButtonClick onNegativeClick) {
-        return AlertUtils.showCustomAlert(getContext(), getString(R.string.tips_alert), view, onPositiveClickListener, onNegativeClick);
+    public AlertDialog showInputFileNameAlert(View view, DialogInterface.OnShowListener onShowListener) {
+        return AlertUtils.showCustomAlert(getContext(), "", view, onShowListener);
     }
 
     @Override
