@@ -55,7 +55,7 @@
     <string name="tips_add_folder">Please input folder name.</string>
     <string name="tips_delete_files">Delete these files?</string>
     <string name="tips_zip_files">Zip these files?</string>
-    <string name="tips_Unzip_files">Unzip these files?</string>
+    <string name="tips_unzip_files">Unzip these files?</string>
     <string name="tips_copy_files">Copy these files?</string>
     <string name="tips_cut_files">Cut these files?</string>
     <string name="tips_delete_successfully">Delete successfully.</string>

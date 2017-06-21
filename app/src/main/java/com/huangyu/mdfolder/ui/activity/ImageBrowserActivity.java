@@ -2,6 +2,7 @@ package com.huangyu.mdfolder.ui.activity;
 
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.widget.TextView;
 
 import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.library.ui.BaseActivity;
@@ -16,6 +17,9 @@ import butterknife.Bind;
  * Created by huangyu on 2017-6-20.
  */
 public class ImageBrowserActivity extends BaseActivity {
+
+    @Bind(R.id.tv_number)
+    TextView tvNumber;
 
     @Bind(R.id.view_pager)
     ViewPager mViewPager;
@@ -32,11 +36,28 @@ public class ImageBrowserActivity extends BaseActivity {
 
     @Override
     protected void initView(Bundle savedInstanceState) {
-        ArrayList<String> imageList = getIntent().getStringArrayListExtra(getString(R.string.intent_image_list));
+        final ArrayList<String> imageList = getIntent().getStringArrayListExtra(getString(R.string.intent_image_list));
         int position = getIntent().getIntExtra(getString(R.string.intentimage_position), 0);
         ImagePagerAdapter adapter = new ImagePagerAdapter(this, imageList);
         mViewPager.setAdapter(adapter);
         mViewPager.setCurrentItem(position);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                tvNumber.setText(position + 1 + "/" + imageList.size());
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        tvNumber.setText(position + 1 + "/" + imageList.size());
     }
 
 }
