@@ -794,7 +794,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                             public void onNext(List<File> fileList) {
                                                 boolean result = mFileListModel.zipFileList(fileList, mCurrentPath + File.separator + filename + ".zip");
                                                 if (result) {
-                                                    mView.showMessage(mView.getResString(R.string.tips_zip_successfully) + fileList.size());
+                                                    mView.showMessage(mView.getResString(R.string.tips_zip_successfully));
                                                 } else {
                                                     mView.showMessage(mView.getResString(R.string.tips_zip_in_error));
                                                 }

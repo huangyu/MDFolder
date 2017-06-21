@@ -105,8 +105,13 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mAdapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                if (mPresenter.mEditType == Constants.EditType.NONE || mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT) {
+                if (mPresenter.mEditType == Constants.EditType.NONE) {
                     FileItem file = mAdapter.getItem(position);
+                    if (file == null) {
+                        finishAction();
+                        return;
+                    }
+
                     if (file.isDirectory()) {
                         mPresenter.enterFolder(file);
                     } else {
@@ -123,14 +128,21 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         }
                     }
 
-                    if (mPresenter.mEditType == Constants.EditType.NONE) {
-                        finishAction();
+                    finishAction();
+                } else if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT) {
+                    FileItem file = mAdapter.getItem(position);
+                    if (file == null) {
+                        return;
+                    }
+
+                    if (file.isDirectory()) {
+                        mPresenter.enterFolder(file);
                     }
                 } else {
                     mPresenter.mEditType = Constants.EditType.SELECT;
                     mAdapter.switchSelectedState(position);
                     mActionMode.setTitle(mAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
-                    if(mAdapter.getSelectedItemCount() == 0) {
+                    if (mAdapter.getSelectedItemCount() == 0) {
                         finishAction();
                     }
                 }
