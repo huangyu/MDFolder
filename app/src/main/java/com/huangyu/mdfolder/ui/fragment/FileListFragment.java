@@ -1,11 +1,13 @@
 package com.huangyu.mdfolder.ui.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatEditText;
@@ -30,6 +32,7 @@ import com.huangyu.library.util.LogUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
+import com.huangyu.mdfolder.listener.OnAlertButtonClick;
 import com.huangyu.mdfolder.mvp.presenter.FileListPresenter;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
 import com.huangyu.mdfolder.ui.activity.FileListActivity;
@@ -80,6 +83,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     @Bind(R.id.fab_add_folder)
     FloatingActionButton mFabAddFolder;
 
+    private ProgressDialog progressDialog;
     private FileListAdapter mAdapter;
     private ActionMode mActionMode;
     private String mSearchStr;
@@ -110,8 +114,8 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         // 进入图片浏览
                         if (file.isPhoto()) {
                             Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
-                            intent.putStringArrayListExtra(getString(R.string.image_list), mPresenter.getImageList(mAdapter.getDataList()));
-                            intent.putExtra(getString(R.string.image_position), position);
+                            intent.putStringArrayListExtra(getString(R.string.intent_image_list), mPresenter.getImageList(mAdapter.getDataList()));
+                            intent.putExtra(getString(R.string.intentimage_position), position);
                             getActivity().startActivity(intent);
                         }
                         // 打开文件
@@ -126,6 +130,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 } else {
                     mPresenter.mEditType = Constants.EditType.SELECT;
                     mAdapter.switchSelectedState(position);
+                    mActionMode.setTitle(mAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
                 }
             }
         });
@@ -141,6 +146,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 if (mActionMode == null) {
                     mActionMode = getControlActionMode();
                 }
+                mActionMode.setTitle(mAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
             }
         });
         mRecyclerView.setAdapter(mAdapter);
@@ -179,7 +185,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
         initRxManagerActions();
 
-        mPresenter.onLoadStorageFileList(mSearchStr);
+        mPresenter.onLoadStorageFileList(false, mSearchStr);
     }
 
     private void initRxManagerActions() {
@@ -191,11 +197,11 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             }
         });
 
-        mRxManager.on("toStorage", new Action1<String>() {
+        mRxManager.on("toStorage", new Action1<Boolean>() {
             @Override
-            public void call(String text) {
+            public void call(Boolean isInner) {
                 mPresenter.mFileType = Constants.FileType.FILE;
-                mPresenter.onLoadStorageFileList(mSearchStr);
+                mPresenter.onLoadStorageFileList(isInner, mSearchStr);
             }
         });
 
@@ -341,13 +347,18 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     @Override
+    public TextInputLayout findTextInputLayout(View view) {
+        return (TextInputLayout) ButterKnife.findById(view, R.id.til_tips);
+    }
+
+    @Override
     public EditText findAlertDialogEditText(View view) {
         return (AppCompatEditText) ButterKnife.findById(view, R.id.et_name);
     }
 
     @Override
-    public AlertDialog showAlert(View view, DialogInterface.OnClickListener onPositiveClickListener, DialogInterface.OnClickListener onNegativeClick) {
-        return AlertUtils.showCustomAlert(getContext(), getString(R.string.tips_add_file), view, onPositiveClickListener, onNegativeClick);
+    public AlertDialog showInputFileNameAlert(View view, OnAlertButtonClick onPositiveClickListener, OnAlertButtonClick onNegativeClick) {
+        return AlertUtils.showCustomAlert(getContext(), getString(R.string.tips_alert), view, onPositiveClickListener, onNegativeClick);
     }
 
     @Override
@@ -370,6 +381,22 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             mActionMode.finish();
         }
         mPresenter.mEditType = Constants.EditType.NONE;
+    }
+
+    @Override
+    public void showProgressDialog(String message) {
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setTitle(getString(R.string.tips_alert));
+        progressDialog.setMessage(message);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+
+    @Override
+    public void hideProgressDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
     }
 
     private ActionMode getControlActionMode() {
@@ -409,11 +436,19 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         mPresenter.mEditType = Constants.EditType.COPY;
                         mActionMode = getPasteActonMode();
                         mAdapter.mSelectedFileList = fileList;
+                        mActionMode.setTitle(mAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
                         break;
                     case R.id.action_cut:
                         mPresenter.mEditType = Constants.EditType.CUT;
                         mActionMode = getPasteActonMode();
                         mAdapter.mSelectedFileList = fileList;
+                        mActionMode.setTitle(mAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
+                        break;
+                    case R.id.action_zip:
+                        mPresenter.onZip(fileList);
+                        break;
+                    case R.id.action_unzip:
+                        mPresenter.onUnzip(fileList);
                         break;
                 }
                 return false;
@@ -482,5 +517,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         return mPresenter.backFolder();
     }
 
+    @Override
+    public void onDestroyView() {
+        hideProgressDialog();
+        super.onDestroyView();
+    }
 
 }

@@ -53,10 +53,8 @@ public class TabView extends HorizontalScrollView {
         textView.setText(title);
         textView.setTag(R.id.tab_tag, mLayout.getChildCount());
         if (mLayout.getChildCount() <= 0) {
-            // 第一个就隐藏箭头
             view.findViewById(R.id.arrow).setVisibility(View.GONE);
         } else {
-            // 设置前一个的字体颜色
             TextView lastTitle = (TextView) mLayout.getChildAt(mLayout.getChildCount() - 1).findViewById(R.id.tv_name);
             lastTitle.setTextColor(getContext().getResources().getColor(R.color.colorPrimaryTextDark));
         }
@@ -73,10 +71,8 @@ public class TabView extends HorizontalScrollView {
     public boolean removeTab() {
         int count = mLayout.getChildCount();
         if (count > 1) {
-            // 移除最后一个
             mLayout.removeViewAt(count - 1);
             View lastView = mLayout.getChildAt(mLayout.getChildCount() - 1);
-
             TextView lastTitle = (TextView) lastView.findViewById(R.id.tv_name);
             lastTitle.setTextColor(getResources().getColor(android.R.color.white));
             return true;

@@ -20,6 +20,8 @@
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
             android:elevation="4dp"
+            android:paddingLeft="8dp"
+            android:paddingStart="8dp"
             app:layout_scrollFlags="scroll|enterAlways" />
 
     </android.support.design.widget.AppBarLayout>

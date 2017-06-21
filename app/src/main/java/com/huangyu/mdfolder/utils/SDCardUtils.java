@@ -1,9 +1,11 @@
 package com.huangyu.mdfolder.utils;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
+import android.os.storage.StorageManager;
 
 import com.huangyu.library.util.CloseUtils;
 
@@ -11,6 +13,11 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import static android.os.Environment.getExternalStorageState;
 
 /**
  * <pre>
@@ -32,7 +39,7 @@ public final class SDCardUtils {
      * @return true : 可用<br>false : 不可用
      */
     public static boolean isSDCardEnable() {
-        return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
+        return Environment.MEDIA_MOUNTED.equals(getExternalStorageState());
     }
 
     /**
@@ -70,6 +77,46 @@ public final class SDCardUtils {
     }
 
     /**
+     * 获取SD卡路径
+     * 通过反射的方式使用在SDK中被隐藏的类StorageVolume 中的方法getVolumeList()，
+     * 获取所有的存储空间（Storage Volume），然后通过参数is_removable控制，
+     * 来获取内部存储和外部存储（内外sd卡）的路径。
+     *
+     * @param is_removable true 外置存储卡
+     *                     false 内置存储卡
+     * @return SD卡路径
+     */
+    public static String getStoragePath(Context mContext, boolean is_removable) {
+        StorageManager mStorageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
+        Class<?> storageVolumeClazz;
+        try {
+            storageVolumeClazz = Class.forName("android.os.storage.StorageVolume");
+            Method getVolumeList = mStorageManager.getClass().getMethod("getVolumeList");
+            Method getPath = storageVolumeClazz.getMethod("getPath");
+            Method isRemovable = storageVolumeClazz.getMethod("isRemovable");
+            Object result = getVolumeList.invoke(mStorageManager);
+            final int length = Array.getLength(result);
+            for (int i = 0; i < length; i++) {
+                Object storageVolumeElement = Array.get(result, i);
+                String path = (String) getPath.invoke(storageVolumeElement);
+                boolean removable = (Boolean) isRemovable.invoke(storageVolumeElement);
+                if (is_removable == removable) {
+                    return path;
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
      * 获取SD卡data路径
      *
      * @return SD卡data路径
@@ -102,13 +149,13 @@ public final class SDCardUtils {
 
     public static class SDCardInfo {
         boolean isExist;
-        long    totalBlocks;
-        long    freeBlocks;
-        long    availableBlocks;
-        long    blockByteSize;
-        long    totalBytes;
-        long    freeBytes;
-        long    availableBytes;
+        long totalBlocks;
+        long freeBlocks;
+        long availableBlocks;
+        long blockByteSize;
+        long totalBytes;
+        long freeBytes;
+        long availableBytes;
 
         @Override
         public String toString() {
@@ -122,4 +169,5 @@ public final class SDCardUtils {
                     "\navailableBytes=" + availableBytes;
         }
     }
+
 }

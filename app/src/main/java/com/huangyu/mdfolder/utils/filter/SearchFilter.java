@@ -2,6 +2,8 @@ package com.huangyu.mdfolder.utils.filter;
 
 import android.text.TextUtils;
 
+import com.huangyu.mdfolder.utils.SPUtils;
+
 import java.io.File;
 import java.io.FilenameFilter;
 
@@ -19,9 +21,14 @@ public class SearchFilter implements FilenameFilter {
     @Override
     public boolean accept(File dir, String name) {
         if (TextUtils.isEmpty(mSearchStr)) {
-            return !name.startsWith(".");
+            return SPUtils.isShowHiddenFiles() || !name.startsWith(".");
+        } else {
+            if (SPUtils.isShowHiddenFiles()) {
+                return containsIgnoreCase(name, mSearchStr);
+            } else {
+                return containsIgnoreCase(name, mSearchStr) && !name.startsWith(".");
+            }
         }
-        return containsIgnoreCase(name, mSearchStr) && !name.startsWith(".");
     }
 
     /**

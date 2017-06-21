@@ -1,10 +1,5 @@
 package com.huangyu.mdfolder.utils;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-
 import com.huangyu.mdfolder.R;
 
 /**
@@ -12,31 +7,27 @@ import com.huangyu.mdfolder.R;
  */
 public class ThemeUtils {
 
-    private Context mContext;
     private boolean isLightMode;
+    private boolean isShowMode;
 
-    public ThemeUtils(Activity context) {
-        mContext = context;
+    public ThemeUtils() {
         isChanged();
     }
 
     public boolean isChanged() {
-        boolean lightTheme = isLightMode(mContext);
-        boolean changed = isLightMode != lightTheme;
-        isLightMode = lightTheme;
+        boolean isLightTheme = SPUtils.isLightMode();
+        boolean isShow = SPUtils.isShowHiddenFiles();
+        boolean changed = isLightMode != isLightTheme || isShowMode != isShow;
+        isLightMode = isLightTheme;
+        isShowMode = isShow;
         return changed;
-    }
-
-    private boolean isLightMode(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getBoolean("pref_theme", true);
     }
 
     public boolean isLightMode() {
         return isLightMode;
     }
 
-    public int getCurrent() {
+    public int getCurrentTheme() {
         if (isLightMode) {
             return R.style.MainTheme;
         } else {
@@ -44,7 +35,7 @@ public class ThemeUtils {
         }
     }
 
-    public int getCurrentBySettings() {
+    public int getCurrentSettingsTheme() {
         if (isLightMode) {
             return R.style.SettingsTheme;
         } else {

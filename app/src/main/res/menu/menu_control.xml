@@ -30,4 +30,16 @@
         android:title="@string/menu_cut"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/action_zip"
+        android:orderInCategory="5"
+        android:title="@string/menu_zip"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_unzip"
+        android:orderInCategory="6"
+        android:title="@string/menu_unzip"
+        app:showAsAction="always" />
+
 </menu>

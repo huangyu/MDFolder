@@ -3,10 +3,14 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_storage"
+            android:id="@+id/nav_inner_storage"
             android:checked="true"
             android:icon="@mipmap/ic_storage"
-            android:title="@string/menu_storage" />
+            android:title="@string/menu_inner_storage" />
+        <!--<item-->
+            <!--android:id="@+id/nav_outer_storage"-->
+            <!--android:icon="@mipmap/ic_storage"-->
+            <!--android:title="@string/menu_outer_storage" />-->
         <item
             android:id="@+id/nav_root"
             android:icon="@mipmap/ic_root"

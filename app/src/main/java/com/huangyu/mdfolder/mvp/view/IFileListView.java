@@ -1,12 +1,14 @@
 package com.huangyu.mdfolder.mvp.view;
 
 import android.content.DialogInterface;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.EditText;
 
 import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.mdfolder.bean.FileItem;
+import com.huangyu.mdfolder.listener.OnAlertButtonClick;
 
 import java.util.List;
 
@@ -32,6 +34,10 @@ public interface IFileListView extends IBaseView {
 
     void finishAction();
 
+    void showProgressDialog(String message);
+
+    void hideProgressDialog();
+
     void showMessage(String message);
 
     void showError(String error);
@@ -42,9 +48,11 @@ public interface IFileListView extends IBaseView {
 
     View inflateAlertDialogLayout();
 
+    TextInputLayout findTextInputLayout(View view);
+
     EditText findAlertDialogEditText(View view);
 
-    AlertDialog showAlert(View view, DialogInterface.OnClickListener onPositiveClickListener, DialogInterface.OnClickListener onNegativeClick);
+    AlertDialog showInputFileNameAlert(View view, OnAlertButtonClick onPositiveClickListener, OnAlertButtonClick onNegativeClick);
 
     AlertDialog showNormalAlert(String message, String positiveString, DialogInterface.OnClickListener positiveClick);
 

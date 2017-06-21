@@ -32,8 +32,8 @@ public class ImageBrowserActivity extends BaseActivity {
 
     @Override
     protected void initView(Bundle savedInstanceState) {
-        ArrayList<String> imageList = getIntent().getStringArrayListExtra(getString(R.string.image_list));
-        int position = getIntent().getIntExtra(getString(R.string.image_position), 0);
+        ArrayList<String> imageList = getIntent().getStringArrayListExtra(getString(R.string.intent_image_list));
+        int position = getIntent().getIntExtra(getString(R.string.intentimage_position), 0);
         ImagePagerAdapter adapter = new ImagePagerAdapter(this, imageList);
         mViewPager.setAdapter(adapter);
         mViewPager.setCurrentItem(position);

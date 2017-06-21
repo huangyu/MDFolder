@@ -199,9 +199,12 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                     case R.id.nav_root:
                         mRxManager.post("toRoot", "");
                         break;
-                    case R.id.nav_storage:
-                        mRxManager.post("toStorage", "");
+                    case R.id.nav_inner_storage:
+                        mRxManager.post("toStorage", false);
                         break;
+//                    case R.id.nav_outer_storage:
+//                        mRxManager.post("toStorage", true);
+//                        break;
                     case R.id.nav_music:
                         mRxManager.post("toMusic", "");
                         break;

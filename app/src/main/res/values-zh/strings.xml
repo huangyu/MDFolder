@@ -6,15 +6,16 @@
     <string name="str_image_browser">图片浏览</string>
     <string name="str_folder">文件夹</string>
     <string name="str_image">图片</string>
-    <string name="image_list">ImageList</string>
-    <string name="image_position">ImagePosition</string>
+    <string name="intent_image_list">ImageList</string>
+    <string name="intentimage_position">ImagePosition</string>
 
     <string name="navigation_drawer_open">打开导航栏</string>
     <string name="navigation_drawer_close">关闭导航栏</string>
 
     <string name="menu_other">其他</string>
     <string name="menu_root">系统目录</string>
-    <string name="menu_storage">存储器</string>
+    <string name="menu_inner_storage">内置存储</string>
+    <string name="menu_outer_storage">外置存储</string>
     <string name="menu_photo">照片</string>
     <string name="menu_audio">音频</string>
     <string name="menu_video">视频</string>
@@ -28,17 +29,24 @@
     <string name="menu_delete">删除</string>
     <string name="menu_rename">重命名</string>
     <string name="menu_settings">设置</string>
+    <string name="menu_zip">压缩</string>
+    <string name="menu_unzip">解压</string>
 
     <string name="act_exit">退出</string>
     <string name="act_search">搜索</string>
     <string name="act_cancel">取消</string>
     <string name="act_confirm">确定</string>
     <string name="act_delete">删除</string>
+    <string name="act_zip">压缩</string>
+    <string name="act_unzip">解压</string>
     <string name="act_copy">复制</string>
     <string name="act_cut">剪切</string>
     <string name="act_add_file">新增文件</string>
     <string name="act_add_folder">新增文件夹</string>
 
+    <string name="tips_alert">提示</string>
+    <string name="tips_zipping">压缩中&#8230;</string>
+    <string name="tips_unzipping">解压中&#8230;</string>
     <string name="tips_loading">加载中&#8230;</string>
     <string name="tips_require_file_permissions">请授予文件权限以正常使用</string>
     <string name="tips_no_permissions">应用无相关权限，无法正常使用</string>
@@ -46,12 +54,18 @@
     <string name="tips_add_file">请输入文件名</string>
     <string name="tips_add_folder">请输入文件夹名</string>
     <string name="tips_delete_files">是否删除这些文件？</string>
+    <string name="tips_zip_files">是否压缩这些文件？</string>
+    <string name="tips_unzip_files">是否解压这些文件？</string>
     <string name="tips_copy_files">是否复制这些文件?</string>
     <string name="tips_cut_files">是否剪切这些文件?</string>
     <string name="tips_delete_successfully">删除成功</string>
     <string name="tips_delete_in_error">删除失败</string>
     <string name="tips_rename_successfully">重命名成功</string>
     <string name="tips_rename_in_error">重命名失败</string>
+    <string name="tips_zip_successfully">压缩成功</string>
+    <string name="tips_zip_in_error">压缩失败</string>
+    <string name="tips_unzip_successfully">解压成功</string>
+    <string name="tips_unzip_in_error">解压失败</string>
     <string name="tips_copy_successfully">复制成功</string>
     <string name="tips_copy_in_error">复制失败</string>
     <string name="tips_cut_successfully">剪切成功</string>
@@ -67,12 +81,18 @@
     <string name="tips_not_complete">此功能尚未实现</string>
     <string name="tips_error">操作失败</string>
     <string name="tips_choose_one_file">请只选择一个文件</string>
+    <string name="tips_selected">个文件被选择</string>
+    <string name="tips_input_file_name">请输入文件名</string>
 
     <string name="pref_settings">设置</string>
     <string name="pref_appearance">外观</string>
+    <string name="pref_configuration">配置</string>
     <string name="pref_theme">主题</string>
     <string name="pref_dark">当前使用深色主题</string>
     <string name="pref_light">当前使用浅色主题</string>
+    <string name="pref_if_show_hidden">是否显示隐藏文件</string>
+    <string name="pref_show_hidden">显示隐藏文件</string>
+    <string name="pref_hide_hidden">不显示隐藏文件</string>
     <string name="pref_about">关于</string>
     <string name="pref_project">项目地址</string>
     <string name="pref_github">https://github.com/huangyu0522/MDFolder</string>

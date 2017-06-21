@@ -1,8 +1,6 @@
 package com.huangyu.mdfolder.ui.activity;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.huangyu.library.ui.BaseActivity;
 import com.huangyu.mdfolder.utils.ThemeUtils;
@@ -16,8 +14,8 @@ public abstract class ThematicActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mThemeUtils = new ThemeUtils(this);
-        setTheme(mThemeUtils.getCurrent());
+        mThemeUtils = new ThemeUtils();
+        setTheme(mThemeUtils.getCurrentTheme());
         super.onCreate(savedInstanceState);
     }
 
@@ -25,7 +23,7 @@ public abstract class ThematicActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         if (mThemeUtils.isChanged()) {
-            setTheme(mThemeUtils.getCurrent());
+            setTheme(mThemeUtils.getCurrentTheme());
             recreateActivity();
         }
     }
@@ -35,13 +33,14 @@ public abstract class ThematicActivity extends BaseActivity {
      * immediately in onResume() you will get RuntimeException: Performing pause of activity that is not resumed
      */
     public void recreateActivity() {
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                recreate();
-            }
-        }, 1);
+        recreate();
+//        Handler handler = new Handler(Looper.getMainLooper());
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                recreate();
+//            }
+//        }, 1);
     }
 
     protected boolean isChanged() {

@@ -1,8 +1,6 @@
 package com.huangyu.mdfolder.ui.activity;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.huangyu.mdfolder.utils.ThemeUtils;
 
@@ -15,8 +13,8 @@ public abstract class ThematicSettingsActivity extends AppCompatPreferenceActivi
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mThemeUtils = new ThemeUtils(this);
-        setTheme(mThemeUtils.getCurrentBySettings());
+        mThemeUtils = new ThemeUtils();
+        setTheme(mThemeUtils.getCurrentSettingsTheme());
         super.onCreate(savedInstanceState);
     }
 
@@ -24,7 +22,7 @@ public abstract class ThematicSettingsActivity extends AppCompatPreferenceActivi
     protected void onResume() {
         super.onResume();
         if (mThemeUtils.isChanged()) {
-            setTheme(mThemeUtils.getCurrentBySettings());
+            setTheme(mThemeUtils.getCurrentSettingsTheme());
             recreateActivity();
         }
     }
@@ -34,13 +32,14 @@ public abstract class ThematicSettingsActivity extends AppCompatPreferenceActivi
      * immediately in onResume() you will get RuntimeException: Performing pause of activity that is not resumed
      */
     public void recreateActivity() {
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                recreate();
-            }
-        }, 1);
+        recreate();
+//        Handler handler = new Handler(Looper.getMainLooper());
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                recreate();
+//            }
+//        }, 1);
     }
 
 }

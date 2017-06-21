@@ -7,22 +7,22 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
+import com.huangyu.library.app.BaseApplication;
 import com.huangyu.library.mvp.IBaseModel;
 import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.utils.DateUtils;
 import com.huangyu.mdfolder.utils.SDCardUtils;
+import com.huangyu.mdfolder.utils.ZipUtils;
 import com.huangyu.mdfolder.utils.comparator.AlphabetComparator;
 import com.huangyu.mdfolder.utils.comparator.TimeComparator;
 import com.huangyu.mdfolder.utils.comparator.TypeComparator;
-import com.huangyu.mdfolder.utils.filter.ApkFilter;
-import com.huangyu.mdfolder.utils.filter.MusicFilter;
-import com.huangyu.mdfolder.utils.filter.PhotoFilter;
 import com.huangyu.mdfolder.utils.filter.SearchFilter;
-import com.huangyu.mdfolder.utils.filter.VideoFilter;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,21 +39,21 @@ public class FileListModel implements IBaseModel {
         return FileUtils.listFilesInDirWithFilter(path, new SearchFilter(searchStr), false);
     }
 
-    public List<File> getAppsFileList(String searchStr) {
-        return FileUtils.listFilesInDirWithFilter(getSDCardPath(), new ApkFilter(searchStr), true);
-    }
-
-    public List<File> getMusicFileList(String searchStr) {
-        return FileUtils.listFilesInDirWithFilter(getSDCardPath(), new MusicFilter(searchStr), true);
-    }
-
-    public List<File> getPhotoFileList(String searchStr) {
-        return FileUtils.listFilesInDirWithFilter(getSDCardPath(), new PhotoFilter(searchStr), true);
-    }
-
-    public List<File> getVideoFileList(String searchStr) {
-        return FileUtils.listFilesInDirWithFilter(getSDCardPath(), new VideoFilter(searchStr), true);
-    }
+//    public List<File> getAppsFileList(String searchStr) {
+//        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(), new ApkFilter(searchStr), true);
+//    }
+//
+//    public List<File> getMusicFileList(String searchStr) {
+//        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(), new MusicFilter(searchStr), true);
+//    }
+//
+//    public List<File> getPhotoFileList(String searchStr) {
+//        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(), new PhotoFilter(searchStr), true);
+//    }
+//
+//    public List<File> getVideoFileList(String searchStr) {
+//        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(), new VideoFilter(searchStr), true);
+//    }
 
     public List<FileItem> getDocumentList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{MediaStore.Files.FileColumns.DATA,
@@ -226,16 +226,16 @@ public class FileListModel implements IBaseModel {
     }
 
     /**
-     * 获取sd卡目录路径
+     * 获取存储卡路径
      *
      * @return
      */
-    public String getSDCardPath() {
-        return SDCardUtils.getSDCardPath();
+    public String getStorageCardPath(boolean isInner) {
+        return SDCardUtils.getStoragePath(BaseApplication.getInstance().getApplicationContext(), isInner);
     }
 
     /**
-     * 获取sd卡目录路径
+     * 获取下载目录路径
      *
      * @return
      */
@@ -265,6 +265,38 @@ public class FileListModel implements IBaseModel {
     public List<FileItem> orderByType(List<FileItem> fileList) {
         Collections.sort(fileList, new TypeComparator());
         return fileList;
+    }
+
+    /**
+     * 压缩文件
+     *
+     * @param resFiles    文件列表
+     * @param zipFilePath 文件路径
+     * @return true/false
+     */
+    public boolean zipFileList(Collection<File> resFiles, String zipFilePath) {
+        try {
+            return ZipUtils.zipFiles(resFiles, zipFilePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * 解压缩文件
+     *
+     * @param resFiles    文件列表
+     * @param zipFilePath 文件路径
+     * @return true/false
+     */
+    public boolean unzipFileList(Collection<File> resFiles, String zipFilePath) {
+        try {
+            return ZipUtils.unzipFiles(resFiles, zipFilePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }
