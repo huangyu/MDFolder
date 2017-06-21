@@ -49,6 +49,8 @@
     <string name="tips_cut_files">Cut these files?</string>
     <string name="tips_delete_successfully">Delete successfully.</string>
     <string name="tips_delete_in_error">Delete in error.</string>
+    <string name="tips_rename_successfully">Rename successfully.</string>
+    <string name="tips_rename_in_error">Rename in error.</string>
     <string name="tips_copy_successfully">Copy successfully.</string>
     <string name="tips_copy_in_error">Copy in error.</string>
     <string name="tips_cut_successfully">Cut successfully.</string>
@@ -63,6 +65,7 @@
     <string name="tips_no_file">No file.</string>
     <string name="tips_not_complete">This function is not complete.</string>
     <string name="tips_error">Error.</string>
+    <string name="tips_choose_one_file">Please choose one file.</string>
 
     <string name="pref_settings">Settings</string>
     <string name="pref_appearance">Appearance</string>

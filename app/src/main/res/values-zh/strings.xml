@@ -50,6 +50,8 @@
     <string name="tips_cut_files">是否剪切这些文件?</string>
     <string name="tips_delete_successfully">删除成功</string>
     <string name="tips_delete_in_error">删除失败</string>
+    <string name="tips_rename_successfully">重命名成功</string>
+    <string name="tips_rename_in_error">重命名失败</string>
     <string name="tips_copy_successfully">复制成功</string>
     <string name="tips_copy_in_error">复制失败</string>
     <string name="tips_cut_successfully">剪切成功</string>
@@ -64,6 +66,7 @@
     <string name="tips_no_file">没有找到文件</string>
     <string name="tips_not_complete">此功能尚未实现</string>
     <string name="tips_error">操作失败</string>
+    <string name="tips_choose_one_file">请只选择一个文件</string>
 
     <string name="pref_settings">设置</string>
     <string name="pref_appearance">外观</string>

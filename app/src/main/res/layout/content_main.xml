@@ -8,6 +8,7 @@
     tools:context="com.huangyu.mdfolder.ui.activity.SettingsActivity">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay"

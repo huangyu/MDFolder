@@ -3,6 +3,7 @@ package com.huangyu.mdfolder.ui.activity;
 import android.Manifest;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -31,6 +32,9 @@ import pub.devrel.easypermissions.EasyPermissions;
 import static com.huangyu.mdfolder.app.Constants.PERMISSION_ACCESS_FILES;
 
 public class FileListActivity extends ThematicActivity implements NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
+
+    @Bind(R.id.appbar)
+    AppBarLayout mAppBarLayout;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -62,6 +66,12 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     @Override
     protected void initView(Bundle savedInstanceState) {
         setSupportActionBar(mToolbar);
+
+        if (isLightMode()) {
+            mAppBarLayout.getContext().setTheme(R.style.AppTheme_AppBarOverlay);
+        } else {
+            mAppBarLayout.getContext().setTheme(R.style.AppTheme_AppBarOverlay_Dark);
+        }
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -123,7 +133,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     }
 
     private boolean isDoubleCheck() {
-        return Math.abs(mCurrentTime - System.currentTimeMillis()) < 2000L;
+        return Math.abs(mCurrentTime - System.currentTimeMillis()) < 1000L;
     }
 
     @Override

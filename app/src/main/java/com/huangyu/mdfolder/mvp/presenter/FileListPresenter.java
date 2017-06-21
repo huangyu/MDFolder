@@ -533,6 +533,67 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     }
 
     /**
+     * 重命名文件（暂时只支持单个文件）
+     *
+     * @param fileList
+     */
+    public void renameFile(final List<FileItem> fileList) {
+        if (fileList.size() > 1) {
+            mView.showMessage(mView.getResString(R.string.tips_choose_one_file));
+        } else {
+            final View view = mView.inflateAlertDialogLayout();
+            final EditText editText = mView.findAlertDialogEditText(view);
+            final String filename = fileList.get(0).getName();
+            final String filePath = fileList.get(0).getPath();
+            editText.setText(filename);
+            editText.setSelection(filename.length());
+            mView.showKeyboard(mView.findAlertDialogEditText(view));
+            mView.showAlert(view, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Subscription subscription = Observable.create(new Observable.OnSubscribe<Boolean>() {
+                        @Override
+                        public void call(Subscriber<? super Boolean> subscriber) {
+                            boolean result = mFileModel.renameFile(filePath, editText.getText().toString());
+                            subscriber.onNext(result);
+                            subscriber.onCompleted();
+                        }
+                    })
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Subscriber<Boolean>() {
+                                @Override
+                                public void onNext(Boolean result) {
+                                    if (result) {
+                                        mView.showMessage(mView.getResString(R.string.tips_rename_successfully));
+                                    } else {
+                                        mView.showMessage(mView.getResString(R.string.tips_rename_in_error));
+                                    }
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    mView.showError(e.getMessage());
+                                    onCompleted();
+                                }
+
+                                @Override
+                                public void onCompleted() {
+                                    mView.finishAction();
+                                }
+                            });
+                    mRxManager.add(subscription);
+                }
+            }, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+        }
+    }
+
+    /**
      * 删除文件
      */
     public void onDelete(final List<FileItem> fileList) {

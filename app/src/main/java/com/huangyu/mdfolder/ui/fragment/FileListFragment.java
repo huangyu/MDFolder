@@ -191,19 +191,19 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             }
         });
 
-        mRxManager.on("toRoot", new Action1<String>() {
-            @Override
-            public void call(String text) {
-                mPresenter.mFileType = Constants.FileType.FILE;
-                mPresenter.onLoadRootFileList(mSearchStr);
-            }
-        });
-
         mRxManager.on("toStorage", new Action1<String>() {
             @Override
             public void call(String text) {
                 mPresenter.mFileType = Constants.FileType.FILE;
                 mPresenter.onLoadStorageFileList(mSearchStr);
+            }
+        });
+
+        mRxManager.on("toRoot", new Action1<String>() {
+            @Override
+            public void call(String text) {
+                mPresenter.mFileType = Constants.FileType.FILE;
+                mPresenter.onLoadRootFileList(mSearchStr);
             }
         });
 
@@ -337,7 +337,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     @Override
     public View inflateAlertDialogLayout() {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        return inflater.inflate(R.layout.dialog_add, new LinearLayout(getContext()), false);
+        return inflater.inflate(R.layout.dialog_input, new LinearLayout(getContext()), false);
     }
 
     @Override
@@ -399,6 +399,12 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 final List<FileItem> fileList = mAdapter.getSelectedDataList();
                 switch (item.getItemId()) {
+                    case R.id.action_rename:
+                        mPresenter.renameFile(fileList);
+                        break;
+                    case R.id.action_delete:
+                        mPresenter.onDelete(fileList);
+                        break;
                     case R.id.action_copy:
                         mPresenter.mEditType = Constants.EditType.COPY;
                         mActionMode = getPasteActonMode();
@@ -408,9 +414,6 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         mPresenter.mEditType = Constants.EditType.CUT;
                         mActionMode = getPasteActonMode();
                         mAdapter.mSelectedFileList = fileList;
-                        break;
-                    case R.id.action_delete:
-                        mPresenter.onDelete(fileList);
                         break;
                 }
                 return false;
