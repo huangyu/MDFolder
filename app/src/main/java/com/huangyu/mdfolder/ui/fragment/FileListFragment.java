@@ -130,6 +130,9 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     mPresenter.mEditType = Constants.EditType.SELECT;
                     mAdapter.switchSelectedState(position);
                     mActionMode.setTitle(mAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
+                    if(mAdapter.getSelectedItemCount() == 0) {
+                        finishAction();
+                    }
                 }
             }
         });

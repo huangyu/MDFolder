@@ -597,7 +597,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * @param fileList 文件列表
      */
     public void renameFile(final List<FileItem> fileList) {
-        if (fileList.size() > 1) {
+        if (fileList.size() != 1) {
             mView.showMessage(mView.getResString(R.string.tips_choose_one_file));
         } else {
             final View view = mView.inflateAlertDialogLayout();
