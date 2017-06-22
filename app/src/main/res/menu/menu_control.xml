@@ -7,39 +7,45 @@
         android:icon="@mipmap/ic_rename"
         android:orderInCategory="1"
         android:title="@string/menu_rename"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_delete"
         android:icon="@mipmap/ic_delete"
         android:orderInCategory="2"
         android:title="@string/menu_delete"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_copy"
         android:icon="@mipmap/ic_copy"
         android:orderInCategory="3"
         android:title="@string/menu_copy"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_cut"
         android:icon="@mipmap/ic_cut"
         android:orderInCategory="4"
         android:title="@string/menu_cut"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_show_hide"
+        android:orderInCategory="6"
+        android:title="@string/menu_show_hide"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/action_zip"
-        android:orderInCategory="5"
+        android:orderInCategory="7"
         android:title="@string/menu_zip"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/action_unzip"
-        android:orderInCategory="6"
+        android:orderInCategory="8"
         android:title="@string/menu_unzip"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
 </menu>

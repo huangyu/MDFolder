@@ -10,11 +10,13 @@ import android.text.TextUtils;
 import com.huangyu.library.app.BaseApplication;
 import com.huangyu.library.mvp.IBaseModel;
 import com.huangyu.library.util.FileUtils;
+import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.utils.DateUtils;
 import com.huangyu.mdfolder.utils.SDCardUtils;
 import com.huangyu.mdfolder.utils.ZipUtils;
 import com.huangyu.mdfolder.utils.comparator.AlphabetComparator;
+import com.huangyu.mdfolder.utils.comparator.SizeComparator;
 import com.huangyu.mdfolder.utils.comparator.TimeComparator;
 import com.huangyu.mdfolder.utils.comparator.TypeComparator;
 import com.huangyu.mdfolder.utils.filter.SearchFilter;
@@ -94,11 +96,12 @@ public class FileListModel implements IBaseModel {
                     FileItem fileItem = new FileItem();
                     fileItem.setName(fileName);
                     fileItem.setPath(filePath);
-                    fileItem.setSize(FileUtils.getFileSize(filePath));
+                    fileItem.setSize(FileUtils.getFileLength(filePath));
                     fileItem.setDate(DateUtils.getFormatDate(Long.valueOf(date) * 1000));
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(false);
-                    fileItem.setIsPhoto(false);
+                    fileItem.setType(Constants.FileType.DOCUMENT);
+                    fileItem.setIsShow(true);
                     if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
                         documentList.add(fileItem);
                     }
@@ -130,11 +133,12 @@ public class FileListModel implements IBaseModel {
                     FileItem fileItem = new FileItem();
                     fileItem.setName(fileName);
                     fileItem.setPath(filePath);
-                    fileItem.setSize(FileUtils.getFileSize(filePath));
+                    fileItem.setSize(FileUtils.getFileLength(filePath));
                     fileItem.setDate(DateUtils.getFormatDate(Long.valueOf(date) * 1000));
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(false);
-                    fileItem.setIsPhoto(false);
+                    fileItem.setType(Constants.FileType.VIDEO);
+                    fileItem.setIsShow(true);
                     if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
                         videoList.add(fileItem);
                     }
@@ -165,11 +169,12 @@ public class FileListModel implements IBaseModel {
                     FileItem fileItem = new FileItem();
                     fileItem.setName(fileName);
                     fileItem.setPath(filePath);
-                    fileItem.setSize(FileUtils.getFileSize(filePath));
+                    fileItem.setSize(FileUtils.getFileLength(filePath));
                     fileItem.setDate(DateUtils.getFormatDate(Long.valueOf(date) * 1000));
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(false);
-                    fileItem.setIsPhoto(true);
+                    fileItem.setType(Constants.FileType.IMAGE);
+                    fileItem.setIsShow(true);
                     if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
                         imageList.add(fileItem);
                     }
@@ -200,11 +205,12 @@ public class FileListModel implements IBaseModel {
                     FileItem fileItem = new FileItem();
                     fileItem.setName(fileName);
                     fileItem.setPath(filePath);
-                    fileItem.setSize(FileUtils.getFileSize(filePath));
+                    fileItem.setSize(FileUtils.getFileLength(filePath));
                     fileItem.setDate(DateUtils.getFormatDate(Long.valueOf(date) * 1000));
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(false);
-                    fileItem.setIsPhoto(false);
+                    fileItem.setType(Constants.FileType.AUDIO);
+                    fileItem.setIsShow(true);
                     if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
                         audioList.add(fileItem);
                     }
@@ -264,6 +270,22 @@ public class FileListModel implements IBaseModel {
      */
     public List<FileItem> orderByType(List<FileItem> fileList) {
         Collections.sort(fileList, new TypeComparator());
+        return fileList;
+    }
+
+    /**
+     * 按大小排序
+     */
+    public List<FileItem> orderBySize(List<FileItem> fileList) {
+        Collections.sort(fileList, new SizeComparator());
+        return fileList;
+    }
+
+    /**
+     * 逆序
+     */
+    public List<FileItem> orderByOrder(List<FileItem> fileList) {
+        Collections.reverse(fileList);
         return fileList;
     }
 

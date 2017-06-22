@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import com.huangyu.library.app.ActivityManager;
 import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.mdfolder.R;
+import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.ui.fragment.FileListFragment;
 import com.huangyu.mdfolder.utils.AlertUtils;
 
@@ -144,11 +145,34 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.clear();
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        initSearchView(menu);
-        return true;
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_sort_by_type:
+                item.setChecked(!item.isChecked());
+                mRxManager.post("onSortType", Constants.SortType.TYPE);
+                break;
+            case R.id.action_sort_by_time:
+                item.setChecked(!item.isChecked());
+                mRxManager.post("onSortType", Constants.SortType.TIME);
+                break;
+            case R.id.action_sort_by_alphabet:
+                item.setChecked(!item.isChecked());
+                mRxManager.post("onSortType", Constants.SortType.ALPHABET);
+                break;
+            case R.id.action_sort_by_size:
+                item.setChecked(!item.isChecked());
+                mRxManager.post("onSortType", Constants.SortType.SIZE);
+                break;
+            case R.id.action_sort_descending:
+                item.setChecked(!item.isChecked());
+                if (item.isChecked()) {
+                    mRxManager.post("onOrderType", Constants.OrderType.DESC);
+                } else {
+                    mRxManager.post("onOrderType", Constants.OrderType.ASC);
+                }
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initSearchView(Menu menu) {

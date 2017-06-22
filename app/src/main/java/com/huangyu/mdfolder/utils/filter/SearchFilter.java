@@ -21,12 +21,12 @@ public class SearchFilter implements FilenameFilter {
     @Override
     public boolean accept(File dir, String name) {
         if (TextUtils.isEmpty(mSearchStr)) {
-            return SPUtils.isShowHiddenFiles() || !name.startsWith(".");
+            return SPUtils.isShowHiddenFiles() || !name.matches("^\\.+[^\\.].+");
         } else {
             if (SPUtils.isShowHiddenFiles()) {
                 return containsIgnoreCase(name, mSearchStr);
             } else {
-                return containsIgnoreCase(name, mSearchStr) && !name.startsWith(".");
+                return containsIgnoreCase(name, mSearchStr) && !name.matches("^\\.+[^\\.].+");
             }
         }
     }

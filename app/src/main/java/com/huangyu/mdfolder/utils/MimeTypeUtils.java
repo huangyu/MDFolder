@@ -37,7 +37,6 @@ public class MimeTypeUtils {
      */
     public static final String[][] MIME_MapTable =
             {
-                    // {后缀名， MIME类型}
                     {".3gp", "video/3gpp"},
                     {".3gpp", "video/3gpp"},
                     {".aac", "audio/x-mpeg"},

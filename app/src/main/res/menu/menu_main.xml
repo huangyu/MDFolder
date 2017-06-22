@@ -8,6 +8,42 @@
         android:orderInCategory="1"
         android:title="@string/act_search"
         app:actionViewClass="android.support.v7.widget.SearchView"
-        app:showAsAction="always|collapseActionView" />
+        app:showAsAction="ifRoom|collapseActionView" />
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/action_sort_by_type"
+            android:checked="true"
+            android:orderInCategory="2"
+            android:title="@string/menu_sort_by_type"
+            app:showAsAction="withText" />
+
+        <item
+            android:id="@+id/action_sort_by_alphabet"
+            android:orderInCategory="3"
+            android:title="@string/menu_sort_by_alphabet"
+            app:showAsAction="withText" />
+
+        <item
+            android:id="@+id/action_sort_by_time"
+            android:orderInCategory="4"
+            android:title="@string/menu_sort_by_time"
+            app:showAsAction="withText" />
+
+        <item
+            android:id="@+id/action_sort_by_size"
+            android:orderInCategory="5"
+            android:title="@string/menu_sort_by_size"
+            app:showAsAction="withText" />
+    </group>
+
+    <group android:checkableBehavior="all">
+        <item
+            android:id="@+id/action_sort_descending"
+            android:checked="true"
+            android:orderInCategory="5"
+            android:title="@string/menu_sort_by_descending"
+            app:showAsAction="withText" />
+    </group>
 
 </menu>

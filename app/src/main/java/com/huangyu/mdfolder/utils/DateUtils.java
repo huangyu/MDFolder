@@ -13,8 +13,6 @@ import java.util.Locale;
 public class DateUtils {
 
     private static String DATE_FORMAT_yyyyMMddHHmmss = "yyyy-MM-dd HH:mm:ss";
-    private static String DATE_FORMAT_yyyyMMdd = "yyyy-MM-dd";
-    private static String DATE_FORMAT_MMdd = "MM-dd";
 
     private DateUtils() {
     }

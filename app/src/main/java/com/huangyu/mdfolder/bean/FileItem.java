@@ -7,11 +7,12 @@ public class FileItem {
 
     private String path;
     private String name;
-    private String size;
+    private long size;
     private String date;
     private boolean isDirectory;
-    private boolean isPhoto;
     private String parent;
+    private int type;
+    private boolean isShow;
 
     public FileItem() {
 
@@ -33,11 +34,11 @@ public class FileItem {
         this.name = mFileName;
     }
 
-    public String getSize() {
+    public long getSize() {
         return size;
     }
 
-    public void setSize(String mSize) {
+    public void setSize(long mSize) {
         this.size = mSize;
     }
 
@@ -57,20 +58,28 @@ public class FileItem {
         this.isDirectory = isDirectory;
     }
 
-    public boolean isPhoto() {
-        return isPhoto;
-    }
-
-    public void setIsPhoto(boolean photo) {
-        isPhoto = photo;
-    }
-
     public String getParent() {
         return parent;
     }
 
     public void setParent(String parent) {
         this.parent = parent;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public boolean isShow() {
+        return isShow;
+    }
+
+    public void setIsShow(boolean show) {
+        isShow = show;
     }
 
 }

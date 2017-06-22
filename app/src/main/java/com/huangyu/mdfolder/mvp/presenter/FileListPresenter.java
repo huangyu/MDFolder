@@ -37,6 +37,8 @@ import rx.functions.Func3;
 import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
 
+import static com.huangyu.mdfolder.app.Constants.OrderType.DESC;
+
 /**
  * Created by huangyu on 2017/5/22.
  */
@@ -50,6 +52,8 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     private String mCurrentPath; // 当前路径
     public int mEditType;   // 当前编辑状态
     public int mFileType;   // 当前文件类型
+    public int mSortType;   // 当前排序类型
+    public int mOrderType;  // 当前升降序类型
 
     @Override
     public void create() {
@@ -57,7 +61,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         mFileModel = new FileModel();
         mFileStack = new Stack<>();
         mEditType = Constants.EditType.NONE;
-        mFileType = Constants.FileType.FILE;
+        mFileType = Constants.SelectType.MENU_FILE;
+        mSortType = Constants.SortType.TYPE;
+        mOrderType = DESC;
     }
 
     /**
@@ -237,16 +243,16 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void onNext(List<FileItem> fileList) {
                         mView.removeAllTabs();
                         switch (fileType) {
-                            case Constants.FileType.DOCUMENT:
+                            case Constants.SelectType.MENU_DOCUMENT:
                                 mView.addTab(mView.getResString(R.string.menu_document));
                                 break;
-                            case Constants.FileType.PHOTO:
+                            case Constants.SelectType.MENU_PHOTO:
                                 mView.addTab(mView.getResString(R.string.menu_photo));
                                 break;
-                            case Constants.FileType.MUSIC:
+                            case Constants.SelectType.MENU_MUSIC:
                                 mView.addTab(mView.getResString(R.string.menu_audio));
                                 break;
-                            case Constants.FileType.VIDEO:
+                            case Constants.SelectType.MENU_VIDEO:
                                 mView.addTab(mView.getResString(R.string.menu_video));
                                 break;
                         }
@@ -349,7 +355,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 新增文件
      */
     public void onAddFile() {
-        if (mFileType != Constants.FileType.FILE) {
+        if (mFileType != Constants.SelectType.MENU_FILE) {
             mView.showMessage(mView.getResString(R.string.tips_add_file_error));
             return;
         }
@@ -472,7 +478,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 新增文件夹
      */
     public void onAddFolder() {
-        if (mFileType != Constants.FileType.FILE) {
+        if (mFileType != Constants.SelectType.MENU_FILE) {
             mView.showMessage(mView.getResString(R.string.tips_add_folder_error));
             return;
         }
@@ -596,7 +602,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      *
      * @param fileList 文件列表
      */
-    public void renameFile(final List<FileItem> fileList) {
+    public void onRenameFile(final List<FileItem> fileList) {
         if (fileList.size() != 1) {
             mView.showMessage(mView.getResString(R.string.tips_choose_one_file));
         } else {
@@ -677,6 +683,67 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 }
             });
         }
+    }
+
+    /**
+     * 显示/隐藏文件
+     *
+     * @param fileList 文件列表
+     */
+    public void onShowHideFile(final List<FileItem> fileList) {
+        mView.showNormalAlert(mView.getResString(R.string.tips_show_hide_files), mView.getResString(R.string.act_show_hide), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Subscription subscription = Observable.from(fileList).groupBy(new Func1<FileItem, Boolean>() {
+                    @Override
+                    public Boolean call(FileItem file) {
+                        return file.isShow();
+                    }
+                })
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(new Action1<GroupedObservable<Boolean, FileItem>>() {
+                            @Override
+                            public void call(final GroupedObservable<Boolean, FileItem> o) {
+                                Subscription subscription = o.all(new Func1<FileItem, Boolean>() {
+                                    @Override
+                                    public Boolean call(FileItem file) {
+                                        boolean result;
+                                        if (o.getKey()) {
+                                            result = mFileModel.hideFile(file.getPath(), file.getName());
+                                        } else {
+                                            result = mFileModel.showFile(file.getPath(), file.getName());
+                                        }
+                                        return result;
+                                    }
+                                })
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(new Subscriber<Boolean>() {
+                                            @Override
+                                            public void onNext(Boolean result) {
+                                                if (result) {
+                                                    mView.showMessage(mView.getResString(R.string.tips_show_hide_successfully));
+                                                } else {
+                                                    mView.showMessage(mView.getResString(R.string.tips_show_hide_in_error));
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onError(Throwable e) {
+                                                mView.showError(e.getMessage());
+                                                onCompleted();
+                                            }
+
+                                            @Override
+                                            public void onCompleted() {
+                                                mView.finishAction();
+                                            }
+                                        });
+                                mRxManager.add(subscription);
+                            }
+                        });
+                mRxManager.add(subscription);
+            }
+        });
     }
 
     /**
@@ -780,7 +847,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     }
                                 })
                                         .toList()
-                                        .delay(1000, TimeUnit.MILLISECONDS)
+                                        .delay(500, TimeUnit.MILLISECONDS)
                                         .subscribeOn(Schedulers.io())
                                         .observeOn(AndroidSchedulers.mainThread())
                                         .subscribe(new Subscriber<List<File>>() {
@@ -833,7 +900,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      *
      * @param fileList 文件列表
      */
-
     public void onUnzip(final List<FileItem> fileList) {
         mView.showNormalAlert(mView.getResString(R.string.tips_unzip_files), mView.getResString(R.string.act_unzip), new DialogInterface.OnClickListener() {
             @Override
@@ -845,7 +911,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     }
                 })
                         .toList()
-                        .delay(1000, TimeUnit.MILLISECONDS)
+                        .delay(500, TimeUnit.MILLISECONDS)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<List<File>>() {
@@ -998,21 +1064,55 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * @return 当前路径文件列表
      */
     private List<FileItem> getCurrentFileList(String searchStr) {
+        List<FileItem> fileItemList = null;
+
         switch (mFileType) {
-            case Constants.FileType.DOCUMENT:
-                return mFileListModel.orderByType(mFileListModel.getDocumentList(searchStr, mContext.getContentResolver()));
-            case Constants.FileType.MUSIC:
-                return mFileListModel.orderByType(mFileListModel.getAudioList(searchStr, mContext.getContentResolver()));
-            case Constants.FileType.PHOTO:
-                return mFileListModel.orderByType(mFileListModel.getImageList(searchStr, mContext.getContentResolver()));
-            case Constants.FileType.VIDEO:
-                return mFileListModel.orderByType(mFileListModel.getVideoList(searchStr, mContext.getContentResolver()));
-            case Constants.FileType.FILE:
-            case Constants.FileType.DOWNLOAD:
-                List<File> fileList = mFileListModel.getFileList(mCurrentPath, searchStr);
-                return transformFileList(fileList);
+            case Constants.SelectType.MENU_DOCUMENT:
+                fileItemList = mFileListModel.getDocumentList(searchStr, mContext.getContentResolver());
+                break;
+            case Constants.SelectType.MENU_MUSIC:
+                fileItemList = mFileListModel.getAudioList(searchStr, mContext.getContentResolver());
+                break;
+            case Constants.SelectType.MENU_PHOTO:
+                fileItemList = mFileListModel.getImageList(searchStr, mContext.getContentResolver());
+                break;
+            case Constants.SelectType.MENU_VIDEO:
+                fileItemList = mFileListModel.getVideoList(searchStr, mContext.getContentResolver());
+                break;
+            case Constants.SelectType.MENU_FILE:
+            case Constants.SelectType.MENU_DOWNLOAD:
+                fileItemList = transformFileList(mFileListModel.getFileList(mCurrentPath, searchStr));
+                break;
         }
-        return null;
+
+        if (fileItemList == null) {
+            return null;
+        }
+
+        switch (mSortType) {
+            case Constants.SortType.TYPE:
+                fileItemList = mFileListModel.orderByType(fileItemList);
+                break;
+            case Constants.SortType.TIME:
+                fileItemList = mFileListModel.orderByTime(fileItemList);
+                break;
+            case Constants.SortType.ALPHABET:
+                fileItemList = mFileListModel.orderByAlphabet(fileItemList);
+                break;
+            case Constants.SortType.SIZE:
+                fileItemList = mFileListModel.orderBySize(fileItemList);
+                break;
+        }
+
+        switch (mOrderType) {
+            case Constants.OrderType.DESC:
+                break;
+            case Constants.OrderType.ASC:
+                mFileListModel.orderByOrder(fileItemList);
+                break;
+        }
+
+        return fileItemList;
     }
 
     /**
@@ -1030,14 +1130,16 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 fileItem.setName(file.getName());
                 fileItem.setPath(file.getPath());
                 if (file.isDirectory()) {
-                    fileItem.setSize(mContext.getString(R.string.str_folder));
+//                    fileItem.setSize(FileUtils.getDirLength(file));
+                    fileItem.setSize(0);
                 } else {
-                    fileItem.setSize(FileUtils.getFileSize(file));
+                    fileItem.setSize(FileUtils.getFileLength(file));
                 }
                 fileItem.setDate(DateUtils.getFormatDate(file.lastModified()));
                 fileItem.setIsDirectory(file.isDirectory());
                 fileItem.setParent(file.getParent());
-                fileItem.setIsPhoto(false);
+                fileItem.setType(Constants.FileType.FILE);
+                fileItem.setIsShow(!file.isHidden());
                 fileItemList.add(fileItem);
             }
             return mFileListModel.orderByType(fileItemList);

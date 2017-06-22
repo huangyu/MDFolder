@@ -1232,6 +1232,16 @@ public final class FileUtils {
     }
 
     /**
+     * 获取文件大小
+     *
+     * @param len 文件长度
+     * @return 文件大小
+     */
+    public static String getFileOrDirSize(long len) {
+        return len == -1 ? "" : byte2FitMemorySize(len);
+    }
+
+    /**
      * 获取目录长度
      *
      * @param dirPath 目录路径

@@ -20,7 +20,7 @@ public class FileModel implements IBaseModel {
     /**
      * 打开文件
      *
-     * @param file
+     * @param file 文件
      */
     public boolean openFile(Context context, File file) {
         if (file != null && !file.isDirectory() && file.exists()) {
@@ -36,7 +36,7 @@ public class FileModel implements IBaseModel {
                     uri = Uri.fromFile(file);
                 }
                 intent.setDataAndType(uri, getMIMEType(file));
-                context.startActivity(intent);
+                context.startActivity(Intent.createChooser(intent, "选择应用打开文件"));
                 return true;
             } catch (Exception e) {
                 return false;
@@ -99,6 +99,14 @@ public class FileModel implements IBaseModel {
 
     public boolean renameFile(String filePath, String newName) {
         return FileUtils.rename(filePath, newName);
+    }
+
+    public boolean hideFile(String filePath, String newName) {
+        return FileUtils.rename(filePath, "." + newName);
+    }
+
+    public boolean showFile(String filePath, String newName) {
+        return FileUtils.rename(filePath, newName.replaceFirst("\\.", ""));
     }
 
 }
