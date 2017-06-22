@@ -12,7 +12,7 @@
     <color name="colorDarkGray">#444444</color>
     <color name="colorDeepDark">#323232</color>
     <color name="colorBlack">#000000</color>
-    <color name="colorLightGray">#AAAAAA</color>
+    <color name="colorLightGray">#999999</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorDivider">#BDBDBD</color>
     <color name="colorPrimaryText">#212121</color>
@@ -20,5 +20,5 @@
     <color name="colorSecondaryText">#757575</color>
     <color name="colorPrimaryTextWhite">#EFEFEF</color>
     <color name="colorSecondaryTextWhite">#CACACA</color>
-    <color name="colorDividerWhite">#DEDEDE</color>
+    <color name="colorDividerWhite">#676767</color>
 </resources>

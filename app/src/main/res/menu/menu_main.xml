@@ -39,10 +39,10 @@
 
     <group android:checkableBehavior="all">
         <item
-            android:id="@+id/action_sort_descending"
+            android:id="@+id/action_sort_ascending"
             android:checked="true"
             android:orderInCategory="5"
-            android:title="@string/menu_sort_by_descending"
+            android:title="@string/menu_sort_by_ascending"
             app:showAsAction="withText" />
     </group>
 

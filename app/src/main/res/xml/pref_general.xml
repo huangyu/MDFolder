@@ -16,6 +16,12 @@
             android:key="pref_show_hidden"
             android:title="@string/pref_if_show_hidden" />
 
+        <ListPreference
+            android:entries="@array/array_languages"
+            android:entryValues="@array/array_languages"
+            android:key="pref_language"
+            android:title="@string/pref_language" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_about">

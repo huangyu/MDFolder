@@ -45,6 +45,8 @@ public interface IFileListView extends IBaseView {
 
     void hideKeyboard(EditText editText);
 
+    void showInfoBottomSheet(FileItem fileItem, DialogInterface.OnCancelListener onCancelListener);
+
     View inflateAlertDialogLayout();
 
     TextInputLayout findTextInputLayout(View view);

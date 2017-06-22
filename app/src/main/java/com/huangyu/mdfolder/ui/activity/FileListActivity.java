@@ -163,7 +163,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                 item.setChecked(!item.isChecked());
                 mRxManager.post("onSortType", Constants.SortType.SIZE);
                 break;
-            case R.id.action_sort_descending:
+            case R.id.action_sort_ascending:
                 item.setChecked(!item.isChecked());
                 if (item.isChecked()) {
                     mRxManager.post("onOrderType", Constants.OrderType.DESC);

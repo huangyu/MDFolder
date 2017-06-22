@@ -747,6 +747,24 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     }
 
     /**
+     * 显示文件详情
+     *
+     * @param fileList 文件列表
+     */
+    public void onShowFileInfo(final List<FileItem> fileList) {
+        if (fileList.size() != 1) {
+            mView.showMessage(mView.getResString(R.string.tips_choose_one_file));
+        } else {
+            mView.showInfoBottomSheet(fileList.get(0), new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    mView.finishAction();
+                }
+            });
+        }
+    }
+
+    /**
      * 删除文件
      *
      * @param fileList 文件列表

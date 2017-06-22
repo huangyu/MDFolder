@@ -119,7 +119,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         if (file.getType() == Constants.FileType.IMAGE) {
                             Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
                             intent.putStringArrayListExtra(getString(R.string.intent_image_list), mPresenter.getImageList(mAdapter.getDataList()));
-                            intent.putExtra(getString(R.string.intentimage_position), position);
+                            intent.putExtra(getString(R.string.intent_image_position), position);
                             getActivity().startActivity(intent);
                         }
                         // 打开文件
@@ -370,6 +370,11 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     @Override
+    public void showInfoBottomSheet(FileItem fileItem, DialogInterface.OnCancelListener onCancelListener) {
+        AlertUtils.showInfoBottomSheet(getContext(), fileItem, onCancelListener);
+    }
+
+    @Override
     public View inflateAlertDialogLayout() {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         return inflater.inflate(R.layout.dialog_input, new LinearLayout(getContext()), false);
@@ -435,7 +440,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 if (mPresenter.mFileType == Constants.SelectType.MENU_FILE || mPresenter.mFileType == Constants.SelectType.MENU_DOWNLOAD) {
                     mode.getMenuInflater().inflate(R.menu.menu_control, menu);
                 } else {
-                    mode.getMenuInflater().inflate(R.menu.menu_control_delete, menu);
+                    mode.getMenuInflater().inflate(R.menu.menu_control_type, menu);
                 }
                 return true;
             }
@@ -446,7 +451,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 if (mPresenter.mFileType == Constants.SelectType.MENU_FILE || mPresenter.mFileType == Constants.SelectType.MENU_DOWNLOAD) {
                     mode.getMenuInflater().inflate(R.menu.menu_control, menu);
                 } else {
-                    mode.getMenuInflater().inflate(R.menu.menu_control_delete, menu);
+                    mode.getMenuInflater().inflate(R.menu.menu_control_type, menu);
                 }
                 return true;
             }
@@ -457,6 +462,9 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 switch (item.getItemId()) {
                     case R.id.action_rename:
                         mPresenter.onRenameFile(fileList);
+                        break;
+                    case R.id.action_info:
+                        mPresenter.onShowFileInfo(fileList);
                         break;
                     case R.id.action_delete:
                         mPresenter.onDelete(fileList);

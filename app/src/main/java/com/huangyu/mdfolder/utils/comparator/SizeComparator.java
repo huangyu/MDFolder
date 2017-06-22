@@ -20,9 +20,9 @@ public class SizeComparator implements Comparator<FileItem> {
         } else if (file1.isDirectory() && file2.isDirectory()) {
             return 0;
         } else {
-            if (diff > 0) {
+            if (diff < 0) {
                 return -1;
-            } else if (diff < 0) {
+            } else if (diff > 0) {
                 return 1;
             } else {
                 return 0;

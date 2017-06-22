@@ -2,6 +2,8 @@ package com.huangyu.mdfolder.utils;
 
 import com.huangyu.mdfolder.R;
 
+import java.util.Locale;
+
 /**
  * Created by huangyu on 2017-6-16.
  */
@@ -9,6 +11,7 @@ public class ThemeUtils {
 
     private boolean isLightMode;
     private boolean isShowMode;
+    private Locale localeMode;
 
     public ThemeUtils() {
         isChanged();
@@ -17,9 +20,11 @@ public class ThemeUtils {
     public boolean isChanged() {
         boolean isLightTheme = SPUtils.isLightMode();
         boolean isShow = SPUtils.isShowHiddenFiles();
-        boolean changed = isLightMode != isLightTheme || isShowMode != isShow;
+        Locale locale = LanguageUtils.getLanguage();
+        boolean changed = isLightMode != isLightTheme || isShowMode != isShow || locale.getLanguage().equals(localeMode.getLanguage());
         isLightMode = isLightTheme;
         isShowMode = isShow;
+        localeMode = locale;
         return changed;
     }
 

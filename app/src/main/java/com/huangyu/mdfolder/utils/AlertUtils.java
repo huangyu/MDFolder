@@ -3,12 +3,21 @@ package com.huangyu.mdfolder.utils;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.R;
+import com.huangyu.mdfolder.bean.FileItem;
+
+import butterknife.ButterKnife;
 
 /**
  * Created by huangyu on 2017-5-22.
@@ -104,6 +113,75 @@ public class AlertUtils {
         alertDialog.setOnShowListener(onShowListener);
         alertDialog.show();
         return alertDialog;
+    }
+
+    /**
+     * 显示文件详情对话框
+     *
+     * @param context context
+     * @return
+     */
+    public static BottomSheetDialog showInfoBottomSheet(final Context context, FileItem fileItem, DialogInterface.OnCancelListener onCancelListener) {
+        BottomSheetDialog dialog;
+        if (SPUtils.isLightMode()) {
+            dialog = new BottomSheetDialog(context, R.style.BottomSheetDialogTheme);
+        } else {
+            dialog = new BottomSheetDialog(context, R.style.BottomSheetDialogThemeDark);
+        }
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_bottom_sheet, new LinearLayout(context), false);
+        dialog.setContentView(view);
+        dialog.setOnCancelListener(onCancelListener);
+
+        TextView tvName = ButterKnife.findById(view, R.id.tv_name);
+        TextView tvPath = ButterKnife.findById(view, R.id.tv_path);
+        TextView tvSize = ButterKnife.findById(view, R.id.tv_size);
+        TextView tvDate = ButterKnife.findById(view, R.id.tv_date);
+        TextView tvType = ButterKnife.findById(view, R.id.tv_type);
+        TextView tvMd5 = ButterKnife.findById(view, R.id.tv_md5);
+
+        tvName.setText(fileItem.getName());
+        String path = fileItem.getPath();
+        tvPath.setText(path.substring(0, path.lastIndexOf("/")));
+        if (fileItem.isDirectory()) {
+            tvSize.setText(FileUtils.getDirSize(fileItem.getPath()));
+        } else {
+            tvSize.setText(FileUtils.getFileSize(fileItem.getPath()));
+        }
+        tvDate.setText(fileItem.getDate());
+        tvType.setText(MimeTypeUtils.getMIMEType(fileItem.getPath()));
+        tvMd5.setText(FileUtils.getFileMD5ToString(fileItem.getPath()));
+
+        View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                String text = ((TextView) v).getText().toString();
+                ClipboardUtils.copyText(text);
+                showToast(context, text + context.getString(R.string.tips_copy_to_clipboard));
+                return false;
+            }
+        };
+
+        if (!TextUtils.isEmpty(tvName.getText().toString())) {
+            tvName.setOnLongClickListener(onLongClickListener);
+        }
+        if (!TextUtils.isEmpty(tvPath.getText().toString())) {
+            tvPath.setOnLongClickListener(onLongClickListener);
+        }
+        if (!TextUtils.isEmpty(tvSize.getText().toString())) {
+            tvSize.setOnLongClickListener(onLongClickListener);
+        }
+        if (!TextUtils.isEmpty(tvDate.getText().toString())) {
+            tvDate.setOnLongClickListener(onLongClickListener);
+        }
+        if (!TextUtils.isEmpty(tvType.getText().toString())) {
+            tvType.setOnLongClickListener(onLongClickListener);
+        }
+        if (!TextUtils.isEmpty(tvMd5.getText().toString())) {
+            tvMd5.setOnLongClickListener(onLongClickListener);
+        }
+
+        dialog.show();
+        return dialog;
     }
 
 }
