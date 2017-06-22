@@ -118,9 +118,13 @@
     <string name="pref_language">Language</string>
 
     <string-array name="array_languages">
-        <item>Auto</item>
         <item>Simplified chinese</item>
         <item>English</item>
+    </string-array>
+
+    <string-array name="array_languages_value">
+        <item>0</item>
+        <item>1</item>
     </string-array>
 
 </resources>

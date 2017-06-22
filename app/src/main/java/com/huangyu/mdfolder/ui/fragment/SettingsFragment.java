@@ -68,39 +68,39 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 String[] languageArray = getResources().getStringArray(R.array.array_languages);
-                String auto = languageArray[0];
-                String simplifiedChinese = languageArray[1];
-                String english = languageArray[2];
+                String simplifiedChinese = languageArray[0];
+                String english = languageArray[1];
+                String[] languageValueArray = getResources().getStringArray(R.array.array_languages_value);
+                String simplifiedChineseValue = languageValueArray[0];
+                String englishValue = languageValueArray[1];
 
-                prefLanguage.setSummary(newValue.toString());
-
-                if (newValue.equals(simplifiedChinese)) {
+                if (newValue.equals(simplifiedChineseValue)) {
                     LanguageUtils.changeLanguage(LanguageUtils.SIMPLIFIED_CHINESE);
-                } else if (newValue.equals(english)) {
+                    prefLanguage.setSummary(simplifiedChinese);
+                } else if (newValue.equals(englishValue)) {
                     LanguageUtils.changeLanguage(LanguageUtils.ENGLISH);
-                } else {
-                    LanguageUtils.changeLanguage(LanguageUtils.AUTO);
+                    prefLanguage.setSummary(english);
                 }
+
                 ((SettingsActivity) getActivity()).recreateActivity();
                 return true;
             }
         });
 
         String[] languageArray = getResources().getStringArray(R.array.array_languages);
-        String auto = languageArray[0];
-        String simplifiedChinese = languageArray[1];
-        String english = languageArray[2];
+        String simplifiedChinese = languageArray[0];
+        String english = languageArray[1];
+        String[] languageValueArray = getResources().getStringArray(R.array.array_languages_value);
+        String simplifiedChineseValue = languageValueArray[0];
+        String englishValue = languageValueArray[1];
 
-        Locale locale = LanguageUtils.getLanguage();
+        Locale locale = LanguageUtils.getLocale();
         if (locale.equals(LanguageUtils.SIMPLIFIED_CHINESE)) {
             prefLanguage.setSummary(simplifiedChinese);
-            prefLanguage.setValue(simplifiedChinese);
+            prefLanguage.setValue(simplifiedChineseValue);
         } else if (locale.equals(LanguageUtils.ENGLISH)) {
             prefLanguage.setSummary(english);
-            prefLanguage.setValue(english);
-        } else {
-            prefLanguage.setSummary(auto);
-            prefLanguage.setValue(auto);
+            prefLanguage.setValue(englishValue);
         }
 
         final Preference prefAbout = findPreference("pref_about");

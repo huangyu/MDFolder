@@ -1,8 +1,7 @@
 package com.huangyu.mdfolder.utils;
 
+import com.huangyu.library.app.BaseApplication;
 import com.huangyu.mdfolder.R;
-
-import java.util.Locale;
 
 /**
  * Created by huangyu on 2017-6-16.
@@ -11,21 +10,27 @@ public class ThemeUtils {
 
     private boolean isLightMode;
     private boolean isShowMode;
-    private Locale localeMode;
+    private String localeMode;
 
     public ThemeUtils() {
-        isChanged();
+        setMode();
+        changeLocale(SPUtils.getLocaleValue());
     }
 
     public boolean isChanged() {
         boolean isLightTheme = SPUtils.isLightMode();
         boolean isShow = SPUtils.isShowHiddenFiles();
-        Locale locale = LanguageUtils.getLanguage();
-        boolean changed = isLightMode != isLightTheme || isShowMode != isShow || locale.getLanguage().equals(localeMode.getLanguage());
+        String localeValue = SPUtils.getLocaleValue();
+        return isLightMode != isLightTheme || isShowMode != isShow || !localeValue.equals(localeMode);
+    }
+
+    private void setMode() {
+        boolean isLightTheme = SPUtils.isLightMode();
+        boolean isShow = SPUtils.isShowHiddenFiles();
+        String localeValue = SPUtils.getLocaleValue();
         isLightMode = isLightTheme;
         isShowMode = isShow;
-        localeMode = locale;
-        return changed;
+        localeMode = localeValue;
     }
 
     public boolean isLightMode() {
@@ -40,11 +45,15 @@ public class ThemeUtils {
         }
     }
 
-    public int getCurrentSettingsTheme() {
-        if (isLightMode) {
-            return R.style.SettingsTheme;
-        } else {
-            return R.style.SettingsThemeDark;
+    private void changeLocale(String localeValue) {
+        String[] languageArray = BaseApplication.getInstance().getApplicationContext().getResources().getStringArray(R.array.array_languages_value);
+        String simplifiedChineseValue = languageArray[0];
+        String englishValue = languageArray[1];
+
+        if (localeValue.equals(simplifiedChineseValue)) {
+            LanguageUtils.changeLanguage(LanguageUtils.SIMPLIFIED_CHINESE);
+        } else if (localeValue.equals(englishValue)) {
+            LanguageUtils.changeLanguage(LanguageUtils.ENGLISH);
         }
     }
 

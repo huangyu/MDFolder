@@ -59,6 +59,11 @@
         <item name="android:textColor">@color/colorPrimaryText</item>
     </style>
 
+    <style name="AppTheme.PopupOverlay.Dark" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:colorBackground">@color/colorDeepDark</item>
+        <item name="android:textColor">@color/colorPrimaryTextWhite</item>
+    </style>
+
     <style name="BottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="android:windowCloseOnTouchOutside">true</item>
         <item name="android:windowIsTranslucent">true</item>

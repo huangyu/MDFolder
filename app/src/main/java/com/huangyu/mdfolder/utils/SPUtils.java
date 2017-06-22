@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.huangyu.library.app.BaseApplication;
+import com.huangyu.mdfolder.R;
 
 /**
  * Created by huangyu on 2017-6-21.
@@ -31,6 +32,17 @@ public class SPUtils {
     public static boolean isShowHiddenFiles() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(BaseApplication.getInstance().getApplicationContext());
         return prefs.getBoolean("pref_show_hidden", false);
+    }
+
+    /**
+     * 获取存储的语言类型
+     *
+     * @return 语言类型
+     */
+    public static String getLocaleValue() {
+        String[] languageArray = BaseApplication.getInstance().getApplicationContext().getResources().getStringArray(R.array.array_languages_value);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(BaseApplication.getInstance().getApplicationContext());
+        return prefs.getString("pref_language", languageArray[0]);
     }
 
 }

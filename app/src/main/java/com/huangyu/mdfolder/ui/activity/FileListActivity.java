@@ -70,8 +70,10 @@ public class FileListActivity extends ThematicActivity implements NavigationView
 
         if (isLightMode()) {
             mAppBarLayout.getContext().setTheme(R.style.AppTheme_AppBarOverlay);
+            mToolbar.setPopupTheme(R.style.AppTheme_PopupOverlay);
         } else {
             mAppBarLayout.getContext().setTheme(R.style.AppTheme_AppBarOverlay_Dark);
+            mToolbar.setPopupTheme(R.style.AppTheme_PopupOverlay_Dark);
         }
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

@@ -13,7 +13,6 @@ import java.util.Locale;
  */
 public final class LanguageUtils {
 
-    public static final Locale AUTO = Locale.getDefault();
     public static final Locale ENGLISH = Locale.ENGLISH;
     public static final Locale SIMPLIFIED_CHINESE = Locale.SIMPLIFIED_CHINESE;
 
@@ -21,8 +20,12 @@ public final class LanguageUtils {
 
     }
 
-    public static Locale getLanguage() {
-        return BaseApplication.getInstance().getApplicationContext().getResources().getConfiguration().locale;
+    public static Locale getLocale() {
+        if (Build.VERSION.SDK_INT < 24) {
+            return BaseApplication.getInstance().getApplicationContext().getResources().getConfiguration().locale;
+        } else {
+            return BaseApplication.getInstance().getApplicationContext().getResources().getConfiguration().getLocales().get(0);
+        }
     }
 
     public static void changeLanguage(Locale language) {
@@ -37,6 +40,27 @@ public final class LanguageUtils {
         }
 
         resources.updateConfiguration(config, resources.getDisplayMetrics());
+    }
+
+    /**
+     * 是否是设置值
+     *
+     * @return 是否是设置值
+     */
+    public static boolean isSetValue() {
+        String currentValue;
+        Locale currentLocale = getLocale();
+        if(currentLocale.getLanguage().equals(SIMPLIFIED_CHINESE.getLanguage())) {
+            currentValue = "1";
+        }
+        else if(currentLocale.getLanguage().equals(ENGLISH.getLanguage())) {
+            currentValue = "2";
+        }
+        else {
+            currentValue = "0";
+        }
+        String localeValue = SPUtils.getLocaleValue();
+        return currentValue.equals(localeValue);
     }
 
 }
