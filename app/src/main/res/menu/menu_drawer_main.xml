@@ -1,49 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/nav_group_folder"
+        android:checkableBehavior="single"
+        android:orderInCategory="0">
         <item
             android:id="@+id/nav_inner_storage"
             android:checked="true"
             android:icon="@mipmap/ic_storage"
+            android:orderInCategory="1"
             android:title="@string/menu_inner_storage" />
-        <!--<item-->
-            <!--android:id="@+id/nav_outer_storage"-->
-            <!--android:icon="@mipmap/ic_storage"-->
-            <!--android:title="@string/menu_outer_storage" />-->
         <item
             android:id="@+id/nav_root"
             android:icon="@mipmap/ic_root"
+            android:orderInCategory="3"
             android:title="@string/menu_root" />
         <item
             android:id="@+id/nav_download"
             android:icon="@mipmap/ic_download"
+            android:orderInCategory="4"
             android:title="@string/menu_download" />
         <item
             android:id="@+id/nav_photo"
             android:icon="@mipmap/ic_photo"
+            android:orderInCategory="5"
             android:title="@string/menu_photo" />
         <item
             android:id="@+id/nav_music"
             android:icon="@mipmap/ic_music"
+            android:orderInCategory="6"
             android:title="@string/menu_audio" />
         <item
             android:id="@+id/nav_video"
             android:icon="@mipmap/ic_video"
+            android:orderInCategory="7"
             android:title="@string/menu_video" />
         <item
             android:id="@+id/nav_document"
             android:icon="@mipmap/ic_document"
+            android:orderInCategory="8"
             android:title="@string/menu_document" />
     </group>
 
-    <item android:title="@string/menu_other">
-        <menu>
-            <item
-                android:id="@+id/nav_settings"
-                android:icon="@mipmap/ic_settings"
-                android:title="@string/menu_settings" />
-        </menu>
-    </item>
+    <group
+        android:id="@+id/nav_group_other"
+        android:orderInCategory="9">
+        <item android:title="@string/menu_other">
+            <menu>
+                <item
+                    android:id="@+id/nav_settings"
+                    android:icon="@mipmap/ic_settings"
+                    android:orderInCategory="10"
+                    android:title="@string/menu_settings" />
+            </menu>
+        </item>
+    </group>
 
 </menu>

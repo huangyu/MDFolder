@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.ui.fragment.FileListFragment;
 import com.huangyu.mdfolder.utils.AlertUtils;
+import com.huangyu.mdfolder.utils.SDCardUtils;
 
 import java.util.List;
 
@@ -82,6 +84,12 @@ public class FileListActivity extends ThematicActivity implements NavigationView
         toggle.syncState();
 
         mNavigationView.setNavigationItemSelectedListener(this);
+
+        String outerSdcardPath = SDCardUtils.getStoragePath(this, true);
+        if (!TextUtils.isEmpty(outerSdcardPath)) {
+            MenuItem item = mNavigationView.getMenu().add(R.id.nav_group_folder, R.id.nav_outer_storage, 2, getString(R.string.menu_outer_storage));
+            item.setIcon(R.mipmap.ic_storage);
+        }
 
         requirePermissions();
     }
@@ -228,9 +236,9 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                     case R.id.nav_inner_storage:
                         mRxManager.post("toStorage", false);
                         break;
-//                    case R.id.nav_outer_storage:
-//                        mRxManager.post("toStorage", true);
-//                        break;
+                    case R.id.nav_outer_storage:
+                        mRxManager.post("toStorage", true);
+                        break;
                     case R.id.nav_music:
                         mRxManager.post("toMusic", "");
                         break;
