@@ -26,7 +26,7 @@ public class ImageBrowserActivity extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_image_browser;
+        return R.layout.activity_browser;
     }
 
     @Override

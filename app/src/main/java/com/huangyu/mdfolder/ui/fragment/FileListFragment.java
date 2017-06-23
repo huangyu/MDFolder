@@ -36,6 +36,7 @@ import com.huangyu.mdfolder.mvp.presenter.FileListPresenter;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
 import com.huangyu.mdfolder.ui.activity.FileListActivity;
 import com.huangyu.mdfolder.ui.activity.ImageBrowserActivity;
+import com.huangyu.mdfolder.ui.activity.VideoBrowserActivity;
 import com.huangyu.mdfolder.ui.adapter.FileListAdapter;
 import com.huangyu.mdfolder.ui.widget.TabView;
 import com.huangyu.mdfolder.utils.AlertUtils;
@@ -118,8 +119,15 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         // 进入图片浏览
                         if (file.getType() == Constants.FileType.IMAGE) {
                             Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
-                            intent.putStringArrayListExtra(getString(R.string.intent_image_list), mPresenter.getImageList(mAdapter.getDataList()));
+                            intent.putStringArrayListExtra(getString(R.string.intent_image_list), mPresenter.getPathList(mAdapter.getDataList()));
                             intent.putExtra(getString(R.string.intent_image_position), position);
+                            getActivity().startActivity(intent);
+                        }
+                        // 进入视频浏览
+                        else if (file.getType() == Constants.FileType.VIDEO || file.getType() == Constants.FileType.AUDIO) {
+                            Intent intent = new Intent(getActivity(), VideoBrowserActivity.class);
+                            intent.putStringArrayListExtra(getString(R.string.intent_video_list), mPresenter.getPathList(mAdapter.getDataList()));
+                            intent.putExtra(getString(R.string.intent_video_position), position);
                             getActivity().startActivity(intent);
                         }
                         // 打开文件

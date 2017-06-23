@@ -1166,17 +1166,17 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     }
 
     /**
-     * 获取文件里的图片路径形成列表
+     * 获取文件里的路径形成列表
      *
      * @param fileItemList 文件列表
-     * @return 图片列表
+     * @return 路径列表
      */
-    public ArrayList<String> getImageList(List<FileItem> fileItemList) {
-        ArrayList<String> imageList = new ArrayList<>();
+    public ArrayList<String> getPathList(List<FileItem> fileItemList) {
+        ArrayList<String> pathList = new ArrayList<>();
         for (FileItem fileItem : fileItemList) {
-            imageList.add(fileItem.getPath());
+            pathList.add(fileItem.getPath());
         }
-        return imageList;
+        return pathList;
     }
 
     /**

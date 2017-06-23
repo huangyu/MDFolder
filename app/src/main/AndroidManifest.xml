@@ -28,7 +28,13 @@
         <activity
             android:name=".ui.activity.ImageBrowserActivity"
             android:label="@string/str_image_browser"
-            android:theme="@style/ImageBrowserTheme" />
+            android:theme="@style/BrowserTheme" />
+
+        <activity
+            android:name=".ui.activity.VideoBrowserActivity"
+            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
+            android:label="@string/str_video_browser"
+            android:theme="@style/BrowserTheme" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

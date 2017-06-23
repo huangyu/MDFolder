@@ -4,6 +4,7 @@
 
     <string name="str_settings">设置</string>
     <string name="str_image_browser">图片浏览</string>
+    <string name="str_video_browser">视频浏览</string>
     <string name="str_folder">文件夹</string>
     <string name="str_image">图片</string>
     <string name="str_file_info">文件属性</string>
@@ -15,6 +16,8 @@
     <string name="str_file_md5">文件MD5</string>
     <string name="intent_image_list">ImageList</string>
     <string name="intent_image_position">ImagePosition</string>
+    <string name="intent_video_list">VideoList</string>
+    <string name="intent_video_position">VideoPosition</string>
 
     <string name="navigation_drawer_open">打开导航栏</string>
     <string name="navigation_drawer_close">关闭导航栏</string>
@@ -103,6 +106,7 @@
     <string name="tips_input_file_name">请输入文件名</string>
     <string name="tips_file_name_empty">文件名不能为空</string>
     <string name="tips_copy_to_clipboard">已复制到剪贴板</string>
+    <string name="tips_not_support">不支持播放</string>
 
     <string name="pref_settings">设置</string>
     <string name="pref_appearance">外观</string>
