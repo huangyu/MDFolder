@@ -123,7 +123,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                             intent.putExtra(getString(R.string.intent_image_position), position);
                             getActivity().startActivity(intent);
                         }
-                        // 进入视频浏览
+                        // 进入音频、视频浏览
                         else if (file.getType() == Constants.FileType.VIDEO || file.getType() == Constants.FileType.AUDIO) {
                             Intent intent = new Intent(getActivity(), VideoBrowserActivity.class);
                             intent.putStringArrayListExtra(getString(R.string.intent_video_list), mPresenter.getPathList(mAdapter.getDataList()));

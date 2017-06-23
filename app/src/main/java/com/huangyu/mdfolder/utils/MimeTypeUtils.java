@@ -35,7 +35,7 @@ public class MimeTypeUtils {
     /**
      * MIME 列表
      */
-    public static final String[][] MIME_MapTable =
+    private static final String[][] MIME_MapTable =
             {
                     {".3gp", "video/3gpp"},
                     {".3gpp", "video/3gpp"},
@@ -92,6 +92,7 @@ public class MimeTypeUtils {
                     {".css", "text/css"},
                     {".cur", "application/octet-stream"},
                     {".doc", "application/msword"},
+                    {".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"},
                     {".dcm", "x-lml/x-evm"},
                     {".dcr", "application/x-director"},
                     {".dcx", "image/x-dcx"},
@@ -277,6 +278,7 @@ public class MimeTypeUtils {
                     {".ppm", "image/x-portable-pixmap"},
                     {".pps", "application/vnd.ms-powerpoint"},
                     {".ppt", "application/vnd.ms-powerpoint"},
+                    {".pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"},
                     {".pqf", "application/x-cprplayer"},
                     {".pqi", "application/cprplayer"},
                     {".prc", "application/x-prc"},
@@ -455,6 +457,7 @@ public class MimeTypeUtils {
                     {".xll", "application/x-excel"},
                     {".xlm", "application/vnd.ms-excel"},
                     {".xls", "application/vnd.ms-excel"},
+                    {".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
                     {".xlt", "application/vnd.ms-excel"},
                     {".xlw", "application/vnd.ms-excel"},
                     {".xm", "audio/x-mod"},

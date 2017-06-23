@@ -1,8 +1,0 @@
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <item name="ic_menu_music" type="drawable">@android:drawable/ic_media_play</item>
-    <item name="ic_menu_photo" type="drawable">@android:drawable/ic_menu_gallery</item>
-    <item name="ic_menu_video" type="drawable">@android:drawable/ic_menu_slideshow</item>
-    <item name="ic_menu_apps" type="drawable">@android:drawable/ic_menu_info_details</item>
-    <item name="ic_menu_share" type="drawable">@android:drawable/ic_menu_share</item>
-    <item name="ic_menu_help" type="drawable">@android:drawable/ic_menu_help</item>
-</resources>

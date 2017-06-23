@@ -400,14 +400,14 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         Observable<Boolean> observable1 = Observable.just(filePath).exists(new Func1<String, Boolean>() {
                                             @Override
                                             public Boolean call(String filePath) {
-                                                return isFileExists(filePath);
+                                                return mFileModel.isFileExists(filePath);
                                             }
                                         });
 
                                         Observable<Boolean> observable2 = Observable.just(filePath).exists(new Func1<String, Boolean>() {
                                             @Override
                                             public Boolean call(String filePath) {
-                                                return isFolderExists(filePath);
+                                                return mFileModel.isFolderExists(filePath);
                                             }
                                         });
 
@@ -439,7 +439,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         if (filePath == null) {
                                             return;
                                         }
-                                        if (addFile(filePath)) {
+                                        if (mFileModel.addFile(filePath)) {
                                             mView.showMessage(mView.getResString(R.string.tips_add_file_successfully));
                                             mView.refreshData(false);
                                         } else {
@@ -523,14 +523,14 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         Observable<Boolean> observable1 = Observable.just(filePath).exists(new Func1<String, Boolean>() {
                                             @Override
                                             public Boolean call(String filePath) {
-                                                return isFileExists(filePath);
+                                                return mFileModel.isFileExists(filePath);
                                             }
                                         });
 
                                         Observable<Boolean> observable2 = Observable.just(filePath).exists(new Func1<String, Boolean>() {
                                             @Override
                                             public Boolean call(String filePath) {
-                                                return isFolderExists(filePath);
+                                                return mFileModel.isFolderExists(filePath);
                                             }
                                         });
 
@@ -562,7 +562,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         if (filePath == null) {
                                             return;
                                         }
-                                        if (addFolder(filePath)) {
+                                        if (mFileModel.addFolder(filePath)) {
                                             mView.showMessage(mView.getResString(R.string.tips_add_folder_successfully));
                                             mView.refreshData(false);
                                         } else {
@@ -985,9 +985,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             public Boolean call(FileItem file) {
                                 boolean result;
                                 if (o.getKey()) {
-                                    result = copyFolder(file.getPath(), mCurrentPath + File.separator + file.getName());
+                                    result = mFileModel.copyFolder(file.getPath(), mCurrentPath + File.separator + file.getName());
                                 } else {
-                                    result = copyFile(file.getPath(), mCurrentPath + File.separator + file.getName());
+                                    result = mFileModel.copyFile(file.getPath(), mCurrentPath + File.separator + file.getName());
                                 }
                                 return result;
                             }
@@ -1040,9 +1040,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             public Boolean call(FileItem file) {
                                 boolean result;
                                 if (o.getKey()) {
-                                    result = cutFolder(file.getPath(), mCurrentPath + File.separator + file.getName());
+                                    result = mFileModel.moveFolder(file.getPath(), mCurrentPath + File.separator + file.getName());
                                 } else {
-                                    result = cutFile(file.getPath(), mCurrentPath + File.separator + file.getName());
+                                    result = mFileModel.moveFile(file.getPath(), mCurrentPath + File.separator + file.getName());
                                 }
                                 return result;
                             }
@@ -1227,48 +1227,15 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         return false;
     }
 
+    /**
+     * 打开文件
+     *
+     * @param context 上下文
+     * @param file    文件
+     * @return 是否打开成功
+     */
     public boolean openFile(Context context, File file) {
         return mFileModel.openFile(context, file);
-    }
-
-    private boolean isFileExists(String path) {
-        return mFileModel.isFileExists(path);
-    }
-
-    private boolean isFolderExists(String path) {
-        return mFileModel.isFolderExists(path);
-    }
-
-    private boolean addFile(String filePath) {
-        return mFileModel.addFile(filePath);
-    }
-
-    private boolean addFolder(String folderPath) {
-        return mFileModel.addFolder(folderPath);
-    }
-
-    private boolean deleteFile(String filePath) {
-        return mFileModel.deleteFile(filePath);
-    }
-
-    private boolean deleteFolder(String folderPath) {
-        return mFileModel.deleteFolder(folderPath);
-    }
-
-    private boolean cutFile(String srcFilePath, String destFilePath) {
-        return mFileModel.moveFile(srcFilePath, destFilePath);
-    }
-
-    private boolean cutFolder(String srcFolderPath, String destFolderPath) {
-        return mFileModel.moveFolder(srcFolderPath, destFolderPath);
-    }
-
-    private boolean copyFile(String srcFilePath, String destFilePath) {
-        return mFileModel.copyFile(srcFilePath, destFilePath);
-    }
-
-    private boolean copyFolder(String srcFolderPath, String destFolderPath) {
-        return mFileModel.copyFolder(srcFolderPath, destFolderPath);
     }
 
 }

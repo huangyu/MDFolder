@@ -71,7 +71,7 @@ public class FileListModel implements IBaseModel {
                 + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
                 + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? ";
 
-        // 分别对应 doc pdf ppt xls wps docx pptx xlsx 类型的文档
+        // 分别对应 doc pdf ppt xls wps docx pptx xlsx类型的文档
         String[] selectionArgs = new String[]{
                 "application/msword",
                 "application/pdf",
