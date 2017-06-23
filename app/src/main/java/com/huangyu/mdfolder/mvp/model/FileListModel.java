@@ -60,30 +60,25 @@ public class FileListModel implements IBaseModel {
     public List<FileItem> getDocumentList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{MediaStore.Files.FileColumns.DATA,
                 MediaStore.Files.FileColumns.TITLE, MediaStore.Files.FileColumns.SIZE,
-                MediaStore.Files.FileColumns.DATE_MODIFIED};
-
-        String selection = MediaStore.Files.FileColumns.MIME_TYPE + "= ? "
-                + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
-                + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
-                + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
-                + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
-                + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
-                + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? "
-                + " or " + MediaStore.Files.FileColumns.MIME_TYPE + " = ? ";
-
-        // 分别对应 doc pdf ppt xls wps docx pptx xlsx类型的文档
-        String[] selectionArgs = new String[]{
-                "application/msword",
-                "application/pdf",
-                "application/vnd.ms-powerpoint",
-                "application/vnd.ms-excel",
-                "application/vnd.ms-works",
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"};
+                MediaStore.Files.FileColumns.DATE_MODIFIED, MediaStore.Files.FileColumns.MIME_TYPE};
 
         Cursor cursor = contentResolver.query(MediaStore.Files.getContentUri("external"), projection,
-                selection, selectionArgs, MediaStore.Files.FileColumns.DATE_MODIFIED + " desc");
+                MediaStore.Files.FileColumns.DATA + " like ? or "
+                        + MediaStore.Files.FileColumns.DATA + " like ? or "
+                        + MediaStore.Files.FileColumns.DATA + " like ? or "
+                        + MediaStore.Files.FileColumns.DATA + " like ? or "
+                        + MediaStore.Files.FileColumns.DATA + " like ? or "
+                        + MediaStore.Files.FileColumns.DATA + " like ? or "
+                        + MediaStore.Files.FileColumns.DATA + " like ? ",
+                new String[]{
+                        "%.doc",
+                        "%.xls",
+                        "%.ppt",
+                        "%.docx",
+                        "%.xlsx",
+                        "%.pptx",
+                        "%.pdf",
+                }, MediaStore.Files.FileColumns.TITLE + " asc");
 
         if (cursor != null) {
             ArrayList<FileItem> documentList = new ArrayList<>();
@@ -94,7 +89,7 @@ public class FileListModel implements IBaseModel {
 
                 if (FileUtils.isFileExists(filePath)) {
                     FileItem fileItem = new FileItem();
-                    fileItem.setName(fileName);
+                    fileItem.setName(filePath.substring(filePath.lastIndexOf(File.separator) + 1));
                     fileItem.setPath(filePath);
                     fileItem.setSize(FileUtils.getFileLength(filePath));
                     fileItem.setDate(DateUtils.getFormatDate(Long.valueOf(date) * 1000));
@@ -120,7 +115,7 @@ public class FileListModel implements IBaseModel {
 
         Cursor cursor = contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                 projection,
-                null, null, MediaStore.Video.VideoColumns.DATE_MODIFIED + " desc");
+                null, null, MediaStore.Video.VideoColumns.DISPLAY_NAME + " asc");
 
         if (cursor != null) {
             ArrayList<FileItem> videoList = new ArrayList<>();
@@ -157,7 +152,7 @@ public class FileListModel implements IBaseModel {
                 MediaStore.Images.ImageColumns.SIZE,
                 MediaStore.Images.ImageColumns.DATE_MODIFIED};
         Cursor cursor = contentResolver.query(imageUri, projection, null, null,
-                MediaStore.Images.ImageColumns.DATE_MODIFIED + " desc");
+                MediaStore.Images.ImageColumns.DISPLAY_NAME + " asc");
         if (cursor != null) {
             ArrayList<FileItem> imageList = new ArrayList<>();
             while (cursor.moveToNext()) {
@@ -192,7 +187,7 @@ public class FileListModel implements IBaseModel {
                 MediaStore.Audio.AudioColumns.DATE_MODIFIED};
 
         Cursor cursor = contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                projection, null, null, MediaStore.Audio.AudioColumns.DATE_MODIFIED + " desc");
+                projection, null, null, MediaStore.Audio.AudioColumns.DISPLAY_NAME + " asc");
 
         if (cursor != null) {
             ArrayList<FileItem> audioList = new ArrayList<>();

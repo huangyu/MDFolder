@@ -10,6 +10,8 @@ public class MimeTypeUtils {
 
     /**
      * 获取文件类型
+     *
+     * @param filePath 文件路径
      */
     public static String getMIMEType(String filePath) {
         String type = "*/*";
@@ -274,10 +276,10 @@ public class MimeTypeUtils {
                     {".png", "image/png"},
                     {".pnm", "image/x-portable-anymap"},
                     {".pnz", "image/png"},
+                    {".ppt", "application/vnd.ms-powerpoint"},
+                    {".pps", "application/vnd.ms-powerpoint"},
                     {".pot", "application/vnd.ms-powerpoint"},
                     {".ppm", "image/x-portable-pixmap"},
-                    {".pps", "application/vnd.ms-powerpoint"},
-                    {".ppt", "application/vnd.ms-powerpoint"},
                     {".pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"},
                     {".pqf", "application/x-cprplayer"},
                     {".pqi", "application/cprplayer"},
@@ -452,14 +454,14 @@ public class MimeTypeUtils {
                     {".xht", "application/xhtml+xml"},
                     {".xhtm", "application/xhtml+xml"},
                     {".xhtml", "application/xhtml+xml"},
+                    {".xls", "application/vnd.ms-excel"},
+                    {".xlt", "application/vnd.ms-excel"},
                     {".xla", "application/vnd.ms-excel"},
                     {".xlc", "application/vnd.ms-excel"},
-                    {".xll", "application/x-excel"},
                     {".xlm", "application/vnd.ms-excel"},
-                    {".xls", "application/vnd.ms-excel"},
                     {".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
-                    {".xlt", "application/vnd.ms-excel"},
                     {".xlw", "application/vnd.ms-excel"},
+                    {".xll", "application/x-excel"},
                     {".xm", "audio/x-mod"},
                     {".xml", "text/xml"},
                     {".xmz", "audio/x-mod"},

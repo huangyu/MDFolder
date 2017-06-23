@@ -17,6 +17,8 @@ import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.bean.FileItem;
 
+import java.io.File;
+
 import butterknife.ButterKnife;
 
 /**
@@ -141,7 +143,7 @@ public class AlertUtils {
 
         tvName.setText(fileItem.getName());
         String path = fileItem.getPath();
-        tvPath.setText(path.substring(0, path.lastIndexOf("/")));
+        tvPath.setText(path.substring(0, path.lastIndexOf(File.separator)));
         if (fileItem.isDirectory()) {
             tvSize.setText(FileUtils.getDirSize(fileItem.getPath()));
         } else {
