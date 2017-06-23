@@ -5,6 +5,7 @@
     <string name="str_settings">设置</string>
     <string name="str_image_browser">图片浏览</string>
     <string name="str_video_browser">视频浏览</string>
+    <string name="str_audio_browser">音频浏览</string>
     <string name="str_folder">文件夹</string>
     <string name="str_image">图片</string>
     <string name="str_file_info">文件属性</string>
@@ -72,6 +73,7 @@
     <string name="tips_add_file">请输入文件名</string>
     <string name="tips_add_folder">请输入文件夹名</string>
     <string name="tips_delete_files">是否删除这些文件？</string>
+    <string name="tips_delete_file">是否删除该文件？</string>
     <string name="tips_show_hide_files">是否显示/隐藏这些文件？</string>
     <string name="tips_zip_files">是否压缩这些文件？</string>
     <string name="tips_unzip_files">是否解压这些文件？</string>

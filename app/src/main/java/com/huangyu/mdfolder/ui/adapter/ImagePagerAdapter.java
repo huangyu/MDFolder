@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.huangyu.mdfolder.R;
+import com.huangyu.mdfolder.bean.FileItem;
 
 import java.util.List;
 
@@ -20,9 +21,9 @@ import butterknife.ButterKnife;
 public class ImagePagerAdapter extends PagerAdapter {
 
     private Context mContext;
-    private List<String> mImageList;
+    private List<FileItem> mImageList;
 
-    public ImagePagerAdapter(Context context, List<String> imageList) {
+    public ImagePagerAdapter(Context context, List<FileItem> imageList) {
         this.mContext = context;
         this.mImageList = imageList;
     }
@@ -41,7 +42,7 @@ public class ImagePagerAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup viewGroup, final int position) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.item_image_pager, viewGroup, false);
         PhotoView photoView = ButterKnife.findById(view, R.id.photo_view);
-        Glide.with(mContext).load(mImageList.get(position)).into(photoView);
+        Glide.with(mContext).load(mImageList.get(position).getPath()).into(photoView);
         viewGroup.addView(view);
         return view;
     }

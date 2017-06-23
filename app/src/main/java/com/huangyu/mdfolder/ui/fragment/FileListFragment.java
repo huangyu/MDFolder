@@ -34,6 +34,7 @@ import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.mvp.presenter.FileListPresenter;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
+import com.huangyu.mdfolder.ui.activity.AudioBrowserActivity;
 import com.huangyu.mdfolder.ui.activity.FileListActivity;
 import com.huangyu.mdfolder.ui.activity.ImageBrowserActivity;
 import com.huangyu.mdfolder.ui.activity.VideoBrowserActivity;
@@ -44,7 +45,7 @@ import com.huangyu.mdfolder.utils.KeyboardUtils;
 import com.jakewharton.rxbinding.view.RxView;
 
 import java.io.File;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
@@ -119,15 +120,22 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         // 进入图片浏览
                         if (file.getType() == Constants.FileType.IMAGE) {
                             Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
-                            intent.putStringArrayListExtra(getString(R.string.intent_image_list), mPresenter.getPathList(mAdapter.getDataList()));
+                            intent.putExtra(getString(R.string.intent_image_list), mAdapter.getDataList());
                             intent.putExtra(getString(R.string.intent_image_position), position);
                             getActivity().startActivity(intent);
                         }
-                        // 进入音频、视频浏览
-                        else if (file.getType() == Constants.FileType.VIDEO || file.getType() == Constants.FileType.AUDIO) {
+                        // 进入视频浏览
+                        else if (file.getType() == Constants.FileType.VIDEO) {
                             Intent intent = new Intent(getActivity(), VideoBrowserActivity.class);
-                            intent.putStringArrayListExtra(getString(R.string.intent_video_list), mPresenter.getPathList(mAdapter.getDataList()));
+                            intent.putExtra(getString(R.string.intent_video_list), mAdapter.getDataList());
                             intent.putExtra(getString(R.string.intent_video_position), position);
+                            getActivity().startActivity(intent);
+                        }
+                        // 进入音频浏览
+                        else if (file.getType() == Constants.FileType.AUDIO) {
+                            Intent intent = new Intent(getActivity(), AudioBrowserActivity.class);
+                            intent.putExtra(getString(R.string.intent_audio_list), mAdapter.getDataList());
+                            intent.putExtra(getString(R.string.intent_audio_position), position);
                             getActivity().startActivity(intent);
                         }
                         // 打开文件
@@ -206,7 +214,11 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         });
 
         initRxManagerActions();
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
         mPresenter.onLoadStorageFileList(false, mSearchStr);
     }
 
@@ -335,7 +347,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     @Override
-    public void refreshData(List<FileItem> filesList, boolean ifClearSelected) {
+    public void refreshData(ArrayList<FileItem> filesList, boolean ifClearSelected) {
         mAdapter.clearData(ifClearSelected);
 
         if (filesList == null || filesList.isEmpty()) {
@@ -466,7 +478,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                final List<FileItem> fileList = mAdapter.getSelectedDataList();
+                final ArrayList<FileItem> fileList = mAdapter.getSelectedDataList();
                 switch (item.getItemId()) {
                     case R.id.action_rename:
                         mPresenter.onRenameFile(fileList);
@@ -533,7 +545,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                final List<FileItem> fileList = mAdapter.mSelectedFileList;
+                final ArrayList<FileItem> fileList = mAdapter.mSelectedFileList;
                 switch (item.getItemId()) {
                     case R.id.action_paste:
                         if (mPresenter.mEditType == Constants.EditType.COPY) {

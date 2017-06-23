@@ -4,6 +4,7 @@
     <string name="str_settings">Settings</string>
     <string name="str_image_browser">Image Browser</string>
     <string name="str_video_browser">Video Browser</string>
+    <string name="str_audio_browser">Audio Browser</string>
     <string name="str_folder">Folder</string>
     <string name="str_image">Image</string>
     <string name="str_file_info">File Info</string>
@@ -17,6 +18,8 @@
     <string name="intent_image_position">ImagePosition</string>
     <string name="intent_video_list">VideoList</string>
     <string name="intent_video_position">VideoPosition</string>
+    <string name="intent_audio_list">AudioList</string>
+    <string name="intent_audio_position">VideoPosition</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -71,6 +74,7 @@
     <string name="tips_add_file">Please input file name.</string>
     <string name="tips_add_folder">Please input folder name.</string>
     <string name="tips_delete_files">Delete these files?</string>
+    <string name="tips_delete_file">Delete file?</string>
     <string name="tips_show_hide_files">Show/Hide these files?</string>
     <string name="tips_zip_files">Zip these files?</string>
     <string name="tips_unzip_files">Unzip these files?</string>

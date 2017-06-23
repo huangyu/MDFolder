@@ -70,9 +70,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 获取根目录文件列表
      */
     public void onLoadRootFileList(final String searchStr) {
-        Subscription subscription = Observable.defer(new Func0<Observable<List<FileItem>>>() {
+        Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
             @Override
-            public Observable<List<FileItem>> call() {
+            public Observable<ArrayList<FileItem>> call() {
                 return Observable.just(getCurrentFileList(searchStr));
             }
         })
@@ -87,7 +87,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<FileItem>>() {
+                .subscribe(new Subscriber<ArrayList<FileItem>>() {
                     @Override
                     public void onStart() {
                         mView.startRefresh();
@@ -95,7 +95,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     }
 
                     @Override
-                    public void onNext(List<FileItem> fileList) {
+                    public void onNext(ArrayList<FileItem> fileList) {
                         mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
                         mView.refreshData(fileList, true);
@@ -119,9 +119,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 获取存储器文件列表
      */
     public void onLoadStorageFileList(final boolean isInner, final String searchStr) {
-        Subscription subscription = Observable.defer(new Func0<Observable<List<FileItem>>>() {
+        Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
             @Override
-            public Observable<List<FileItem>> call() {
+            public Observable<ArrayList<FileItem>> call() {
                 return Observable.just(getCurrentFileList(searchStr));
             }
         })
@@ -136,7 +136,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<FileItem>>() {
+                .subscribe(new Subscriber<ArrayList<FileItem>>() {
                     @Override
                     public void onStart() {
                         mView.startRefresh();
@@ -144,7 +144,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     }
 
                     @Override
-                    public void onNext(List<FileItem> fileList) {
+                    public void onNext(ArrayList<FileItem> fileList) {
                         mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
                         mView.refreshData(fileList, true);
@@ -168,9 +168,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 获取下载文件列表
      */
     public void onLoadDownloadFileList(final String searchStr) {
-        Subscription subscription = Observable.defer(new Func0<Observable<List<FileItem>>>() {
+        Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
             @Override
-            public Observable<List<FileItem>> call() {
+            public Observable<ArrayList<FileItem>> call() {
                 return Observable.just(getCurrentFileList(searchStr));
             }
         })
@@ -185,7 +185,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<FileItem>>() {
+                .subscribe(new Subscriber<ArrayList<FileItem>>() {
                     @Override
                     public void onStart() {
                         mView.startRefresh();
@@ -193,7 +193,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     }
 
                     @Override
-                    public void onNext(List<FileItem> fileList) {
+                    public void onNext(ArrayList<FileItem> fileList) {
                         mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
                         mView.refreshData(fileList, true);
@@ -217,9 +217,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 获取不同类型文件列表
      */
     public void onLoadMultiTypeFileList(final String searchStr, final int fileType) {
-        Subscription subscription = Observable.defer(new Func0<Observable<List<FileItem>>>() {
+        Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
             @Override
-            public Observable<List<FileItem>> call() {
+            public Observable<ArrayList<FileItem>> call() {
                 return Observable.just(getCurrentFileList(searchStr));
             }
         })
@@ -232,7 +232,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<FileItem>>() {
+                .subscribe(new Subscriber<ArrayList<FileItem>>() {
                     @Override
                     public void onStart() {
                         mView.startRefresh();
@@ -240,7 +240,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     }
 
                     @Override
-                    public void onNext(List<FileItem> fileList) {
+                    public void onNext(ArrayList<FileItem> fileList) {
                         mView.removeAllTabs();
                         switch (fileType) {
                             case Constants.SelectType.MENU_DOCUMENT:
@@ -277,22 +277,22 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 刷新界面
      */
     public void onRefreshInSwipe(final String searchStr, final boolean ifClearSelected) {
-        Subscription subscription = Observable.defer(new Func0<Observable<List<FileItem>>>() {
+        Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
             @Override
-            public Observable<List<FileItem>> call() {
+            public Observable<ArrayList<FileItem>> call() {
                 return Observable.just(getCurrentFileList(searchStr));
             }
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<FileItem>>() {
+                .subscribe(new Subscriber<ArrayList<FileItem>>() {
                     @Override
                     public void onStart() {
                         mView.startRefresh();
                     }
 
                     @Override
-                    public void onNext(List<FileItem> fileList) {
+                    public void onNext(ArrayList<FileItem> fileList) {
                         mView.refreshData(fileList, ifClearSelected);
                     }
 
@@ -317,21 +317,21 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 刷新界面
      */
     public void onRefresh(final String searchStr, final boolean ifClearSelected) {
-        Subscription subscription = Observable.defer(new Func0<Observable<List<FileItem>>>() {
+        Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
             @Override
-            public Observable<List<FileItem>> call() {
+            public Observable<ArrayList<FileItem>> call() {
                 return Observable.just(getCurrentFileList(searchStr));
             }
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<FileItem>>() {
+                .subscribe(new Subscriber<ArrayList<FileItem>>() {
                     @Override
                     public void onStart() {
                     }
 
                     @Override
-                    public void onNext(List<FileItem> fileList) {
+                    public void onNext(ArrayList<FileItem> fileList) {
                         mView.refreshData(fileList, ifClearSelected);
                     }
 
@@ -602,7 +602,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      *
      * @param fileList 文件列表
      */
-    public void onRenameFile(final List<FileItem> fileList) {
+    public void onRenameFile(final ArrayList<FileItem> fileList) {
         if (fileList.size() != 1) {
             mView.showMessage(mView.getResString(R.string.tips_choose_one_file));
         } else {
@@ -690,7 +690,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      *
      * @param fileList 文件列表
      */
-    public void onShowHideFile(final List<FileItem> fileList) {
+    public void onShowHideFile(final ArrayList<FileItem> fileList) {
         mView.showNormalAlert(mView.getResString(R.string.tips_show_hide_files), mView.getResString(R.string.act_show_hide), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -751,7 +751,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      *
      * @param fileList 文件列表
      */
-    public void onShowFileInfo(final List<FileItem> fileList) {
+    public void onShowFileInfo(final ArrayList<FileItem> fileList) {
         if (fileList.size() != 1) {
             mView.showMessage(mView.getResString(R.string.tips_choose_one_file));
         } else {
@@ -769,7 +769,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      *
      * @param fileList 文件列表
      */
-    public void onDelete(final List<FileItem> fileList) {
+    public void onDelete(final ArrayList<FileItem> fileList) {
         mView.showNormalAlert(mView.getResString(R.string.tips_delete_files), mView.getResString(R.string.act_delete), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -830,7 +830,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      *
      * @param fileList 文件列表
      */
-    public void onZip(final List<FileItem> fileList) {
+    public void onZip(final ArrayList<FileItem> fileList) {
         mView.showNormalAlert(mView.getResString(R.string.tips_zip_files), mView.getResString(R.string.act_zip), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -918,7 +918,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      *
      * @param fileList 文件列表
      */
-    public void onUnzip(final List<FileItem> fileList) {
+    public void onUnzip(final ArrayList<FileItem> fileList) {
         mView.showNormalAlert(mView.getResString(R.string.tips_unzip_files), mView.getResString(R.string.act_unzip), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -968,7 +968,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     /**
      * 复制文件
      */
-    public void onCopy(final List<FileItem> fileList) {
+    public void onCopy(final ArrayList<FileItem> fileList) {
         mView.showNormalAlert(mView.getResString(R.string.tips_copy_files), mView.getResString(R.string.act_copy), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -1023,7 +1023,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     /**
      * 剪切文件
      */
-    public void onCut(final List<FileItem> fileList) {
+    public void onCut(final ArrayList<FileItem> fileList) {
         mView.showNormalAlert(mView.getResString(R.string.tips_cut_files), mView.getResString(R.string.act_cut), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -1081,8 +1081,8 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * @param searchStr 查询文字
      * @return 当前路径文件列表
      */
-    private List<FileItem> getCurrentFileList(String searchStr) {
-        List<FileItem> fileItemList = null;
+    private ArrayList<FileItem> getCurrentFileList(String searchStr) {
+        ArrayList<FileItem> fileItemList = null;
 
         switch (mFileType) {
             case Constants.SelectType.MENU_DOCUMENT:
@@ -1134,14 +1134,14 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     }
 
     /**
-     * 转换文件列表，将List<File>转为List<FileItem>
+     * 转换文件列表，ArrayList<File>ArrayList<FileItem>
      *
      * @param fileList 文件列表
-     * @return List<FileItem>
+     * @return ArrayList<FileItem>
      */
-    private List<FileItem> transformFileList(List<File> fileList) {
+    private ArrayList<FileItem> transformFileList(ArrayList<File> fileList) {
         if (fileList != null && fileList.size() > 0) {
-            List<FileItem> fileItemList = new ArrayList<>();
+            ArrayList<FileItem> fileItemList = new ArrayList<>();
             FileItem fileItem;
             for (File file : fileList) {
                 fileItem = new FileItem();
@@ -1163,20 +1163,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
             return mFileListModel.orderByType(fileItemList);
         }
         return null;
-    }
-
-    /**
-     * 获取文件里的路径形成列表
-     *
-     * @param fileItemList 文件列表
-     * @return 路径列表
-     */
-    public ArrayList<String> getPathList(List<FileItem> fileItemList) {
-        ArrayList<String> pathList = new ArrayList<>();
-        for (FileItem fileItem : fileItemList) {
-            pathList.add(fileItem.getPath());
-        }
-        return pathList;
     }
 
     /**

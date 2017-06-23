@@ -29,6 +29,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:maxLines="1"
                 android:text="@string/str_file_name" />
 
@@ -37,8 +38,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:maxLines="1" />
+                android:gravity="center" />
 
         </LinearLayout>
 
@@ -51,6 +51,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:maxLines="1"
                 android:text="@string/str_file_path" />
 
@@ -72,6 +73,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:maxLines="1"
                 android:text="@string/str_file_size" />
 
@@ -79,10 +81,8 @@
                 android:id="@+id/tv_size"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-
                 android:layout_weight="1"
-                android:gravity="center"
-                android:maxLines="1" />
+                android:gravity="center" />
 
         </LinearLayout>
 
@@ -95,6 +95,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:maxLines="1"
                 android:text="@string/str_file_date" />
 
@@ -103,8 +104,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:maxLines="1" />
+                android:gravity="center" />
 
         </LinearLayout>
 
@@ -117,6 +117,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:maxLines="1"
                 android:text="@string/str_file_type" />
 
@@ -125,8 +126,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:maxLines="1" />
+                android:gravity="center" />
 
         </LinearLayout>
 
@@ -139,6 +139,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:maxLines="1"
                 android:text="@string/str_file_md5" />
 
@@ -147,8 +148,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:maxLines="1" />
+                android:gravity="center" />
 
         </LinearLayout>
     </LinearLayout>

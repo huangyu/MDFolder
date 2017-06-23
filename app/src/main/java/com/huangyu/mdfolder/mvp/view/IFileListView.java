@@ -9,7 +9,7 @@ import android.widget.EditText;
 import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.mdfolder.bean.FileItem;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by huangyu on 2017/5/22.
@@ -29,7 +29,7 @@ public interface IFileListView extends IBaseView {
 
     void refreshData(boolean ifClearSelected);
 
-    void refreshData(List<FileItem> filesList, boolean ifClearSelected);
+    void refreshData(ArrayList<FileItem> filesList, boolean ifClearSelected);
 
     void finishAction();
 

@@ -1,6 +1,7 @@
 package com.huangyu.mdfolder.ui.activity;
 
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.view.ViewPager;
@@ -10,12 +11,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.afollestad.easyvideoplayer.EasyVideoCallback;
+import com.afollestad.easyvideoplayer.EasyVideoPlayer;
 import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.mvp.model.FileListModel;
-import com.huangyu.mdfolder.ui.adapter.ImagePagerAdapter;
+import com.huangyu.mdfolder.ui.adapter.AudioPagerAdapter;
 import com.huangyu.mdfolder.utils.AlertUtils;
 
 import java.util.ArrayList;
@@ -23,9 +26,9 @@ import java.util.ArrayList;
 import butterknife.Bind;
 
 /**
- * Created by huangyu on 2017-6-20.
+ * Created by huangyu on 2017-6-23.
  */
-public class ImageBrowserActivity extends ThematicActivity {
+public class AudioBrowserActivity extends ThematicActivity implements EasyVideoCallback {
 
     @Bind(R.id.appbar)
     AppBarLayout mAppBarLayout;
@@ -41,7 +44,7 @@ public class ImageBrowserActivity extends ThematicActivity {
 
     private ArrayList<FileItem> mFileList;
     private FileListModel mFileListModel;
-    private ImagePagerAdapter adapter;
+    private AudioPagerAdapter adapter;
     private int currentPosition;
 
     @Override
@@ -58,9 +61,9 @@ public class ImageBrowserActivity extends ThematicActivity {
     @SuppressWarnings("unchecked")
     protected void initView(Bundle savedInstanceState) {
         mFileListModel = new FileListModel();
-        mFileList = (ArrayList<FileItem>) getIntent().getSerializableExtra(getString(R.string.intent_image_list));
-        currentPosition = getIntent().getIntExtra(getString(R.string.intent_image_position), 0);
-        adapter = new ImagePagerAdapter(this, mFileList);
+        mFileList = (ArrayList<FileItem>) getIntent().getSerializableExtra(getString(R.string.intent_audio_list));
+        currentPosition = getIntent().getIntExtra(getString(R.string.intent_audio_position), 0);
+        adapter = new AudioPagerAdapter(this, mFileList, this);
         mViewPager.setAdapter(adapter);
         mViewPager.setCurrentItem(currentPosition);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -140,9 +143,9 @@ public class ImageBrowserActivity extends ThematicActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (FileUtils.deleteFile(fileItem.getPath())) {
-                    mFileList = mFileListModel.getImageList("", getContentResolver());
+                    mFileList = mFileListModel.getAudioList("", getContentResolver());
                     AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_delete_successfully));
-                    adapter = new ImagePagerAdapter(ImageBrowserActivity.this, mFileList);
+                    adapter = new AudioPagerAdapter(AudioBrowserActivity.this, mFileList, AudioBrowserActivity.this);
                     mViewPager.setAdapter(adapter);
                     if (currentPosition >= mFileList.size() - 1) {
                         currentPosition = mFileList.size() - 1;
@@ -155,6 +158,51 @@ public class ImageBrowserActivity extends ThematicActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onStarted(EasyVideoPlayer player) {
+
+    }
+
+    @Override
+    public void onPaused(EasyVideoPlayer player) {
+
+    }
+
+    @Override
+    public void onPreparing(EasyVideoPlayer player) {
+
+    }
+
+    @Override
+    public void onPrepared(EasyVideoPlayer player) {
+
+    }
+
+    @Override
+    public void onBuffering(int percent) {
+
+    }
+
+    @Override
+    public void onError(EasyVideoPlayer player, Exception e) {
+        AlertUtils.showSnack(mViewPager, getString(R.string.tips_not_support));
+    }
+
+    @Override
+    public void onCompletion(EasyVideoPlayer player) {
+
+    }
+
+    @Override
+    public void onRetry(EasyVideoPlayer player, Uri source) {
+
+    }
+
+    @Override
+    public void onSubmit(EasyVideoPlayer player, Uri source) {
+
     }
 
 }

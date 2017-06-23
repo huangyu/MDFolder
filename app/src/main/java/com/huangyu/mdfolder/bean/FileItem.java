@@ -1,9 +1,11 @@
 package com.huangyu.mdfolder.bean;
 
+import java.io.Serializable;
+
 /**
  * Created by huangyu on 2017-6-19.
  */
-public class FileItem {
+public class FileItem implements Serializable {
 
     private String path;
     private String name;

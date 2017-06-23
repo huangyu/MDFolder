@@ -25,12 +25,9 @@ public class ThemeUtils {
     }
 
     private void setMode() {
-        boolean isLightTheme = SPUtils.isLightMode();
-        boolean isShow = SPUtils.isShowHiddenFiles();
-        String localeValue = SPUtils.getLocaleValue();
-        isLightMode = isLightTheme;
-        isShowMode = isShow;
-        localeMode = localeValue;
+        isLightMode = SPUtils.isLightMode();
+        isShowMode = SPUtils.isShowHiddenFiles();
+        localeMode = SPUtils.getLocaleValue();
     }
 
     public boolean isLightMode() {

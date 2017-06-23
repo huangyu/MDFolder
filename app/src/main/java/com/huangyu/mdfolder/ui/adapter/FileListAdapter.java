@@ -16,14 +16,14 @@ import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.ui.activity.FileListActivity;
 
 import java.io.File;
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by huangyu on 2017-5-23.
  */
 public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
 
-    public List<FileItem> mSelectedFileList;
+    public ArrayList<FileItem> mSelectedFileList;
 
     public FileListAdapter(Context context) {
         super(context);

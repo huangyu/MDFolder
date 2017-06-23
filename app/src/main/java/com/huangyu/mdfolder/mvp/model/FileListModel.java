@@ -37,7 +37,7 @@ public class FileListModel implements IBaseModel {
 
     }
 
-    public List<File> getFileList(String path, String searchStr) {
+    public ArrayList<File> getFileList(String path, String searchStr) {
         return FileUtils.listFilesInDirWithFilter(path, new SearchFilter(searchStr), false);
     }
 
@@ -57,7 +57,7 @@ public class FileListModel implements IBaseModel {
 //        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(), new VideoFilter(searchStr), true);
 //    }
 
-    public List<FileItem> getDocumentList(String searchStr, ContentResolver contentResolver) {
+    public ArrayList<FileItem> getDocumentList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{MediaStore.Files.FileColumns.DATA,
                 MediaStore.Files.FileColumns.TITLE, MediaStore.Files.FileColumns.SIZE,
                 MediaStore.Files.FileColumns.DATE_MODIFIED, MediaStore.Files.FileColumns.MIME_TYPE};
@@ -108,7 +108,7 @@ public class FileListModel implements IBaseModel {
         return null;
     }
 
-    public List<FileItem> getVideoList(String searchStr, ContentResolver contentResolver) {
+    public ArrayList<FileItem> getVideoList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{MediaStore.Video.VideoColumns.DATA,
                 MediaStore.Video.VideoColumns.DISPLAY_NAME, MediaStore.Video.VideoColumns.SIZE,
                 MediaStore.Video.VideoColumns.DATE_MODIFIED};
@@ -145,7 +145,7 @@ public class FileListModel implements IBaseModel {
         return null;
     }
 
-    public List<FileItem> getImageList(String searchStr, ContentResolver contentResolver) {
+    public ArrayList<FileItem> getImageList(String searchStr, ContentResolver contentResolver) {
         Uri imageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         String[] projection = new String[]{MediaStore.Images.ImageColumns.DATA,
                 MediaStore.Images.ImageColumns.DISPLAY_NAME,
@@ -181,7 +181,7 @@ public class FileListModel implements IBaseModel {
         return null;
     }
 
-    public List<FileItem> getAudioList(String searchStr, ContentResolver contentResolver) {
+    public ArrayList<FileItem> getAudioList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{MediaStore.Audio.AudioColumns.DATA,
                 MediaStore.Audio.AudioColumns.DISPLAY_NAME, MediaStore.Audio.AudioColumns.SIZE,
                 MediaStore.Audio.AudioColumns.DATE_MODIFIED};
@@ -247,7 +247,7 @@ public class FileListModel implements IBaseModel {
     /**
      * 按字母排序
      */
-    public List<FileItem> orderByAlphabet(List<FileItem> fileList) {
+    public ArrayList<FileItem> orderByAlphabet(ArrayList<FileItem> fileList) {
         Collections.sort(fileList, new AlphabetComparator());
         return fileList;
     }
@@ -255,7 +255,7 @@ public class FileListModel implements IBaseModel {
     /**
      * 按时间排序
      */
-    public List<FileItem> orderByTime(List<FileItem> fileList) {
+    public ArrayList<FileItem> orderByTime(ArrayList<FileItem> fileList) {
         Collections.sort(fileList, new TimeComparator());
         return fileList;
     }
@@ -263,7 +263,7 @@ public class FileListModel implements IBaseModel {
     /**
      * 按类型排序
      */
-    public List<FileItem> orderByType(List<FileItem> fileList) {
+    public ArrayList<FileItem> orderByType(ArrayList<FileItem> fileList) {
         Collections.sort(fileList, new TypeComparator());
         return fileList;
     }
@@ -271,7 +271,7 @@ public class FileListModel implements IBaseModel {
     /**
      * 按大小排序
      */
-    public List<FileItem> orderBySize(List<FileItem> fileList) {
+    public ArrayList<FileItem> orderBySize(ArrayList<FileItem> fileList) {
         Collections.sort(fileList, new SizeComparator());
         return fileList;
     }
@@ -279,7 +279,7 @@ public class FileListModel implements IBaseModel {
     /**
      * 逆序
      */
-    public List<FileItem> orderByOrder(List<FileItem> fileList) {
+    public ArrayList<FileItem> orderByOrder(ArrayList<FileItem> fileList) {
         Collections.reverse(fileList);
         return fileList;
     }

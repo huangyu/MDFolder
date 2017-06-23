@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * RecyclerView通用Adapter
@@ -17,7 +16,7 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
 
     protected Context mContext;
 
-    protected List<T> mDataList;
+    protected ArrayList<T> mDataList;
 
     protected OnItemClickListener mOnItemClick;
     protected OnItemLongClickListener mOnItemLongClick;
@@ -30,7 +29,7 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
         mSelectArray = new SparseBooleanArray();
     }
 
-    public void setData(List<T> list) {
+    public void setData(ArrayList<T> list) {
         if (list == null) {
             return;
         }
@@ -61,7 +60,7 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
         notifyDataSetChanged();
     }
 
-    public List<T> getDataList() {
+    public ArrayList<T> getDataList() {
         return mDataList;
     }
 
@@ -79,7 +78,7 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
     }
 
     public void clearSelectedState() {
-        List<Integer> selection = getSelectedItemList();
+        ArrayList<Integer> selection = getSelectedItemList();
         mSelectArray.clear();
         for (Integer i : selection) {
             notifyItemChanged(i);
@@ -90,16 +89,16 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
         return mSelectArray.size();
     }
 
-    public List<Integer> getSelectedItemList() {
-        List<Integer> itemList = new ArrayList<>(mSelectArray.size());
+    public ArrayList<Integer> getSelectedItemList() {
+        ArrayList<Integer> itemList = new ArrayList<>(mSelectArray.size());
         for (int i = 0; i < mSelectArray.size(); ++i) {
             itemList.add(mSelectArray.keyAt(i));
         }
         return itemList;
     }
 
-    public List<T> getSelectedDataList() {
-        List<T> dataList = new ArrayList<>(mSelectArray.size());
+    public ArrayList<T> getSelectedDataList() {
+        ArrayList<T> dataList = new ArrayList<>(mSelectArray.size());
         for (int i = 0; i < mSelectArray.size(); ++i) {
             dataList.add(mDataList.get(mSelectArray.keyAt(i)));
         }
