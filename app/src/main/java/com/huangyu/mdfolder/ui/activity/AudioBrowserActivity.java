@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.afollestad.easyvideoplayer.EasyVideoCallback;
@@ -24,6 +25,7 @@ import com.huangyu.mdfolder.utils.AlertUtils;
 import java.util.ArrayList;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * Created by huangyu on 2017-6-23.
@@ -74,6 +76,7 @@ public class AudioBrowserActivity extends ThematicActivity implements EasyVideoC
 
             @Override
             public void onPageSelected(int position) {
+                resetLastPositionPlayer();
                 currentPosition = position;
                 mToolbar.setTitle(mFileList.get(position).getName());
                 mTvNumber.setText(position + 1 + "/" + mFileList.size());
@@ -103,6 +106,19 @@ public class AudioBrowserActivity extends ThematicActivity implements EasyVideoC
                 finish();
             }
         });
+    }
+
+    private void resetLastPositionPlayer() {
+        View view = mViewPager.findViewWithTag("audio" + currentPosition);
+        if (view != null) {
+            EasyVideoPlayer easyVideoPlayer = ButterKnife.findById(view, R.id.audio_player);
+            easyVideoPlayer.pause();
+            easyVideoPlayer.seekTo(0);
+            SeekBar seekBar = ButterKnife.findById(view, com.afollestad.easyvideoplayer.R.id.seeker);
+            seekBar.setProgress(0);
+            TextView tvLabelPosition = ButterKnife.findById(view, com.afollestad.easyvideoplayer.R.id.position);
+            tvLabelPosition.setText("00:00");
+        }
     }
 
     @Override

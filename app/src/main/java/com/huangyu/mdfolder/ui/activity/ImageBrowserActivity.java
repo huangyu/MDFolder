@@ -89,9 +89,11 @@ public class ImageBrowserActivity extends ThematicActivity {
         if (isLightMode()) {
             mAppBarLayout.getContext().setTheme(R.style.AppTheme_AppBarOverlay);
             mToolbar.setPopupTheme(R.style.AppTheme_PopupOverlay);
+            mTvNumber.setTextColor(getResources().getColor(R.color.colorPrimaryText));
         } else {
             mAppBarLayout.getContext().setTheme(R.style.AppTheme_AppBarOverlay_Dark);
             mToolbar.setPopupTheme(R.style.AppTheme_PopupOverlay_Dark);
+            mTvNumber.setTextColor(getResources().getColor(R.color.colorPrimaryTextWhite));
         }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {

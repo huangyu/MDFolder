@@ -65,6 +65,7 @@ public class AudioPagerAdapter extends PagerAdapter {
             ivMusic.setColorFilter(mContext.getResources().getColor(R.color.colorLightGray));
             easyVideoPlayer.setBackgroundColor(mContext.getResources().getColor(R.color.colorDeepDark));
         }
+        view.setTag("audio" + position);
         viewGroup.addView(view);
         return view;
     }

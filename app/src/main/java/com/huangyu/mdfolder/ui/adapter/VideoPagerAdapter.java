@@ -48,13 +48,14 @@ public class VideoPagerAdapter extends PagerAdapter {
         EasyVideoPlayer easyVideoPlayer = ButterKnife.findById(view, R.id.video_player);
         easyVideoPlayer.setSource(Uri.fromFile(new File(mVideoList.get(position).getPath())));
         easyVideoPlayer.setCallback(mEasyVideoCallback);
+        view.setTag("video" + position);
         viewGroup.addView(view);
         return view;
     }
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
-        return view.equals(object);
+        return view == object;
     }
 
 }

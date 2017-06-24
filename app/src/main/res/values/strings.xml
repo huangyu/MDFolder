@@ -19,7 +19,7 @@
     <string name="intent_video_list">VideoList</string>
     <string name="intent_video_position">VideoPosition</string>
     <string name="intent_audio_list">AudioList</string>
-    <string name="intent_audio_position">VideoPosition</string>
+    <string name="intent_audio_position">AudioPosition</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
