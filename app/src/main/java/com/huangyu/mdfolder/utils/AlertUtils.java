@@ -149,7 +149,7 @@ public class AlertUtils {
         } else {
             tvSize.setText(FileUtils.getFileSize(fileItem.getPath()));
         }
-        tvDate.setText(fileItem.getDate());
+        tvDate.setText(DateUtils.getFormatDate(Long.valueOf(fileItem.getDate()) * 1000));
         tvType.setText(MimeTypeUtils.getMIMEType(fileItem.getPath()));
         tvMd5.setText(FileUtils.getFileMD5ToString(fileItem.getPath()));
 

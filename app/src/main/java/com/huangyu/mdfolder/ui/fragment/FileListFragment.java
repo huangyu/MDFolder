@@ -325,6 +325,13 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 mPresenter.onRefresh(mSearchStr, true, 0);
             }
         });
+
+        mRxManager.on("onDeleteAndRefresh", new Action1<String>() {
+            @Override
+            public void call(String s) {
+                mPresenter.onLoadStorageFileList(false, mSearchStr);
+            }
+        });
     }
 
     @Override

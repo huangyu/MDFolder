@@ -1,5 +1,6 @@
 package com.huangyu.mdfolder.ui.activity;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,6 +27,11 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by huangyu on 2017-6-23.
@@ -44,10 +50,12 @@ public class AudioBrowserActivity extends ThematicActivity implements EasyVideoC
     @Bind(R.id.view_pager)
     ViewPager mViewPager;
 
+    private ProgressDialog mProgressDialog;
+    private AudioPagerAdapter mAdapter;
+
     private ArrayList<FileItem> mFileList;
     private FileListModel mFileListModel;
-    private AudioPagerAdapter adapter;
-    private int currentPosition;
+    private int mCurrentPosition;
 
     @Override
     protected int getLayoutId() {
@@ -64,10 +72,10 @@ public class AudioBrowserActivity extends ThematicActivity implements EasyVideoC
     protected void initView(Bundle savedInstanceState) {
         mFileListModel = new FileListModel();
         mFileList = (ArrayList<FileItem>) getIntent().getSerializableExtra(getString(R.string.intent_audio_list));
-        currentPosition = getIntent().getIntExtra(getString(R.string.intent_audio_position), 0);
-        adapter = new AudioPagerAdapter(this, mFileList, this);
-        mViewPager.setAdapter(adapter);
-        mViewPager.setCurrentItem(currentPosition);
+        mCurrentPosition = getIntent().getIntExtra(getString(R.string.intent_audio_position), 0);
+        mAdapter = new AudioPagerAdapter(this, mFileList, this);
+        mViewPager.setAdapter(mAdapter);
+        mViewPager.setCurrentItem(mCurrentPosition);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -77,7 +85,7 @@ public class AudioBrowserActivity extends ThematicActivity implements EasyVideoC
             @Override
             public void onPageSelected(int position) {
                 resetLastPositionPlayer();
-                currentPosition = position;
+                mCurrentPosition = position;
                 mToolbar.setTitle(mFileList.get(position).getName());
                 mTvNumber.setText(position + 1 + "/" + mFileList.size());
             }
@@ -87,8 +95,8 @@ public class AudioBrowserActivity extends ThematicActivity implements EasyVideoC
 
             }
         });
-        mToolbar.setTitle(mFileList.get(currentPosition).getName());
-        mTvNumber.setText(currentPosition + 1 + "/" + mFileList.size());
+        mToolbar.setTitle(mFileList.get(mCurrentPosition).getName());
+        mTvNumber.setText(mCurrentPosition + 1 + "/" + mFileList.size());
 
         setSupportActionBar(mToolbar);
 
@@ -109,7 +117,7 @@ public class AudioBrowserActivity extends ThematicActivity implements EasyVideoC
     }
 
     private void resetLastPositionPlayer() {
-        View view = mViewPager.findViewWithTag("audio" + currentPosition);
+        View view = mViewPager.findViewWithTag("audio" + mCurrentPosition);
         if (view != null) {
             EasyVideoPlayer easyVideoPlayer = ButterKnife.findById(view, R.id.audio_player);
             easyVideoPlayer.pause();
@@ -131,10 +139,10 @@ public class AudioBrowserActivity extends ThematicActivity implements EasyVideoC
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_info:
-                onShowFileInfo(mFileList.get(currentPosition));
+                onShowFileInfo(mFileList.get(mCurrentPosition));
                 break;
             case R.id.action_delete:
-                onDelete(mFileList.get(currentPosition));
+                onDelete(mFileList.get(mCurrentPosition));
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -164,22 +172,68 @@ public class AudioBrowserActivity extends ThematicActivity implements EasyVideoC
                         return;
                     }
 
-                    mFileList = mFileListModel.getAudioList("", getContentResolver());
-                    AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_delete_successfully));
+                    Subscription subscription = Observable.just(mFileListModel.getAudioList("", getContentResolver()))
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Subscriber<ArrayList<FileItem>>() {
+                                @Override
+                                public void onStart() {
+                                    AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_delete_successfully));
+                                    showProgressDialog(getString(R.string.tips_loading));
+                                }
 
-                    adapter = new AudioPagerAdapter(AudioBrowserActivity.this, mFileList, AudioBrowserActivity.this);
-                    mViewPager.setAdapter(adapter);
-                    if (currentPosition >= mFileList.size() - 1) {
-                        currentPosition = mFileList.size() - 1;
-                    } else {
-                        currentPosition++;
-                    }
-                    mViewPager.setCurrentItem(currentPosition);
+                                @Override
+                                public void onCompleted() {
+                                    if (mCurrentPosition >= mFileList.size() - 1) {
+                                        mCurrentPosition = mFileList.size() - 1;
+                                    } else {
+                                        mCurrentPosition++;
+                                    }
+                                    mTvNumber.setText(mCurrentPosition + 1 + "/" + mFileList.size());
+                                    mViewPager.setCurrentItem(mCurrentPosition);
+                                    mRxManager.post("onDeleteAndRefresh", "");
+                                    hideProgressDialog();
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_error));
+                                    onCompleted();
+                                }
+
+                                @Override
+                                public void onNext(ArrayList<FileItem> fileItemList) {
+                                    mFileList = fileItemList;
+                                    mAdapter = new AudioPagerAdapter(AudioBrowserActivity.this, fileItemList, AudioBrowserActivity.this);
+                                    mViewPager.setAdapter(mAdapter);
+                                }
+                            });
+                    mRxManager.add(subscription);
                 } else {
                     AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_delete_in_error));
                 }
             }
         });
+    }
+
+    private void showProgressDialog(String message) {
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setTitle(getString(R.string.tips_alert));
+        mProgressDialog.setMessage(message);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.show();
+    }
+
+    private void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        hideProgressDialog();
+        super.onDestroy();
     }
 
     @Override

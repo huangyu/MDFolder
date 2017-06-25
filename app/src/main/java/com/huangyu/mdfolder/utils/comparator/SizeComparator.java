@@ -10,8 +10,8 @@ import java.util.Comparator;
 public class SizeComparator implements Comparator<FileItem> {
 
     public int compare(FileItem file1, FileItem file2) {
-        long size1 = file1.getSize();
-        long size2 = file2.getSize();
+        long size1 = Long.valueOf(file1.getSize());
+        long size2 = Long.valueOf(file2.getSize());
         long diff = size1 - size2;
         if (file1.isDirectory() && !file2.isDirectory()) {
             return -1;

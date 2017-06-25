@@ -9,7 +9,7 @@ public class FileItem implements Serializable {
 
     private String path;
     private String name;
-    private long size;
+    private String size;
     private String date;
     private boolean isDirectory;
     private String parent;
@@ -36,11 +36,11 @@ public class FileItem implements Serializable {
         this.name = mFileName;
     }
 
-    public long getSize() {
+    public String getSize() {
         return size;
     }
 
-    public void setSize(long mSize) {
+    public void setSize(String mSize) {
         this.size = mSize;
     }
 

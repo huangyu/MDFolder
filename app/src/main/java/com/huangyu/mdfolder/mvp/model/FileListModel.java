@@ -12,7 +12,6 @@ import com.huangyu.library.mvp.IBaseModel;
 import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
-import com.huangyu.mdfolder.utils.DateUtils;
 import com.huangyu.mdfolder.utils.SDCardUtils;
 import com.huangyu.mdfolder.utils.ZipUtils;
 import com.huangyu.mdfolder.utils.comparator.AlphabetComparator;
@@ -58,8 +57,10 @@ public class FileListModel implements IBaseModel {
 
     public ArrayList<FileItem> getDocumentList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{MediaStore.Files.FileColumns.DATA,
-                MediaStore.Files.FileColumns.TITLE, MediaStore.Files.FileColumns.SIZE,
-                MediaStore.Files.FileColumns.DATE_MODIFIED, MediaStore.Files.FileColumns.MIME_TYPE};
+                MediaStore.Files.FileColumns.TITLE,
+                MediaStore.Files.FileColumns.SIZE,
+                MediaStore.Files.FileColumns.DATE_MODIFIED,
+                MediaStore.Files.FileColumns.MIME_TYPE};
 
         Cursor cursor = contentResolver.query(MediaStore.Files.getContentUri("external"), projection,
                 MediaStore.Files.FileColumns.MIME_TYPE + " like ? or "
@@ -77,21 +78,22 @@ public class FileListModel implements IBaseModel {
                         "%.xlsx",
                         "%.pptx",
                         "application/pdf",
-                }, MediaStore.Files.FileColumns.TITLE + " asc");
+                }, null);
 
         if (cursor != null) {
             ArrayList<FileItem> documentList = new ArrayList<>();
             while (cursor.moveToNext()) {
                 String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.TITLE));
                 String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA));
+                String fileLength = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.SIZE));
                 String date = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATE_MODIFIED));
 
                 if (FileUtils.isFileExists(filePath)) {
                     FileItem fileItem = new FileItem();
                     fileItem.setName(filePath.substring(filePath.lastIndexOf(File.separator) + 1));
                     fileItem.setPath(filePath);
-                    fileItem.setSize(FileUtils.getFileLength(filePath));
-                    fileItem.setDate(DateUtils.getFormatDate(Long.valueOf(date) * 1000));
+                    fileItem.setSize(fileLength);
+                    fileItem.setDate(date);
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(false);
                     fileItem.setType(Constants.FileType.DOCUMENT);
@@ -109,26 +111,28 @@ public class FileListModel implements IBaseModel {
 
     public ArrayList<FileItem> getVideoList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{MediaStore.Video.VideoColumns.DATA,
-                MediaStore.Video.VideoColumns.DISPLAY_NAME, MediaStore.Video.VideoColumns.SIZE,
+                MediaStore.Video.VideoColumns.DISPLAY_NAME,
+                MediaStore.Video.VideoColumns.SIZE,
                 MediaStore.Video.VideoColumns.DATE_MODIFIED};
 
         Cursor cursor = contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                 projection,
-                null, null, MediaStore.Video.VideoColumns.DISPLAY_NAME + " asc");
+                null, null, null);
 
         if (cursor != null) {
             ArrayList<FileItem> videoList = new ArrayList<>();
             while (cursor.moveToNext()) {
                 String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DISPLAY_NAME));
                 String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DATA));
+                String fileLength = cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.SIZE));
                 String date = cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DATE_MODIFIED));
 
                 if (FileUtils.isFileExists(filePath)) {
                     FileItem fileItem = new FileItem();
                     fileItem.setName(fileName);
                     fileItem.setPath(filePath);
-                    fileItem.setSize(FileUtils.getFileLength(filePath));
-                    fileItem.setDate(DateUtils.getFormatDate(Long.valueOf(date) * 1000));
+                    fileItem.setSize(fileLength);
+                    fileItem.setDate(date);
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(false);
                     fileItem.setType(Constants.FileType.VIDEO);
@@ -151,20 +155,21 @@ public class FileListModel implements IBaseModel {
                 MediaStore.Images.ImageColumns.SIZE,
                 MediaStore.Images.ImageColumns.DATE_MODIFIED};
         Cursor cursor = contentResolver.query(imageUri, projection, null, null,
-                MediaStore.Images.ImageColumns.DISPLAY_NAME + " asc");
+                null);
         if (cursor != null) {
             ArrayList<FileItem> imageList = new ArrayList<>();
             while (cursor.moveToNext()) {
                 String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA));
                 String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME));
+                String fileLength = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE));
                 String date = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED));
 
                 if (FileUtils.isFileExists(filePath)) {
                     FileItem fileItem = new FileItem();
                     fileItem.setName(fileName);
                     fileItem.setPath(filePath);
-                    fileItem.setSize(FileUtils.getFileLength(filePath));
-                    fileItem.setDate(DateUtils.getFormatDate(Long.valueOf(date) * 1000));
+                    fileItem.setSize(fileLength);
+                    fileItem.setDate(date);
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(false);
                     fileItem.setType(Constants.FileType.IMAGE);
@@ -182,25 +187,27 @@ public class FileListModel implements IBaseModel {
 
     public ArrayList<FileItem> getAudioList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{MediaStore.Audio.AudioColumns.DATA,
-                MediaStore.Audio.AudioColumns.DISPLAY_NAME, MediaStore.Audio.AudioColumns.SIZE,
+                MediaStore.Audio.AudioColumns.DISPLAY_NAME,
+                MediaStore.Audio.AudioColumns.SIZE,
                 MediaStore.Audio.AudioColumns.DATE_MODIFIED};
 
         Cursor cursor = contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                projection, null, null, MediaStore.Audio.AudioColumns.DISPLAY_NAME + " asc");
+                projection, null, null, null);
 
         if (cursor != null) {
             ArrayList<FileItem> audioList = new ArrayList<>();
             while (cursor.moveToNext()) {
                 String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DISPLAY_NAME));
                 String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATA));
+                String fileLength = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.SIZE));
                 String date = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATE_MODIFIED));
 
                 if (FileUtils.isFileExists(filePath)) {
                     FileItem fileItem = new FileItem();
                     fileItem.setName(fileName);
                     fileItem.setPath(filePath);
-                    fileItem.setSize(FileUtils.getFileLength(filePath));
-                    fileItem.setDate(DateUtils.getFormatDate(Long.valueOf(date) * 1000));
+                    fileItem.setSize(fileLength);
+                    fileItem.setDate(date);
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(false);
                     fileItem.setType(Constants.FileType.AUDIO);

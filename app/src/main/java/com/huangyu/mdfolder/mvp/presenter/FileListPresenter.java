@@ -17,7 +17,6 @@ import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
-import com.huangyu.mdfolder.utils.DateUtils;
 import com.huangyu.mdfolder.utils.MimeTypeUtils;
 
 import java.io.File;
@@ -1160,11 +1159,11 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 fileItem.setPath(file.getPath());
                 if (file.isDirectory()) {
 //                    fileItem.setSize(FileUtils.getDirLength(file));
-                    fileItem.setSize(0);
+                    fileItem.setSize("0");
                 } else {
-                    fileItem.setSize(FileUtils.getFileLength(file));
+                    fileItem.setSize(String.valueOf(FileUtils.getFileLength(file)));
                 }
-                fileItem.setDate(DateUtils.getFormatDate(file.lastModified()));
+                fileItem.setDate(String.valueOf(file.lastModified() / 1000));
                 fileItem.setIsDirectory(file.isDirectory());
                 fileItem.setParent(file.getParent());
                 fileItem.setType(MimeTypeUtils.getTypeBySuffix(FileUtils.getSuffix(file.getName())));

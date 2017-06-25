@@ -13,6 +13,7 @@ import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.ui.activity.FileListActivity;
+import com.huangyu.mdfolder.utils.DateUtils;
 
 import java.util.ArrayList;
 
@@ -66,7 +67,7 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
                     mTvSize.setText(mContext.getString(R.string.str_folder));
                     Glide.with(mContext).load(R.mipmap.ic_folder).into(mIvIcon);
                 } else {
-                    mTvSize.setText(FileUtils.getFileOrDirSize(fileItem.getSize()));
+                    mTvSize.setText(FileUtils.getFileOrDirSize(Long.valueOf(fileItem.getSize())));
                     if (FileUtils.getSuffix(fileItem.getName()).equals("aac")) {
                         Glide.with(mContext).load(R.mipmap.ic_aac).into(mIvIcon);
                     } else if (FileUtils.getSuffix(fileItem.getName()).equals("jpg")) {
@@ -172,7 +173,7 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
                 break;
             case Constants.FileType.IMAGE:
             case Constants.FileType.SINGLE_IMAGE:
-                mTvSize.setText(FileUtils.getFileOrDirSize(fileItem.getSize()));
+                mTvSize.setText(FileUtils.getFileOrDirSize(Long.valueOf(fileItem.getSize())));
                 Glide.with(mContext).load(fileItem.getPath()).error(R.mipmap.ic_file).into(mIvIcon);
                 break;
         }
@@ -187,7 +188,7 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
             }
         }
 
-        mTvTime.setText(fileItem.getDate());
+        mTvTime.setText(DateUtils.getFormatDate(Long.valueOf(fileItem.getDate()) * 1000));
 
         if (position == getItemCount() - 1) {
             mVDivider.setVisibility(View.GONE);
