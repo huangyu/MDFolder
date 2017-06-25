@@ -159,8 +159,14 @@ public class AudioBrowserActivity extends ThematicActivity implements EasyVideoC
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (FileUtils.deleteFile(fileItem.getPath())) {
+                    if (mFileList.size() <= 1) {
+                        finish();
+                        return;
+                    }
+
                     mFileList = mFileListModel.getAudioList("", getContentResolver());
                     AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_delete_successfully));
+
                     adapter = new AudioPagerAdapter(AudioBrowserActivity.this, mFileList, AudioBrowserActivity.this);
                     mViewPager.setAdapter(adapter);
                     if (currentPosition >= mFileList.size() - 1) {

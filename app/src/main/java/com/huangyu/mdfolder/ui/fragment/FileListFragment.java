@@ -115,10 +115,37 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     }
 
                     if (file.isDirectory()) {
-                        mPresenter.enterFolder(file);
+                        mPresenter.enterFolder(file, getScrollYDistance());
                     } else {
+                        // 单个图片浏览
+                        if (file.getType() == Constants.FileType.SINGLE_IMAGE) {
+                            ArrayList<FileItem> arrayList = new ArrayList<>();
+                            arrayList.add(file);
+                            Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
+                            intent.putExtra(getString(R.string.intent_image_list), arrayList);
+                            intent.putExtra(getString(R.string.intent_image_position), 0);
+                            getActivity().startActivity(intent);
+                        }
+                        // 单个视频浏览
+                        else if (file.getType() == Constants.FileType.SINGLE_VIDEO) {
+                            ArrayList<FileItem> arrayList = new ArrayList<>();
+                            arrayList.add(file);
+                            Intent intent = new Intent(getActivity(), VideoBrowserActivity.class);
+                            intent.putExtra(getString(R.string.intent_video_list), arrayList);
+                            intent.putExtra(getString(R.string.intent_video_position), 0);
+                            getActivity().startActivity(intent);
+                        }
+                        // 单个音频浏览
+                        else if (file.getType() == Constants.FileType.SINGLE_AUDIO) {
+                            ArrayList<FileItem> arrayList = new ArrayList<>();
+                            arrayList.add(file);
+                            Intent intent = new Intent(getActivity(), AudioBrowserActivity.class);
+                            intent.putExtra(getString(R.string.intent_audio_list), arrayList);
+                            intent.putExtra(getString(R.string.intent_audio_position), 0);
+                            getActivity().startActivity(intent);
+                        }
                         // 进入图片浏览
-                        if (file.getType() == Constants.FileType.IMAGE) {
+                        else if (file.getType() == Constants.FileType.IMAGE) {
                             Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
                             intent.putExtra(getString(R.string.intent_image_list), mAdapter.getDataList());
                             intent.putExtra(getString(R.string.intent_image_position), position);
@@ -152,7 +179,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     }
 
                     if (file.isDirectory()) {
-                        mPresenter.enterFolder(file);
+                        mPresenter.enterFolder(file, getScrollYDistance());
                     }
                 } else {
                     mPresenter.mEditType = Constants.EditType.SELECT;
@@ -214,11 +241,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         });
 
         initRxManagerActions();
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
         mPresenter.onLoadStorageFileList(false, mSearchStr);
     }
 
@@ -227,7 +250,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public void call(String text) {
                 mSearchStr = text;
-                mPresenter.onRefresh(text, true);
+                mPresenter.onRefresh(text, true, 0);
             }
         });
 
@@ -291,7 +314,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public void call(Integer sortType) {
                 mPresenter.mSortType = sortType;
-                mPresenter.onRefresh(mSearchStr, true);
+                mPresenter.onRefresh(mSearchStr, true, 0);
             }
         });
 
@@ -299,7 +322,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public void call(Integer orderType) {
                 mPresenter.mOrderType = orderType;
-                mPresenter.onRefresh(mSearchStr, true);
+                mPresenter.onRefresh(mSearchStr, true, 0);
             }
         });
     }
@@ -342,12 +365,12 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     @Override
-    public void refreshData(boolean ifClearSelected) {
-        mPresenter.onRefresh(mSearchStr, ifClearSelected);
+    public void refreshData(boolean ifClearSelected, final int scrollY) {
+        mPresenter.onRefresh(mSearchStr, ifClearSelected, scrollY);
     }
 
     @Override
-    public void refreshData(ArrayList<FileItem> filesList, boolean ifClearSelected) {
+    public void refreshData(ArrayList<FileItem> filesList, boolean ifClearSelected, final int scrollY) {
         mAdapter.clearData(ifClearSelected);
 
         if (filesList == null || filesList.isEmpty()) {
@@ -355,6 +378,11 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         } else {
             mLlEmpty.setVisibility(View.GONE);
             mAdapter.setData(filesList);
+        }
+
+        if (scrollY != 0) {
+            mRecyclerView.scrollToPosition(0);
+            mRecyclerView.scrollBy(0, scrollY);
         }
     }
 
@@ -517,12 +545,12 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public void onDestroyActionMode(ActionMode mode) {
                 if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT) {
-                    refreshData(true);
+                    refreshData(true, 0);
                     getActivity().supportInvalidateOptionsMenu();
                     mActionMode = null;
                     mPresenter.mEditType = Constants.EditType.NONE;
                 } else {
-                    refreshData(false);
+                    refreshData(false, 0);
                 }
             }
         });
@@ -560,7 +588,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
-                refreshData(true);
+                refreshData(true, 0);
                 getActivity().supportInvalidateOptionsMenu();
                 mActionMode = null;
                 mPresenter.mEditType = Constants.EditType.NONE;
@@ -581,6 +609,14 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     public void onDestroyView() {
         hideProgressDialog();
         super.onDestroyView();
+    }
+
+    public int getScrollYDistance() {
+        LinearLayoutManager layoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
+        int position = layoutManager.findFirstVisibleItemPosition();
+        View firstVisibleChildView = layoutManager.findViewByPosition(position);
+        int itemHeight = firstVisibleChildView.getHeight();
+        return (position) * itemHeight - firstVisibleChildView.getTop();
     }
 
 }

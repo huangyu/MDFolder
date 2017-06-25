@@ -58,6 +58,9 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
             case Constants.FileType.DOCUMENT:
             case Constants.FileType.AUDIO:
             case Constants.FileType.VIDEO:
+            case Constants.FileType.SINGLE_DOCUMENT:
+            case Constants.FileType.SINGLE_AUDIO:
+            case Constants.FileType.SINGLE_VIDEO:
                 if (fileItem.isDirectory()) {
 //                    String size = mContext.getString(R.string.str_folder) + FileUtils.getFileOrDirSize(fileItem.getSize());
                     mTvSize.setText(mContext.getString(R.string.str_folder));
@@ -168,12 +171,13 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
                 }
                 break;
             case Constants.FileType.IMAGE:
+            case Constants.FileType.SINGLE_IMAGE:
                 mTvSize.setText(FileUtils.getFileOrDirSize(fileItem.getSize()));
                 Glide.with(mContext).load(fileItem.getPath()).error(R.mipmap.ic_file).into(mIvIcon);
                 break;
         }
 
-        if (fileType == Constants.FileType.IMAGE) {
+        if (fileType == Constants.FileType.IMAGE || fileType == Constants.FileType.SINGLE_IMAGE) {
             mIvIcon.setColorFilter(null);
         } else {
             if (activity.isLightMode()) {

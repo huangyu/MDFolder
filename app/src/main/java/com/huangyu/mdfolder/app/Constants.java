@@ -44,6 +44,14 @@ public class Constants extends BaseConstants {
         public static final int VIDEO = 0x23;
 
         public static final int DOCUMENT = 0x24;
+
+        public static final int SINGLE_IMAGE = 0x25;
+
+        public static final int SINGLE_AUDIO = 0x26;
+
+        public static final int SINGLE_VIDEO = 0x27;
+
+        public static final int SINGLE_DOCUMENT = 0x28;
     }
 
     public static class SortType {

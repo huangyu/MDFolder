@@ -159,8 +159,14 @@ public class VideoBrowserActivity extends ThematicActivity implements EasyVideoC
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (FileUtils.deleteFile(fileItem.getPath())) {
+                    if (mFileList.size() <= 1) {
+                        finish();
+                        return;
+                    }
+
                     mFileList = mFileListModel.getVideoList("", getContentResolver());
                     AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_delete_successfully));
+
                     adapter = new VideoPagerAdapter(VideoBrowserActivity.this, mFileList, VideoBrowserActivity.this);
                     mViewPager.setAdapter(adapter);
                     if (currentPosition >= mFileList.size() - 1) {

@@ -1,5 +1,7 @@
 package com.huangyu.mdfolder.utils;
 
+import com.huangyu.mdfolder.app.Constants;
+
 /**
  * Created by huangyu on 2017-6-5.
  */
@@ -32,6 +34,75 @@ public class MimeTypeUtils {
             }
         }
         return type;
+    }
+
+    /**
+     * 根据文件后缀获取文件类型
+     */
+    public static int getTypeBySuffix(String suffix) {
+        if (suffix.equals("doc")) {
+            return Constants.FileType.SINGLE_DOCUMENT;
+        } else if (suffix.equals("docx")) {
+            return Constants.FileType.SINGLE_DOCUMENT;
+        } else if (suffix.equals("ppt")) {
+            return Constants.FileType.SINGLE_DOCUMENT;
+        } else if (suffix.equals("pptx")) {
+            return Constants.FileType.SINGLE_DOCUMENT;
+        } else if (suffix.equals("xls")) {
+            return Constants.FileType.SINGLE_DOCUMENT;
+        } else if (suffix.equals("xlsx")) {
+            return Constants.FileType.SINGLE_DOCUMENT;
+        } else if (suffix.equals("pdf")) {
+            return Constants.FileType.SINGLE_DOCUMENT;
+        } else if (suffix.equals("3gp")) {
+            return Constants.FileType.SINGLE_VIDEO;
+        } else if (suffix.equals("mp4")) {
+            return Constants.FileType.SINGLE_VIDEO;
+        } else if (suffix.equals("webm")) {
+            return Constants.FileType.SINGLE_VIDEO;
+        } else if (suffix.equals("mkv")) {
+            return Constants.FileType.SINGLE_VIDEO;
+        } else if (suffix.equals("ts")) {
+            return Constants.FileType.SINGLE_VIDEO;
+        } else if (suffix.equals("wav")) {
+            return Constants.FileType.SINGLE_VIDEO;
+        } else if (suffix.equals("flv")) {
+            return Constants.FileType.SINGLE_VIDEO;
+        } else if (suffix.equals("flac")) {
+            return Constants.FileType.SINGLE_AUDIO;
+        } else if (suffix.equals("ogg")) {
+            return Constants.FileType.SINGLE_AUDIO;
+        } else if (suffix.equals("mid")) {
+            return Constants.FileType.SINGLE_AUDIO;
+        } else if (suffix.equals("xmf")) {
+            return Constants.FileType.SINGLE_AUDIO;
+        } else if (suffix.equals("mxmf")) {
+            return Constants.FileType.SINGLE_AUDIO;
+        } else if (suffix.equals("rtttl")) {
+            return Constants.FileType.SINGLE_AUDIO;
+        } else if (suffix.equals("rtx")) {
+            return Constants.FileType.SINGLE_AUDIO;
+        } else if (suffix.equals("ota")) {
+            return Constants.FileType.SINGLE_AUDIO;
+        } else if (suffix.equals("imy")) {
+            return Constants.FileType.SINGLE_AUDIO;
+        } else if (suffix.equals("mp3")) {
+            return Constants.FileType.SINGLE_AUDIO;
+        } else if (suffix.equals("bmp")) {
+            return Constants.FileType.SINGLE_IMAGE;
+        } else if (suffix.equals("jpg")) {
+            return Constants.FileType.SINGLE_IMAGE;
+        } else if (suffix.equals("jpeg")) {
+            return Constants.FileType.SINGLE_IMAGE;
+        } else if (suffix.equals("png")) {
+            return Constants.FileType.SINGLE_IMAGE;
+        } else if (suffix.equals("webp")) {
+            return Constants.FileType.SINGLE_IMAGE;
+        } else if (suffix.equals("gif")) {
+            return Constants.FileType.SINGLE_IMAGE;
+        } else {
+            return Constants.FileType.FILE;
+        }
     }
 
     /**

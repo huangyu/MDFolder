@@ -142,8 +142,14 @@ public class ImageBrowserActivity extends ThematicActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (FileUtils.deleteFile(fileItem.getPath())) {
+                    if (mFileList.size() <= 1) {
+                        finish();
+                        return;
+                    }
+
                     mFileList = mFileListModel.getImageList("", getContentResolver());
                     AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_delete_successfully));
+
                     adapter = new ImagePagerAdapter(ImageBrowserActivity.this, mFileList);
                     mViewPager.setAdapter(adapter);
                     if (currentPosition >= mFileList.size() - 1) {

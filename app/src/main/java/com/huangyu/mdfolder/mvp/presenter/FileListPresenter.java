@@ -18,6 +18,7 @@ import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
 import com.huangyu.mdfolder.utils.DateUtils;
+import com.huangyu.mdfolder.utils.MimeTypeUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,8 +49,10 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     private FileListModel mFileListModel;
     private FileModel mFileModel;
     private Stack<String> mFileStack;   // 文件路径栈
+    private Stack<Integer> mScrollYStack;   // 列表position栈
 
     private String mCurrentPath; // 当前路径
+    private int mBeforeScrollY; // 当前position
     public int mEditType;   // 当前编辑状态
     public int mFileType;   // 当前文件类型
     public int mSortType;   // 当前排序类型
@@ -60,6 +63,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         mFileListModel = new FileListModel();
         mFileModel = new FileModel();
         mFileStack = new Stack<>();
+        mScrollYStack = new Stack<>();
         mEditType = Constants.EditType.NONE;
         mFileType = Constants.SelectType.MENU_FILE;
         mSortType = Constants.SortType.TYPE;
@@ -84,6 +88,8 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                         mCurrentPath = mFileListModel.getRootPath();
                         mFileStack.clear();
                         mFileStack.push(mCurrentPath);
+                        mBeforeScrollY = 0;
+                        mScrollYStack.clear();
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -98,7 +104,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void onNext(ArrayList<FileItem> fileList) {
                         mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
-                        mView.refreshData(fileList, true);
+                        mView.refreshData(fileList, true, mBeforeScrollY);
                     }
 
                     @Override
@@ -133,6 +139,8 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                         mCurrentPath = mFileListModel.getStorageCardPath(isInner);
                         mFileStack.clear();
                         mFileStack.push(mCurrentPath);
+                        mBeforeScrollY = 0;
+                        mScrollYStack.clear();
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -147,7 +155,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void onNext(ArrayList<FileItem> fileList) {
                         mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
-                        mView.refreshData(fileList, true);
+                        mView.refreshData(fileList, true, mBeforeScrollY);
                     }
 
                     @Override
@@ -182,6 +190,8 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                         mCurrentPath = mFileListModel.getDownloadPath();
                         mFileStack.clear();
                         mFileStack.push(mCurrentPath);
+                        mBeforeScrollY = 0;
+                        mScrollYStack.clear();
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -196,7 +206,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void onNext(ArrayList<FileItem> fileList) {
                         mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
-                        mView.refreshData(fileList, true);
+                        mView.refreshData(fileList, true, mBeforeScrollY);
                     }
 
                     @Override
@@ -229,6 +239,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     @Override
                     public void call() {
                         mFileStack.clear();
+                        mScrollYStack.clear();
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -256,7 +267,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                 mView.addTab(mView.getResString(R.string.menu_video));
                                 break;
                         }
-                        mView.refreshData(fileList, true);
+                        mView.refreshData(fileList, true, mBeforeScrollY);
                     }
 
                     @Override
@@ -293,7 +304,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                     @Override
                     public void onNext(ArrayList<FileItem> fileList) {
-                        mView.refreshData(fileList, ifClearSelected);
+                        mView.refreshData(fileList, ifClearSelected, 0);
                     }
 
                     @Override
@@ -316,7 +327,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     /**
      * 刷新界面
      */
-    public void onRefresh(final String searchStr, final boolean ifClearSelected) {
+    public void onRefresh(final String searchStr, final boolean ifClearSelected, final int scrollY) {
         Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
             @Override
             public Observable<ArrayList<FileItem>> call() {
@@ -332,7 +343,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                     @Override
                     public void onNext(ArrayList<FileItem> fileList) {
-                        mView.refreshData(fileList, ifClearSelected);
+                        mView.refreshData(fileList, ifClearSelected, scrollY);
                     }
 
                     @Override
@@ -441,7 +452,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         }
                                         if (mFileModel.addFile(filePath)) {
                                             mView.showMessage(mView.getResString(R.string.tips_add_file_successfully));
-                                            mView.refreshData(false);
+                                            mView.refreshData(false, 0);
                                         } else {
                                             mView.showMessage(mView.getResString(R.string.tips_add_file_error));
                                         }
@@ -564,7 +575,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         }
                                         if (mFileModel.addFolder(filePath)) {
                                             mView.showMessage(mView.getResString(R.string.tips_add_folder_successfully));
-                                            mView.refreshData(false);
+                                            mView.refreshData(false, 0);
                                         } else {
                                             mView.showMessage(mView.getResString(R.string.tips_add_folder_error));
                                         }
@@ -1156,7 +1167,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 fileItem.setDate(DateUtils.getFormatDate(file.lastModified()));
                 fileItem.setIsDirectory(file.isDirectory());
                 fileItem.setParent(file.getParent());
-                fileItem.setType(Constants.FileType.FILE);
+                fileItem.setType(MimeTypeUtils.getTypeBySuffix(FileUtils.getSuffix(file.getName())));
                 fileItem.setIsShow(!file.isHidden());
                 fileItemList.add(fileItem);
             }
@@ -1170,11 +1181,13 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      *
      * @param file 文件夹
      */
-    public void enterFolder(FileItem file) {
+    public void enterFolder(FileItem file, int scrollY) {
         mFileStack.push(file.getPath());
+        mScrollYStack.push(scrollY);
         mView.addTab(file.getName());
         mCurrentPath = file.getPath();
-        mView.refreshData(false);
+        mBeforeScrollY = scrollY;
+        mView.refreshData(false, 0);
     }
 
     /**
@@ -1187,12 +1200,17 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         boolean isRemoved = false;
         while (mFileStack.size() > index + 1) {
             mFileStack.pop();
+            if (mFileStack.size() > index + 2) {
+                mScrollYStack.pop();
+            }
             mView.removeTab();
             isRemoved = true;
         }
         if (isRemoved) {
             mCurrentPath = mFileStack.peek();
-            mView.refreshData(false);
+            mBeforeScrollY = mScrollYStack.peek();
+            mScrollYStack.pop();
+            mView.refreshData(false, mBeforeScrollY);
         }
         return isRemoved;
     }
@@ -1207,7 +1225,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
             mFileStack.pop();
             mView.removeTab();
             mCurrentPath = mFileStack.peek();
-            mView.refreshData(false);
+            mBeforeScrollY = mScrollYStack.peek();
+            mScrollYStack.pop();
+            mView.refreshData(false, mBeforeScrollY);
             return true;
         }
         return false;
