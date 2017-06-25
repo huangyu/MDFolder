@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Created by huangyu on 2017-5-24.
@@ -63,21 +62,21 @@ public class FileListModel implements IBaseModel {
                 MediaStore.Files.FileColumns.DATE_MODIFIED, MediaStore.Files.FileColumns.MIME_TYPE};
 
         Cursor cursor = contentResolver.query(MediaStore.Files.getContentUri("external"), projection,
-                MediaStore.Files.FileColumns.DATA + " like ? or "
+                MediaStore.Files.FileColumns.MIME_TYPE + " like ? or "
+                        + MediaStore.Files.FileColumns.MIME_TYPE + " like ? or "
                         + MediaStore.Files.FileColumns.DATA + " like ? or "
                         + MediaStore.Files.FileColumns.DATA + " like ? or "
                         + MediaStore.Files.FileColumns.DATA + " like ? or "
                         + MediaStore.Files.FileColumns.DATA + " like ? or "
-                        + MediaStore.Files.FileColumns.DATA + " like ? or "
-                        + MediaStore.Files.FileColumns.DATA + " like ? ",
+                        + MediaStore.Files.FileColumns.MIME_TYPE + " like ? ",
                 new String[]{
-                        "%.doc",
-                        "%.xls",
+                        "application/msword",
+                        "application/vnd.ms-excel",
                         "%.ppt",
                         "%.docx",
                         "%.xlsx",
                         "%.pptx",
-                        "%.pdf",
+                        "application/pdf",
                 }, MediaStore.Files.FileColumns.TITLE + " asc");
 
         if (cursor != null) {

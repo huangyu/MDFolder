@@ -56,12 +56,11 @@ public class AudioPagerAdapter extends PagerAdapter {
         easyVideoPlayer.setCallback(mEasyVideoCallback);
 
         ImageView ivMusic = ButterKnife.findById(view, R.id.iv_view_music);
+        Glide.with(mContext).load(R.mipmap.ic_file).into(ivMusic);
         if (((AudioBrowserActivity) mContext).isLightMode()) {
-            Glide.with(mContext).load(R.mipmap.ic_view_music).into(ivMusic);
             ivMusic.setColorFilter(mContext.getResources().getColor(R.color.colorDarkGray));
             easyVideoPlayer.setBackgroundColor(mContext.getResources().getColor(R.color.colorWhite));
         } else {
-            Glide.with(mContext).load(R.mipmap.ic_view_music_white).into(ivMusic);
             ivMusic.setColorFilter(mContext.getResources().getColor(R.color.colorLightGray));
             easyVideoPlayer.setBackgroundColor(mContext.getResources().getColor(R.color.colorDeepDark));
         }

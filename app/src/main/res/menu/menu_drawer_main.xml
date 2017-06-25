@@ -38,7 +38,7 @@
             android:title="@string/menu_video" />
         <item
             android:id="@+id/nav_document"
-            android:icon="@mipmap/ic_document"
+            android:icon="@mipmap/ic_file"
             android:orderInCategory="8"
             android:title="@string/menu_document" />
     </group>
