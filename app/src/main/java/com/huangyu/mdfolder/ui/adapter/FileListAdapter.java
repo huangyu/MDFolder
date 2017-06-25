@@ -173,7 +173,7 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
                 break;
         }
 
-        if (fileType == Constants.FileType.IMAGE || fileType == Constants.FileType.VIDEO) {
+        if (fileType == Constants.FileType.IMAGE) {
             mIvIcon.setColorFilter(null);
         } else {
             if (activity.isLightMode()) {
