@@ -27,6 +27,10 @@ public interface IFileListView extends IBaseView {
 
     void removeAllTabs();
 
+    void hideTabs();
+
+    void showTabs();
+
     void refreshData(boolean ifClearSelected, final int position);
 
     void refreshData(ArrayList<FileItem> filesList, boolean ifClearSelected, final int scrollY);

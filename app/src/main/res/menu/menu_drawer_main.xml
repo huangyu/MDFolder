@@ -3,7 +3,6 @@
 
     <group
         android:id="@+id/nav_group_folder"
-        android:checkableBehavior="single"
         android:orderInCategory="0">
         <item
             android:id="@+id/nav_inner_storage"
@@ -45,13 +44,13 @@
 
     <group
         android:id="@+id/nav_group_other"
-        android:orderInCategory="9">
+        android:orderInCategory="20">
         <item android:title="@string/menu_other">
             <menu>
                 <item
                     android:id="@+id/nav_settings"
                     android:icon="@mipmap/ic_settings"
-                    android:orderInCategory="10"
+                    android:orderInCategory="21"
                     android:title="@string/menu_settings" />
             </menu>
         </item>

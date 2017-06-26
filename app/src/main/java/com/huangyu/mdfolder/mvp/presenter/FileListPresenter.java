@@ -53,7 +53,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     private String mCurrentPath; // 当前路径
     private int mBeforeScrollY; // 当前position
     public int mEditType;   // 当前编辑状态
-    public int mFileType;   // 当前文件类型
+    public int mSelectType;   // 当前选择类型
     public int mSortType;   // 当前排序类型
     public int mOrderType;  // 当前升降序类型
 
@@ -64,7 +64,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         mFileStack = new Stack<>();
         mScrollYStack = new Stack<>();
         mEditType = Constants.EditType.NONE;
-        mFileType = Constants.SelectType.MENU_FILE;
+        mSelectType = Constants.SelectType.MENU_FILE;
         mSortType = Constants.SortType.TYPE;
         mOrderType = DESC;
     }
@@ -95,6 +95,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 .subscribe(new Subscriber<ArrayList<FileItem>>() {
                     @Override
                     public void onStart() {
+                        mView.showTabs();
                         mView.startRefresh();
                         mView.finishAction();
                     }
@@ -146,6 +147,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 .subscribe(new Subscriber<ArrayList<FileItem>>() {
                     @Override
                     public void onStart() {
+                        mView.showTabs();
                         mView.startRefresh();
                         mView.finishAction();
                     }
@@ -197,6 +199,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 .subscribe(new Subscriber<ArrayList<FileItem>>() {
                     @Override
                     public void onStart() {
+                        mView.showTabs();
                         mView.startRefresh();
                         mView.finishAction();
                     }
@@ -205,6 +208,42 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void onNext(ArrayList<FileItem> fileList) {
                         mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
+                        mView.refreshData(fileList, true, mBeforeScrollY);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showError(e.getMessage());
+                        onCompleted();
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        mView.stopRefresh();
+                    }
+                });
+        mRxManager.add(subscription);
+    }
+
+    /**
+     * 全局查询
+     */
+    public void onSearchFileList(final String searchStr) {
+        Subscription subscription = Observable.just(mFileListModel.getFileListBySearch(searchStr, mContext.getContentResolver()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<ArrayList<FileItem>>() {
+                    @Override
+                    public void onStart() {
+                        mView.showTabs();
+                        mView.startRefresh();
+                        mView.finishAction();
+                        mView.hideTabs();
+                    }
+
+                    @Override
+                    public void onNext(ArrayList<FileItem> fileList) {
                         mView.refreshData(fileList, true, mBeforeScrollY);
                     }
 
@@ -245,6 +284,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 .subscribe(new Subscriber<ArrayList<FileItem>>() {
                     @Override
                     public void onStart() {
+                        mView.showTabs();
                         mView.startRefresh();
                         mView.finishAction();
                     }
@@ -298,6 +338,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 .subscribe(new Subscriber<ArrayList<FileItem>>() {
                     @Override
                     public void onStart() {
+                        mView.showTabs();
                         mView.startRefresh();
                     }
 
@@ -338,6 +379,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 .subscribe(new Subscriber<ArrayList<FileItem>>() {
                     @Override
                     public void onStart() {
+                        mView.showTabs();
                     }
 
                     @Override
@@ -365,7 +407,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 新增文件
      */
     public void onAddFile() {
-        if (mFileType != Constants.SelectType.MENU_FILE) {
+        if (mSelectType != Constants.SelectType.MENU_FILE) {
             mView.showMessage(mView.getResString(R.string.tips_add_file_error));
             return;
         }
@@ -488,7 +530,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 新增文件夹
      */
     public void onAddFolder() {
-        if (mFileType != Constants.SelectType.MENU_FILE) {
+        if (mSelectType != Constants.SelectType.MENU_FILE) {
             mView.showMessage(mView.getResString(R.string.tips_add_folder_error));
             return;
         }
@@ -1094,7 +1136,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     private ArrayList<FileItem> getCurrentFileList(String searchStr) {
         ArrayList<FileItem> fileItemList = null;
 
-        switch (mFileType) {
+        switch (mSelectType) {
             case Constants.SelectType.MENU_DOCUMENT:
                 fileItemList = mFileListModel.getDocumentList(searchStr, mContext.getContentResolver());
                 break;

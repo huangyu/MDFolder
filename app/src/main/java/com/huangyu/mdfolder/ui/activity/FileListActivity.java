@@ -90,6 +90,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             MenuItem item = mNavigationView.getMenu().add(R.id.nav_group_folder, R.id.nav_outer_storage, 2, getString(R.string.menu_outer_storage));
             item.setIcon(R.mipmap.ic_storage);
         }
+        mNavigationView.getMenu().setGroupCheckable(R.id.nav_group_folder, true, true);
 
         requirePermissions();
     }
@@ -182,6 +183,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                 }
                 break;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -192,11 +194,11 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             @Override
             public boolean onQueryTextSubmit(String text) {
                 mSearchView.setIconified(false);
+                mRxManager.post("onSearch", text);
                 return true;
             }
 
             public boolean onQueryTextChange(String text) {
-                mRxManager.post("onSearch", text);
                 return false;
             }
         });
@@ -217,6 +219,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 resetSearch();
+                mRxManager.post("onSearch", "");
                 return true;
             }
         });
@@ -258,8 +261,9 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                         startActivity(SettingsActivity.class);
                         break;
                 }
+                resetSearch();
             }
-        }, 200);
+        }, 250);
         return true;
     }
 

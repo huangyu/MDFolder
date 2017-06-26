@@ -2,7 +2,6 @@ package com.huangyu.mdfolder.mvp.model;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -12,6 +11,7 @@ import com.huangyu.library.mvp.IBaseModel;
 import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
+import com.huangyu.mdfolder.utils.MimeTypeUtils;
 import com.huangyu.mdfolder.utils.SDCardUtils;
 import com.huangyu.mdfolder.utils.ZipUtils;
 import com.huangyu.mdfolder.utils.comparator.AlphabetComparator;
@@ -54,6 +54,56 @@ public class FileListModel implements IBaseModel {
 //    public List<File> getVideoFileList(String searchStr) {
 //        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(), new VideoFilter(searchStr), true);
 //    }
+
+    public ArrayList<FileItem> getFileListBySearch(String searchStr, ContentResolver contentResolver) {
+        String[] projection = new String[]{
+                MediaStore.Files.FileColumns.DATA,
+                MediaStore.Files.FileColumns.TITLE,
+                MediaStore.Files.FileColumns.SIZE,
+                MediaStore.Files.FileColumns.DATE_MODIFIED,
+                MediaStore.Files.FileColumns.MIME_TYPE};
+
+        Cursor cursor = contentResolver.query(MediaStore.Files.getContentUri("external"), projection,
+                MediaStore.Files.FileColumns.DATA + " like ? ",
+                new String[]{"%" + searchStr + "%"}, null);
+
+        if (cursor != null) {
+            ArrayList<FileItem> documentList = new ArrayList<>();
+            while (cursor.moveToNext()) {
+                String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.TITLE));
+                String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA));
+                String fileLength = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.SIZE));
+                String date = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATE_MODIFIED));
+
+                String fileRealName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
+                if (FileUtils.isFileExists(filePath) && !isFolder(fileRealName)) {
+                    FileItem fileItem = new FileItem();
+                    fileItem.setName(filePath);
+                    fileItem.setPath(filePath);
+                    fileItem.setSize(fileLength);
+                    fileItem.setDate(date);
+                    fileItem.setParent(null);
+                    fileItem.setIsDirectory(false);
+                    fileItem.setType(MimeTypeUtils.getTypeBySuffix(FileUtils.getSuffix(fileRealName)));
+                    fileItem.setIsShow(true);
+                    if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
+                        documentList.add(fileItem);
+                    }
+                }
+            }
+            cursor.close();
+            return documentList;
+        }
+        return null;
+    }
+
+    private boolean isFolder(String fileRealName) {
+        int index = fileRealName.indexOf(".");
+        if (index > -1 && index != 0 && index != fileRealName.length() - 1) {
+            return false;
+        }
+        return true;
+    }
 
     public ArrayList<FileItem> getDocumentList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{MediaStore.Files.FileColumns.DATA,
@@ -149,12 +199,11 @@ public class FileListModel implements IBaseModel {
     }
 
     public ArrayList<FileItem> getImageList(String searchStr, ContentResolver contentResolver) {
-        Uri imageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         String[] projection = new String[]{MediaStore.Images.ImageColumns.DATA,
                 MediaStore.Images.ImageColumns.DISPLAY_NAME,
                 MediaStore.Images.ImageColumns.SIZE,
                 MediaStore.Images.ImageColumns.DATE_MODIFIED};
-        Cursor cursor = contentResolver.query(imageUri, projection, null, null,
+        Cursor cursor = contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null,
                 null);
         if (cursor != null) {
             ArrayList<FileItem> imageList = new ArrayList<>();
@@ -230,6 +279,7 @@ public class FileListModel implements IBaseModel {
      */
     public String getRootPath() {
         return Environment.getRootDirectory().getPath();
+//        return "/";
     }
 
     /**

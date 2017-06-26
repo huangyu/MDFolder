@@ -92,4 +92,19 @@ public class TabView extends HorizontalScrollView {
         }
     }
 
+    public boolean isHide() {
+        if (mLayout.getVisibility() == View.VISIBLE) {
+            return false;
+        }
+        return true;
+    }
+
+    public void hideTabs() {
+        mLayout.setVisibility(View.INVISIBLE);
+    }
+
+    public void showTabs() {
+        mLayout.setVisibility(View.VISIBLE);
+    }
+
 }

@@ -15,6 +15,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.text.TextUtils;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -87,7 +88,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     private ProgressDialog progressDialog;
     private FileListAdapter mAdapter;
     private ActionMode mActionMode;
-    private String mSearchStr;
+    private String mSearchStr = "";
 
     @Override
     protected int getLayoutId() {
@@ -249,15 +250,19 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mRxManager.on("onSearch", new Action1<String>() {
             @Override
             public void call(String text) {
-                mSearchStr = text;
-                mPresenter.onRefresh(text, true, 0);
+//                mSearchStr = text;
+                if (TextUtils.isEmpty(text)) {
+                    mPresenter.onRefreshInSwipe(mSearchStr, false);
+                } else {
+                    mPresenter.onSearchFileList(text);
+                }
             }
         });
 
         mRxManager.on("toStorage", new Action1<Boolean>() {
             @Override
             public void call(Boolean isInner) {
-                mPresenter.mFileType = Constants.SelectType.MENU_FILE;
+                mPresenter.mSelectType = Constants.SelectType.MENU_FILE;
                 mPresenter.onLoadStorageFileList(isInner, mSearchStr);
             }
         });
@@ -265,7 +270,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mRxManager.on("toRoot", new Action1<String>() {
             @Override
             public void call(String text) {
-                mPresenter.mFileType = Constants.SelectType.MENU_FILE;
+                mPresenter.mSelectType = Constants.SelectType.MENU_FILE;
                 mPresenter.onLoadRootFileList(mSearchStr);
             }
         });
@@ -273,39 +278,39 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mRxManager.on("toPhoto", new Action1<String>() {
             @Override
             public void call(String s) {
-                mPresenter.mFileType = Constants.SelectType.MENU_PHOTO;
-                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mFileType);
+                mPresenter.mSelectType = Constants.SelectType.MENU_PHOTO;
+                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
             }
         });
 
         mRxManager.on("toMusic", new Action1<String>() {
             @Override
             public void call(String s) {
-                mPresenter.mFileType = Constants.SelectType.MENU_MUSIC;
-                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mFileType);
+                mPresenter.mSelectType = Constants.SelectType.MENU_MUSIC;
+                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
             }
         });
 
         mRxManager.on("toVideo", new Action1<String>() {
             @Override
             public void call(String s) {
-                mPresenter.mFileType = Constants.SelectType.MENU_VIDEO;
-                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mFileType);
+                mPresenter.mSelectType = Constants.SelectType.MENU_VIDEO;
+                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
             }
         });
 
         mRxManager.on("toDocument", new Action1<String>() {
             @Override
             public void call(String s) {
-                mPresenter.mFileType = Constants.SelectType.MENU_DOCUMENT;
-                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mFileType);
+                mPresenter.mSelectType = Constants.SelectType.MENU_DOCUMENT;
+                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
             }
         });
 
         mRxManager.on("toDownload", new Action1<String>() {
             @Override
             public void call(String s) {
-                mPresenter.mFileType = Constants.SelectType.MENU_DOWNLOAD;
+                mPresenter.mSelectType = Constants.SelectType.MENU_DOWNLOAD;
                 mPresenter.onLoadDownloadFileList(mSearchStr);
             }
         });
@@ -328,7 +333,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
         mRxManager.on("onDeleteAndRefresh", new Action1<String>() {
             @Override
-            public void call(String s) {
+            public void call(String orderType) {
                 mPresenter.onLoadStorageFileList(false, mSearchStr);
             }
         });
@@ -369,6 +374,18 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     @Override
     public void removeAllTabs() {
         mTabView.removeAllTabs();
+    }
+
+    @Override
+    public void hideTabs() {
+        mTabView.hideTabs();
+    }
+
+    @Override
+    public void showTabs() {
+        if (mTabView.isHide()) {
+            mTabView.showTabs();
+        }
     }
 
     @Override
@@ -492,7 +509,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         return getActivity().startActionMode(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                if (mPresenter.mFileType == Constants.SelectType.MENU_FILE || mPresenter.mFileType == Constants.SelectType.MENU_DOWNLOAD) {
+                if (mPresenter.mSelectType == Constants.SelectType.MENU_FILE || mPresenter.mSelectType == Constants.SelectType.MENU_DOWNLOAD) {
                     mode.getMenuInflater().inflate(R.menu.menu_control, menu);
                 } else {
                     mode.getMenuInflater().inflate(R.menu.menu_control_type, menu);
@@ -503,7 +520,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
                 menu.clear();
-                if (mPresenter.mFileType == Constants.SelectType.MENU_FILE || mPresenter.mFileType == Constants.SelectType.MENU_DOWNLOAD) {
+                if (mPresenter.mSelectType == Constants.SelectType.MENU_FILE || mPresenter.mSelectType == Constants.SelectType.MENU_DOWNLOAD) {
                     mode.getMenuInflater().inflate(R.menu.menu_control, menu);
                 } else {
                     mode.getMenuInflater().inflate(R.menu.menu_control_type, menu);
