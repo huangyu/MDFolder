@@ -124,6 +124,12 @@
     <string name="pref_project">Project</string>
     <string name="pref_github">https://github.com/huangyu0522/MDFolder</string>
     <string name="pref_language">Language</string>
+    <string name="pref_build_in_mode">Use build-in mode</string>
+    <string name="pref_external_mode">Use external apps</string>
+    <string name="pref_open_mode">Image/Audio/Video open mode</string>
+    <string name="pref_search_global">Search Globally</string>
+    <string name="pref_search_single">Search in single file</string>
+    <string name="pref_search_mode">File Search mode</string>
 
     <string-array name="array_languages">
         <item>Simplified chinese</item>

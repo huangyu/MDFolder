@@ -45,4 +45,20 @@ public class SPUtils {
         return prefs.getString("pref_language", languageArray[0]);
     }
 
+    /**
+     * 是否是内置模式
+     */
+    public static boolean isBuildInMode() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(BaseApplication.getInstance().getApplicationContext());
+        return prefs.getBoolean("pref_open_mode", true);
+    }
+
+    /**
+     * 是否是全局搜索
+     */
+    public static boolean isSearchGlobally() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(BaseApplication.getInstance().getApplicationContext());
+        return prefs.getBoolean("pref_search_mode", true);
+    }
+
 }

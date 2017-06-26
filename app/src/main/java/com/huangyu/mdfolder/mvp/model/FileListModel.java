@@ -36,7 +36,11 @@ public class FileListModel implements IBaseModel {
     }
 
     public ArrayList<File> getFileList(String path, String searchStr) {
-        return FileUtils.listFilesInDirWithFilter(path, new SearchFilter(searchStr), false);
+        if (TextUtils.isEmpty(searchStr)) {
+            return FileUtils.listFilesInDirWithFilter(path, new SearchFilter(searchStr), false);
+        } else {
+            return FileUtils.listFilesInDirWithFilter(path, new SearchFilter(searchStr), true);
+        }
     }
 
 //    public List<File> getAppsFileList(String searchStr) {
@@ -55,7 +59,7 @@ public class FileListModel implements IBaseModel {
 //        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(), new VideoFilter(searchStr), true);
 //    }
 
-    public ArrayList<FileItem> getFileListBySearch(String searchStr, ContentResolver contentResolver) {
+    public ArrayList<FileItem> getGlobalFileListBySearch(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{
                 MediaStore.Files.FileColumns.DATA,
                 MediaStore.Files.FileColumns.TITLE,

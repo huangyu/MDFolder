@@ -43,6 +43,7 @@ import com.huangyu.mdfolder.ui.adapter.FileListAdapter;
 import com.huangyu.mdfolder.ui.widget.TabView;
 import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.KeyboardUtils;
+import com.huangyu.mdfolder.utils.SPUtils;
 import com.jakewharton.rxbinding.view.RxView;
 
 import java.io.File;
@@ -118,57 +119,63 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     if (file.isDirectory()) {
                         mPresenter.enterFolder(file, getScrollYDistance());
                     } else {
-                        // 单个图片浏览
-                        if (file.getType() == Constants.FileType.SINGLE_IMAGE) {
-                            ArrayList<FileItem> arrayList = new ArrayList<>();
-                            arrayList.add(file);
-                            Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
-                            intent.putExtra(getString(R.string.intent_image_list), arrayList);
-                            intent.putExtra(getString(R.string.intent_image_position), 0);
-                            getActivity().startActivity(intent);
-                        }
-                        // 单个视频浏览
-                        else if (file.getType() == Constants.FileType.SINGLE_VIDEO) {
-                            ArrayList<FileItem> arrayList = new ArrayList<>();
-                            arrayList.add(file);
-                            Intent intent = new Intent(getActivity(), VideoBrowserActivity.class);
-                            intent.putExtra(getString(R.string.intent_video_list), arrayList);
-                            intent.putExtra(getString(R.string.intent_video_position), 0);
-                            getActivity().startActivity(intent);
-                        }
-                        // 单个音频浏览
-                        else if (file.getType() == Constants.FileType.SINGLE_AUDIO) {
-                            ArrayList<FileItem> arrayList = new ArrayList<>();
-                            arrayList.add(file);
-                            Intent intent = new Intent(getActivity(), AudioBrowserActivity.class);
-                            intent.putExtra(getString(R.string.intent_audio_list), arrayList);
-                            intent.putExtra(getString(R.string.intent_audio_position), 0);
-                            getActivity().startActivity(intent);
-                        }
-                        // 进入图片浏览
-                        else if (file.getType() == Constants.FileType.IMAGE) {
-                            Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
-                            intent.putExtra(getString(R.string.intent_image_list), mAdapter.getDataList());
-                            intent.putExtra(getString(R.string.intent_image_position), position);
-                            getActivity().startActivity(intent);
-                        }
-                        // 进入视频浏览
-                        else if (file.getType() == Constants.FileType.VIDEO) {
-                            Intent intent = new Intent(getActivity(), VideoBrowserActivity.class);
-                            intent.putExtra(getString(R.string.intent_video_list), mAdapter.getDataList());
-                            intent.putExtra(getString(R.string.intent_video_position), position);
-                            getActivity().startActivity(intent);
-                        }
-                        // 进入音频浏览
-                        else if (file.getType() == Constants.FileType.AUDIO) {
-                            Intent intent = new Intent(getActivity(), AudioBrowserActivity.class);
-                            intent.putExtra(getString(R.string.intent_audio_list), mAdapter.getDataList());
-                            intent.putExtra(getString(R.string.intent_audio_position), position);
-                            getActivity().startActivity(intent);
-                        }
-                        // 打开文件
-                        else if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
-                            AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_no_permission_to_access_file));
+                        if (SPUtils.isBuildInMode()) {
+                            // 单个图片浏览
+                            if (file.getType() == Constants.FileType.SINGLE_IMAGE) {
+                                ArrayList<FileItem> arrayList = new ArrayList<>();
+                                arrayList.add(file);
+                                Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
+                                intent.putExtra(getString(R.string.intent_image_list), arrayList);
+                                intent.putExtra(getString(R.string.intent_image_position), 0);
+                                getActivity().startActivity(intent);
+                            }
+                            // 单个视频浏览
+                            else if (file.getType() == Constants.FileType.SINGLE_VIDEO) {
+                                ArrayList<FileItem> arrayList = new ArrayList<>();
+                                arrayList.add(file);
+                                Intent intent = new Intent(getActivity(), VideoBrowserActivity.class);
+                                intent.putExtra(getString(R.string.intent_video_list), arrayList);
+                                intent.putExtra(getString(R.string.intent_video_position), 0);
+                                getActivity().startActivity(intent);
+                            }
+                            // 单个音频浏览
+                            else if (file.getType() == Constants.FileType.SINGLE_AUDIO) {
+                                ArrayList<FileItem> arrayList = new ArrayList<>();
+                                arrayList.add(file);
+                                Intent intent = new Intent(getActivity(), AudioBrowserActivity.class);
+                                intent.putExtra(getString(R.string.intent_audio_list), arrayList);
+                                intent.putExtra(getString(R.string.intent_audio_position), 0);
+                                getActivity().startActivity(intent);
+                            }
+                            // 进入图片浏览
+                            else if (file.getType() == Constants.FileType.IMAGE) {
+                                Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
+                                intent.putExtra(getString(R.string.intent_image_list), mAdapter.getDataList());
+                                intent.putExtra(getString(R.string.intent_image_position), position);
+                                getActivity().startActivity(intent);
+                            }
+                            // 进入视频浏览
+                            else if (file.getType() == Constants.FileType.VIDEO) {
+                                Intent intent = new Intent(getActivity(), VideoBrowserActivity.class);
+                                intent.putExtra(getString(R.string.intent_video_list), mAdapter.getDataList());
+                                intent.putExtra(getString(R.string.intent_video_position), position);
+                                getActivity().startActivity(intent);
+                            }
+                            // 进入音频浏览
+                            else if (file.getType() == Constants.FileType.AUDIO) {
+                                Intent intent = new Intent(getActivity(), AudioBrowserActivity.class);
+                                intent.putExtra(getString(R.string.intent_audio_list), mAdapter.getDataList());
+                                intent.putExtra(getString(R.string.intent_audio_position), position);
+                                getActivity().startActivity(intent);
+                            }
+                            // 打开文件
+                            else if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
+                                AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_no_permission_to_access_file));
+                            }
+                        } else {
+                            if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
+                                AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_no_permission_to_access_file));
+                            }
                         }
                     }
 
@@ -250,12 +257,19 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mRxManager.on("onSearch", new Action1<String>() {
             @Override
             public void call(String text) {
-//                mSearchStr = text;
-                if (TextUtils.isEmpty(text)) {
-                    mPresenter.onRefreshInSwipe(mSearchStr, false);
-                } else {
-                    mPresenter.onSearchFileList(text);
+                // 内置存储全局搜索
+                if (SPUtils.isSearchGlobally()) {
+                    if (TextUtils.isEmpty(text)) {
+                    } else {
+                        mPresenter.onSearchFileList(text);
+                    }
                 }
+                // 单个文件迭代搜索
+                else {
+                    mSearchStr = text;
+                    mPresenter.onRefreshInSwipe(mSearchStr, false);
+                }
+
             }
         });
 

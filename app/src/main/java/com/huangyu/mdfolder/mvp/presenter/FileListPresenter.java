@@ -229,9 +229,8 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 全局查询
      */
     public void onSearchFileList(final String searchStr) {
-        Subscription subscription = Observable.just(mFileListModel.getFileListBySearch(searchStr, mContext.getContentResolver()))
+        Subscription subscription = Observable.just(mFileListModel.getGlobalFileListBySearch(searchStr, mContext.getContentResolver()))
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<ArrayList<FileItem>>() {
                     @Override

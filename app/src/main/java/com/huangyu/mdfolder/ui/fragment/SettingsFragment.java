@@ -63,6 +63,46 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             prefShowHide.setSummary(getString(R.string.pref_hide_hidden));
         }
 
+        final Preference prefOpenMode = findPreference("pref_open_mode");
+        prefOpenMode.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                boolean isBuildIn = (Boolean) newValue;
+                if (isBuildIn) {
+                    prefOpenMode.setSummary(getString(R.string.pref_build_in_mode));
+                } else {
+                    prefOpenMode.setSummary(getString(R.string.pref_external_mode));
+                }
+                return true;
+            }
+        });
+
+        if (SPUtils.isBuildInMode()) {
+            prefOpenMode.setSummary(getString(R.string.pref_build_in_mode));
+        } else {
+            prefOpenMode.setSummary(getString(R.string.pref_external_mode));
+        }
+
+        final Preference prefSearchMode = findPreference("pref_search_mode");
+        prefSearchMode.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                boolean isGlobally = (Boolean) newValue;
+                if (isGlobally) {
+                    prefSearchMode.setSummary(getString(R.string.pref_search_global));
+                } else {
+                    prefSearchMode.setSummary(getString(R.string.pref_search_single));
+                }
+                return true;
+            }
+        });
+
+        if (SPUtils.isSearchGlobally()) {
+            prefSearchMode.setSummary(getString(R.string.pref_search_global));
+        } else {
+            prefSearchMode.setSummary(getString(R.string.pref_search_single));
+        }
+
         final ListPreference prefLanguage = (ListPreference) findPreference("pref_language");
         prefLanguage.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
