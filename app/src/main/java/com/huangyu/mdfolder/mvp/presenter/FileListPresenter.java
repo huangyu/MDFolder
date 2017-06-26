@@ -229,7 +229,12 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 全局查询
      */
     public void onSearchFileList(final String searchStr) {
-        Subscription subscription = Observable.just(mFileListModel.getGlobalFileListBySearch(searchStr, mContext.getContentResolver()))
+        Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
+            @Override
+            public Observable<ArrayList<FileItem>> call() {
+                return Observable.just(mFileListModel.getGlobalFileListBySearch(searchStr, mContext.getContentResolver()));
+            }
+        })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<ArrayList<FileItem>>() {
@@ -237,13 +242,12 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void onStart() {
                         mView.showTabs();
                         mView.startRefresh();
-                        mView.finishAction();
                         mView.hideTabs();
                     }
 
                     @Override
                     public void onNext(ArrayList<FileItem> fileList) {
-                        mView.refreshData(fileList, true, mBeforeScrollY);
+                        mView.refreshData(fileList, true, 0);
                     }
 
                     @Override

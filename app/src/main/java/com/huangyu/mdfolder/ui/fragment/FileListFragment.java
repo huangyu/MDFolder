@@ -260,6 +260,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 // 内置存储全局搜索
                 if (SPUtils.isSearchGlobally()) {
                     if (TextUtils.isEmpty(text)) {
+                        mPresenter.onRefreshInSwipe(mSearchStr, false);
                     } else {
                         mPresenter.onSearchFileList(text);
                     }
