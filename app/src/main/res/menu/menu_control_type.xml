@@ -16,4 +16,18 @@
         android:title="@string/menu_delete"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_copy"
+        android:icon="@mipmap/ic_copy"
+        android:orderInCategory="3"
+        android:title="@string/menu_copy"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_move"
+        android:icon="@mipmap/ic_move"
+        android:orderInCategory="4"
+        android:title="@string/menu_move"
+        app:showAsAction="ifRoom" />
+
 </menu>

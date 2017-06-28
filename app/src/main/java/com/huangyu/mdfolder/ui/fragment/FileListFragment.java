@@ -594,7 +594,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         mAdapter.mSelectedFileList = fileList;
                         mActionMode.setTitle(mAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
                         break;
-                    case R.id.action_cut:
+                    case R.id.action_move:
                         mPresenter.mEditType = Constants.EditType.CUT;
                         mActionMode = getPasteActonMode();
                         mAdapter.mSelectedFileList = fileList;
@@ -650,7 +650,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         if (mPresenter.mEditType == Constants.EditType.COPY) {
                             mPresenter.onCopy(fileList);
                         } else if (mPresenter.mEditType == Constants.EditType.CUT) {
-                            mPresenter.onCut(fileList);
+                            mPresenter.onMove(fileList);
                         }
                         break;
                 }

@@ -37,7 +37,7 @@
     <string name="menu_share">Share</string>
     <string name="menu_help">Help</string>
     <string name="menu_copy">Copy</string>
-    <string name="menu_cut">Cut</string>
+    <string name="menu_move">Move</string>
     <string name="menu_paste">Paste</string>
     <string name="menu_delete">Delete</string>
     <string name="menu_rename">Rename</string>
@@ -63,7 +63,7 @@
     <string name="act_zip">Zip</string>
     <string name="act_unzip">Unzip</string>
     <string name="act_copy">Copy</string>
-    <string name="act_cut">Cut</string>
+    <string name="act_move">Move</string>
     <string name="act_add_file">Add file</string>
     <string name="act_add_folder">Add folder</string>
 
@@ -82,7 +82,7 @@
     <string name="tips_zip_files">Zip these files?</string>
     <string name="tips_unzip_file">Unzip file?</string>
     <string name="tips_copy_files">Copy these files?</string>
-    <string name="tips_cut_files">Cut these files?</string>
+    <string name="tips_move_files">Move these files?</string>
     <string name="tips_delete_successfully">Delete successfully.</string>
     <string name="tips_delete_in_error">Delete in error.</string>
     <string name="tips_show_hide_successfully">Show/Hide successfully.</string>
@@ -95,8 +95,8 @@
     <string name="tips_unzip_in_error">Unzip in error.</string>
     <string name="tips_copy_successfully">Copy successfully.</string>
     <string name="tips_copy_in_error">Copy in error.</string>
-    <string name="tips_cut_successfully">Cut successfully.</string>
-    <string name="tips_cut_in_error">Cut in error.</string>
+    <string name="tips_move_successfully">Move successfully.</string>
+    <string name="tips_move_in_error">Move in error.</string>
     <string name="tips_file_exist">File is exist.</string>
     <string name="tips_folder_exist">Folder is exist.</string>
     <string name="tips_add_file_error">Add file error.</string>

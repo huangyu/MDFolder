@@ -31,10 +31,10 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_cut"
-        android:icon="@mipmap/ic_cut"
+        android:id="@+id/action_move"
+        android:icon="@mipmap/ic_move"
         android:orderInCategory="5"
-        android:title="@string/menu_cut"
+        android:title="@string/menu_move"
         app:showAsAction="ifRoom" />
 
     <item

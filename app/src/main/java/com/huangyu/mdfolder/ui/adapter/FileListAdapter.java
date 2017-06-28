@@ -201,7 +201,7 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
             mVDivider.setVisibility(View.VISIBLE);
         }
 
-        if (isSelected(position) && isInSelectPath(position)) {
+        if (isSelected(position) && isInSelectPath(fileItem)) {
             holder.itemView.setSelected(true);
         } else {
             holder.itemView.setSelected(false);
@@ -213,13 +213,7 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
         return R.layout.item_file_list;
     }
 
-    /**
-     * 是否选中项在当前目录
-     *
-     * @param position
-     * @return
-     */
-    private boolean isInSelectPath(int position) {
+    private boolean isInSelectPath(FileItem fileItem) {
         // 考虑正在选择的情况
         if (mSelectedFileList == null) {
             if (mSelectArray == null || mSelectArray.size() == 0) {
@@ -230,10 +224,10 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
         }
         // 判断路径是否一致
         else {
-            String selectPath = mSelectedFileList.get(0).getParent();
-            String currentPath = getItem(position).getParent();
-            if (selectPath.equals(currentPath)) {
-                return true;
+            for (FileItem selectFile : mSelectedFileList) {
+                if (fileItem.getPath().equals(selectFile.getPath())) {
+                    return true;
+                }
             }
             return false;
         }

@@ -103,14 +103,13 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void onStart() {
                         mView.showTabs();
                         mView.startRefresh();
-                        mView.finishAction();
                     }
 
                     @Override
                     public void onNext(ArrayList<FileItem> fileList) {
                         mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
-                        mView.refreshData(fileList, true, 0);
+                        mView.refreshData(fileList, false, 0);
                     }
 
                     @Override
@@ -155,14 +154,13 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void onStart() {
                         mView.showTabs();
                         mView.startRefresh();
-                        mView.finishAction();
                     }
 
                     @Override
                     public void onNext(ArrayList<FileItem> fileList) {
                         mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
-                        mView.refreshData(fileList, true, 0);
+                        mView.refreshData(fileList, false, 0);
                     }
 
                     @Override
@@ -207,14 +205,13 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void onStart() {
                         mView.showTabs();
                         mView.startRefresh();
-                        mView.finishAction();
                     }
 
                     @Override
                     public void onNext(ArrayList<FileItem> fileList) {
                         mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
-                        mView.refreshData(fileList, true, 0);
+                        mView.refreshData(fileList, false, 0);
                     }
 
                     @Override
@@ -253,7 +250,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                     @Override
                     public void onNext(ArrayList<FileItem> fileList) {
-                        mView.refreshData(fileList, true, 0);
+                        mView.refreshData(fileList, false, 0);
                     }
 
                     @Override
@@ -296,7 +293,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void onStart() {
                         mView.showTabs();
                         mView.startRefresh();
-                        mView.finishAction();
                     }
 
                     @Override
@@ -322,7 +318,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                 mView.addTab(mView.getResString(R.string.menu_zip_package));
                                 break;
                         }
-                        mView.refreshData(fileList, true, 0);
+                        mView.refreshData(fileList, false, 0);
                     }
 
                     @Override
@@ -1203,10 +1199,10 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     }
 
     /**
-     * 剪切文件
+     * 移动文件
      */
-    public void onCut(final ArrayList<FileItem> fileList) {
-        mView.showNormalAlert(mView.getResString(R.string.tips_cut_files), mView.getResString(R.string.act_cut), new DialogInterface.OnClickListener() {
+    public void onMove(final ArrayList<FileItem> fileList) {
+        mView.showNormalAlert(mView.getResString(R.string.tips_move_files), mView.getResString(R.string.act_move), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Subscription subscription = Observable.from(fileList).groupBy(new Func1<FileItem, Boolean>() {
@@ -1232,9 +1228,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             @Override
                             public void onNext(Boolean result) {
                                 if (result) {
-                                    mView.showMessage(mView.getResString(R.string.tips_cut_successfully));
+                                    mView.showMessage(mView.getResString(R.string.tips_move_successfully));
                                 } else {
-                                    mView.showMessage(mView.getResString(R.string.tips_cut_in_error));
+                                    mView.showMessage(mView.getResString(R.string.tips_move_in_error));
                                 }
                             }
 
