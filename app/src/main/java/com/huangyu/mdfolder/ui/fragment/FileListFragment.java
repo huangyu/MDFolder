@@ -276,9 +276,9 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
         mRxManager.on("toStorage", new Action1<Boolean>() {
             @Override
-            public void call(Boolean isInner) {
+            public void call(Boolean isOuter) {
                 mPresenter.mSelectType = Constants.SelectType.MENU_FILE;
-                mPresenter.onLoadStorageFileList(isInner, mSearchStr);
+                mPresenter.onLoadStorageFileList(isOuter, mSearchStr);
             }
         });
 
@@ -327,6 +327,22 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             public void call(String s) {
                 mPresenter.mSelectType = Constants.SelectType.MENU_DOWNLOAD;
                 mPresenter.onLoadDownloadFileList(mSearchStr);
+            }
+        });
+
+        mRxManager.on("toApk", new Action1<String>() {
+            @Override
+            public void call(String s) {
+                mPresenter.mSelectType = Constants.SelectType.MENU_APK;
+                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
+            }
+        });
+
+        mRxManager.on("toZip", new Action1<String>() {
+            @Override
+            public void call(String s) {
+                mPresenter.mSelectType = Constants.SelectType.MENU_ZIP;
+                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
             }
         });
 
@@ -401,6 +417,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         if (mTabView.isHide()) {
             mTabView.showTabs();
         }
+    }
+
+    private void refreshData(boolean ifClearSelected) {
+        mPresenter.onRefresh(mSearchStr, ifClearSelected);
     }
 
     @Override
@@ -590,12 +610,12 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public void onDestroyActionMode(ActionMode mode) {
                 if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT) {
-                    refreshData(true, 0);
+                    refreshData(true);
                     getActivity().supportInvalidateOptionsMenu();
                     mActionMode = null;
                     mPresenter.mEditType = Constants.EditType.NONE;
                 } else {
-                    refreshData(false, 0);
+                    refreshData(false);
                 }
             }
         });
@@ -633,7 +653,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
-                refreshData(true, 0);
+                refreshData(true);
                 getActivity().supportInvalidateOptionsMenu();
                 mActionMode = null;
                 mPresenter.mEditType = Constants.EditType.NONE;

@@ -105,7 +105,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void onNext(ArrayList<FileItem> fileList) {
                         mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
-                        mView.refreshData(fileList, true, mBeforeScrollY);
+                        mView.refreshData(fileList, true, 0);
                     }
 
                     @Override
@@ -125,7 +125,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     /**
      * 获取存储器文件列表
      */
-    public void onLoadStorageFileList(final boolean isInner, final String searchStr) {
+    public void onLoadStorageFileList(final boolean isOuter, final String searchStr) {
         Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
             @Override
             public Observable<ArrayList<FileItem>> call() {
@@ -137,7 +137,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 .doOnSubscribe(new Action0() {
                     @Override
                     public void call() {
-                        mCurrentPath = mFileListModel.getStorageCardPath(isInner);
+                        mCurrentPath = mFileListModel.getStorageCardPath(isOuter);
                         mFileStack.clear();
                         mFileStack.push(mCurrentPath);
                         mBeforeScrollY = 0;
@@ -157,7 +157,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void onNext(ArrayList<FileItem> fileList) {
                         mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
-                        mView.refreshData(fileList, true, mBeforeScrollY);
+                        mView.refreshData(fileList, true, 0);
                     }
 
                     @Override
@@ -209,7 +209,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void onNext(ArrayList<FileItem> fileList) {
                         mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
-                        mView.refreshData(fileList, true, mBeforeScrollY);
+                        mView.refreshData(fileList, true, 0);
                     }
 
                     @Override
@@ -282,6 +282,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void call() {
                         mFileStack.clear();
                         mScrollYStack.clear();
+                        mBeforeScrollY = 0;
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -309,8 +310,14 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             case Constants.SelectType.MENU_VIDEO:
                                 mView.addTab(mView.getResString(R.string.menu_video));
                                 break;
+                            case Constants.SelectType.MENU_APK:
+                                mView.addTab(mView.getResString(R.string.menu_apk));
+                                break;
+                            case Constants.SelectType.MENU_ZIP:
+                                mView.addTab(mView.getResString(R.string.menu_zip));
+                                break;
                         }
-                        mView.refreshData(fileList, true, mBeforeScrollY);
+                        mView.refreshData(fileList, true, 0);
                     }
 
                     @Override
@@ -402,6 +409,47 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                         if (mEditType == Constants.EditType.NONE) {
                             mView.finishAction();
                         }
+                    }
+                });
+        mRxManager.add(subscription);
+    }
+
+    /**
+     * 刷新界面
+     */
+    public void onRefresh(final String searchStr, final boolean ifClearSelected) {
+        Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
+            @Override
+            public Observable<ArrayList<FileItem>> call() {
+                return Observable.just(getCurrentFileList(searchStr));
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<ArrayList<FileItem>>() {
+                    @Override
+                    public void onStart() {
+                        mView.showTabs();
+                        mView.startRefresh();
+                    }
+
+                    @Override
+                    public void onNext(ArrayList<FileItem> fileList) {
+                        mView.refreshData(fileList, ifClearSelected, 0);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showError(e.getMessage());
+                        onCompleted();
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        if (mEditType == Constants.EditType.NONE) {
+                            mView.finishAction();
+                        }
+                        mView.stopRefresh();
                     }
                 });
         mRxManager.add(subscription);
@@ -1229,6 +1277,12 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
             case Constants.SelectType.MENU_FILE:
             case Constants.SelectType.MENU_DOWNLOAD:
                 fileItemList = transformFileList(mFileListModel.getFileList(mCurrentPath, searchStr));
+                break;
+            case Constants.SelectType.MENU_APK:
+                fileItemList = mFileListModel.getApkList(searchStr, mContext.getContentResolver());
+                break;
+            case Constants.SelectType.MENU_ZIP:
+                fileItemList = mFileListModel.getZipList(searchStr, mContext.getContentResolver());
                 break;
         }
 

@@ -1,5 +1,7 @@
 package com.huangyu.mdfolder.bean;
 
+import android.graphics.drawable.Drawable;
+
 import java.io.Serializable;
 
 /**
@@ -15,6 +17,7 @@ public class FileItem implements Serializable {
     private String parent;
     private int type;
     private boolean isShow;
+    private Drawable apkIcon;
 
     public FileItem() {
 
@@ -82,6 +85,14 @@ public class FileItem implements Serializable {
 
     public void setIsShow(boolean show) {
         isShow = show;
+    }
+
+    public Drawable getApkIcon() {
+        return apkIcon;
+    }
+
+    public void setApkIcon(Drawable apkIcon) {
+        this.apkIcon = apkIcon;
     }
 
 }

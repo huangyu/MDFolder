@@ -62,6 +62,7 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
             case Constants.FileType.SINGLE_DOCUMENT:
             case Constants.FileType.SINGLE_AUDIO:
             case Constants.FileType.SINGLE_VIDEO:
+            case Constants.FileType.ZIP:
                 if (fileItem.isDirectory()) {
 //                    String size = mContext.getString(R.string.str_folder) + FileUtils.getFileOrDirSize(fileItem.getSize());
                     mTvSize.setText(mContext.getString(R.string.str_folder));
@@ -176,9 +177,13 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
                 mTvSize.setText(FileUtils.getFileOrDirSize(Long.valueOf(fileItem.getSize())));
                 Glide.with(mContext).load(fileItem.getPath()).error(R.mipmap.ic_file).into(mIvIcon);
                 break;
+            case Constants.FileType.APK:
+                mTvSize.setText(FileUtils.getFileOrDirSize(Long.valueOf(fileItem.getSize())));
+                mIvIcon.setImageDrawable(fileItem.getApkIcon());
+                break;
         }
 
-        if (fileType == Constants.FileType.IMAGE || fileType == Constants.FileType.SINGLE_IMAGE) {
+        if (fileType == Constants.FileType.IMAGE || fileType == Constants.FileType.SINGLE_IMAGE || fileType == Constants.FileType.APK) {
             mIvIcon.setColorFilter(null);
         } else {
             if (activity.isLightMode()) {

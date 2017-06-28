@@ -43,6 +43,8 @@
     <string name="menu_rename">重命名</string>
     <string name="menu_info">详情</string>
     <string name="menu_settings">设置</string>
+    <string name="menu_apk">安装包</string>
+    <string name="menu_zip_package">压缩包</string>
     <string name="menu_zip">压缩</string>
     <string name="menu_unzip">解压</string>
     <string name="menu_show_hide">显示/隐藏</string>

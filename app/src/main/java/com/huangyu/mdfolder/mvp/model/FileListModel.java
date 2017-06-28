@@ -1,7 +1,11 @@
 package com.huangyu.mdfolder.mvp.model;
 
 import android.content.ContentResolver;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -274,6 +278,101 @@ public class FileListModel implements IBaseModel {
         return null;
     }
 
+    public ArrayList<FileItem> getApkList(String searchStr, ContentResolver contentResolver) {
+        String[] projection = new String[]{
+                MediaStore.Files.FileColumns.DATA,
+                MediaStore.Files.FileColumns.TITLE,
+                MediaStore.Files.FileColumns.SIZE,
+                MediaStore.Files.FileColumns.DATE_MODIFIED,
+                MediaStore.Files.FileColumns.MIME_TYPE};
+
+        Cursor cursor = contentResolver.query(MediaStore.Files.getContentUri("external"), projection,
+                MediaStore.Files.FileColumns.DATA + " like ? ",
+                new String[]{"%" + ".apk"}, null);
+
+        if (cursor != null) {
+            PackageManager pm = BaseApplication.getInstance().getApplicationContext().getPackageManager();
+
+            ArrayList<FileItem> apkList = new ArrayList<>();
+            while (cursor.moveToNext()) {
+                String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.TITLE));
+                String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA));
+                String fileLength = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.SIZE));
+                String date = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATE_MODIFIED));
+
+                if (FileUtils.isFileExists(filePath)) {
+                    PackageInfo packageInfo = pm.getPackageArchiveInfo(filePath, PackageManager.GET_ACTIVITIES);
+                    ApplicationInfo appInfo = packageInfo.applicationInfo;
+                    appInfo.sourceDir = filePath;
+                    appInfo.publicSourceDir = filePath;
+                    String packageName = packageInfo.packageName;
+                    int versionCode = packageInfo.versionCode;
+
+                    FileItem fileItem = new FileItem();
+                    String fileRealName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
+                    fileItem.setName(fileRealName);
+                    fileItem.setPath(filePath);
+                    fileItem.setSize(fileLength);
+                    fileItem.setDate(date);
+                    fileItem.setParent(null);
+                    fileItem.setIsDirectory(false);
+                    fileItem.setType(Constants.FileType.APK);
+                    fileItem.setIsShow(true);
+                    Drawable icon = appInfo.loadIcon(pm);
+                    fileItem.setApkIcon(icon);
+                    if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
+                        apkList.add(fileItem);
+                    }
+                }
+            }
+            cursor.close();
+            return apkList;
+        }
+        return null;
+    }
+
+    public ArrayList<FileItem> getZipList(String searchStr, ContentResolver contentResolver) {
+        String[] projection = new String[]{
+                MediaStore.Files.FileColumns.DATA,
+                MediaStore.Files.FileColumns.TITLE,
+                MediaStore.Files.FileColumns.SIZE,
+                MediaStore.Files.FileColumns.DATE_MODIFIED,
+                MediaStore.Files.FileColumns.MIME_TYPE};
+
+        Cursor cursor = contentResolver.query(MediaStore.Files.getContentUri("external"), projection,
+                MediaStore.Files.FileColumns.DATA + " like ? ",
+                new String[]{"%" + ".zip"}, null);
+
+        if (cursor != null) {
+            ArrayList<FileItem> apkList = new ArrayList<>();
+            while (cursor.moveToNext()) {
+                String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.TITLE));
+                String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA));
+                String fileLength = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.SIZE));
+                String date = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATE_MODIFIED));
+
+                if (FileUtils.isFileExists(filePath)) {
+                    FileItem fileItem = new FileItem();
+                    String fileRealName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
+                    fileItem.setName(fileRealName);
+                    fileItem.setPath(filePath);
+                    fileItem.setSize(fileLength);
+                    fileItem.setDate(date);
+                    fileItem.setParent(null);
+                    fileItem.setIsDirectory(false);
+                    fileItem.setType(Constants.FileType.ZIP);
+                    fileItem.setIsShow(true);
+                    if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
+                        apkList.add(fileItem);
+                    }
+                }
+            }
+            cursor.close();
+            return apkList;
+        }
+        return null;
+    }
+
     /**
      * 获取根目录文件路径
      *
@@ -289,8 +388,8 @@ public class FileListModel implements IBaseModel {
      *
      * @return
      */
-    public String getStorageCardPath(boolean isInner) {
-        return SDCardUtils.getStoragePath(BaseApplication.getInstance().getApplicationContext(), isInner);
+    public String getStorageCardPath(boolean isOuter) {
+        return SDCardUtils.getStoragePath(BaseApplication.getInstance().getApplicationContext(), isOuter);
     }
 
     /**

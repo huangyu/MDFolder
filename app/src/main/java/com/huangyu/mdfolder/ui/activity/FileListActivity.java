@@ -257,6 +257,12 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                     case R.id.nav_download:
                         mRxManager.post("toDownload", "");
                         break;
+                    case R.id.nav_apk:
+                        mRxManager.post("toApk", "");
+                        break;
+                    case R.id.nav_zip:
+                        mRxManager.post("toZip", "");
+                        break;
                     case R.id.nav_settings:
                         startActivity(SettingsActivity.class);
                         break;
