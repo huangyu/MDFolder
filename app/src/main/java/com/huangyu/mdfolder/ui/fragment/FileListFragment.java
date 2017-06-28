@@ -44,6 +44,7 @@ import com.huangyu.mdfolder.ui.widget.TabView;
 import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.KeyboardUtils;
 import com.huangyu.mdfolder.utils.SPUtils;
+import com.huangyu.mdfolder.utils.ZipUtils;
 import com.jakewharton.rxbinding.view.RxView;
 
 import java.io.File;
@@ -105,7 +106,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     protected void initView(Bundle savedInstanceState) {
         mIvCenter.setColorFilter(getResources().getColor(R.color.colorDarkGray));
 
-        mAdapter = new FileListAdapter(getActivity());
+        mAdapter = new FileListAdapter(getContext());
         mAdapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -120,6 +121,11 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         mPresenter.enterFolder(file, getScrollYDistance());
                     } else {
                         if (SPUtils.isBuildInMode()) {
+                            // 压缩包文件
+                            if(file.getType() == Constants.FileType.ZIP) {
+                                AlertUtils.showZipListBottomSheet(getContext(), ZipUtils.listFiles(file.getPath()));
+                                return;
+                            }
                             // 单个图片浏览
                             if (file.getType() == Constants.FileType.SINGLE_IMAGE) {
                                 ArrayList<FileItem> arrayList = new ArrayList<>();
@@ -478,7 +484,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
     @Override
     public void showInfoBottomSheet(FileItem fileItem, DialogInterface.OnCancelListener onCancelListener) {
-        AlertUtils.showInfoBottomSheet(getContext(), fileItem, onCancelListener);
+        AlertUtils.showFileInfoBottomSheet(getContext(), fileItem, onCancelListener);
     }
 
     @Override

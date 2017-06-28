@@ -7,7 +7,8 @@
     <string name="str_audio_browser">Audio Browser</string>
     <string name="str_folder">Folder</string>
     <string name="str_image">Image</string>
-    <string name="str_file_info">Info</string>
+    <string name="str_file_info">File Info</string>
+    <string name="str_zip_info">Zip Info</string>
     <string name="str_file_name">Name</string>
     <string name="str_file_path">Path</string>
     <string name="str_file_size">Size</string>

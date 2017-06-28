@@ -2,6 +2,10 @@ package com.huangyu.mdfolder.mvp.presenter;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -9,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.huangyu.library.app.BaseApplication;
 import com.huangyu.library.mvp.BasePresenter;
 import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.R;
@@ -18,7 +23,7 @@ import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
 import com.huangyu.mdfolder.utils.MimeTypeUtils;
-import com.huangyu.mdfolder.utils.Zip4JUtils;
+import com.huangyu.mdfolder.utils.ZipUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -314,7 +319,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                 mView.addTab(mView.getResString(R.string.menu_apk));
                                 break;
                             case Constants.SelectType.MENU_ZIP:
-                                mView.addTab(mView.getResString(R.string.menu_zip));
+                                mView.addTab(mView.getResString(R.string.menu_zip_package));
                                 break;
                         }
                         mView.refreshData(fileList, true, 0);
@@ -1032,7 +1037,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     final String filePath = fileList.get(0).getPath();
-                    if (Zip4JUtils.isEncrypted(filePath)) {
+                    if (ZipUtils.isEncrypted(filePath)) {
                         final View view = mView.inflatePasswordInputDialogLayout();
                         final EditText editText = mView.findAlertDialogEditText(view);
                         mView.showKeyboard(mView.findAlertDialogEditText(view));
@@ -1324,6 +1329,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      */
     private ArrayList<FileItem> transformFileList(ArrayList<File> fileList) {
         if (fileList != null && fileList.size() > 0) {
+            PackageManager pm = BaseApplication.getInstance().getApplicationContext().getPackageManager();
             ArrayList<FileItem> fileItemList = new ArrayList<>();
             FileItem fileItem;
             for (File file : fileList) {
@@ -1341,6 +1347,14 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 fileItem.setParent(file.getParent());
                 fileItem.setType(MimeTypeUtils.getTypeBySuffix(FileUtils.getSuffix(file.getName())));
                 fileItem.setIsShow(!file.isHidden());
+                if (file.getName().endsWith(".apk")) {
+                    PackageInfo packageInfo = pm.getPackageArchiveInfo(file.getPath(), PackageManager.GET_ACTIVITIES);
+                    ApplicationInfo appInfo = packageInfo.applicationInfo;
+                    appInfo.sourceDir = file.getPath();
+                    appInfo.publicSourceDir = file.getPath();
+                    Drawable icon = appInfo.loadIcon(pm);
+                    fileItem.setApkIcon(icon);
+                }
                 fileItemList.add(fileItem);
             }
             return mFileListModel.orderByType(fileItemList);

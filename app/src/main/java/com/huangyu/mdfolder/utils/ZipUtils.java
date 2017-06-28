@@ -7,6 +7,7 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.FileHeader;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
+import net.lingala.zip4j.util.Zip4jUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -16,9 +17,9 @@ import java.util.List;
  * Created by huangyu on 2017/6/28.
  */
 
-public class Zip4JUtils {
+public class ZipUtils {
 
-    private Zip4JUtils() {
+    private ZipUtils() {
         throw new UnsupportedOperationException("u can't instantiate me...");
     }
 
@@ -31,7 +32,6 @@ public class Zip4JUtils {
             ZipParameters parameters = new ZipParameters();
             parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
             parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
-//            parameters.setRootFolderInZip(toPath);
             zipFile.addFiles(fileList, parameters);
         } catch (ZipException e) {
             e.printStackTrace();
@@ -101,8 +101,8 @@ public class Zip4JUtils {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static List<FileItem> listFiles(String zipFilePath) {
-        List<FileItem> fileItemList = new ArrayList<>();
+    public static ArrayList<FileItem> listFiles(String zipFilePath) {
+        ArrayList<FileItem> fileItemList = new ArrayList<>();
         try {
             ZipFile zipFile = new ZipFile(zipFilePath);
             List<FileHeader> fileHeaderList = zipFile.getFileHeaders();
@@ -110,6 +110,9 @@ public class Zip4JUtils {
             for (FileHeader fileHeader : fileHeaderList) {
                 fileItem = new FileItem();
                 fileItem.setName(fileHeader.getFileName());
+                fileItem.setDate(String.valueOf(Zip4jUtil.dosToJavaTme(fileHeader.getLastModFileTime())));
+                fileItem.setSize(String.valueOf(fileHeader.getUncompressedSize()));
+                fileItemList.add(fileItem);
             }
         } catch (ZipException e) {
             e.printStackTrace();

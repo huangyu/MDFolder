@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +18,10 @@ import android.widget.Toast;
 import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.bean.FileItem;
+import com.huangyu.mdfolder.ui.adapter.ZipListAdapter;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 
@@ -123,14 +127,14 @@ public class AlertUtils {
      * @param context context
      * @return
      */
-    public static BottomSheetDialog showInfoBottomSheet(final Context context, FileItem fileItem, DialogInterface.OnCancelListener onCancelListener) {
+    public static BottomSheetDialog showFileInfoBottomSheet(final Context context, FileItem fileItem, DialogInterface.OnCancelListener onCancelListener) {
         BottomSheetDialog dialog;
         if (SPUtils.isLightMode()) {
             dialog = new BottomSheetDialog(context, R.style.BottomSheetDialogTheme);
         } else {
             dialog = new BottomSheetDialog(context, R.style.BottomSheetDialogThemeDark);
         }
-        View view = LayoutInflater.from(context).inflate(R.layout.dialog_bottom_sheet, new LinearLayout(context), false);
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_file_info, new LinearLayout(context), false);
         dialog.setContentView(view);
         dialog.setOnCancelListener(onCancelListener);
 
@@ -181,6 +185,32 @@ public class AlertUtils {
         if (!TextUtils.isEmpty(tvMd5.getText().toString())) {
             tvMd5.setOnLongClickListener(onLongClickListener);
         }
+
+        dialog.show();
+        return dialog;
+    }
+
+    /**
+     * 显示文件详情对话框
+     *
+     * @param context context
+     * @return
+     */
+    public static BottomSheetDialog showZipListBottomSheet(final Context context, ArrayList<FileItem> fileItemList) {
+        BottomSheetDialog dialog;
+        if (SPUtils.isLightMode()) {
+            dialog = new BottomSheetDialog(context, R.style.BottomSheetDialogTheme);
+        } else {
+            dialog = new BottomSheetDialog(context, R.style.BottomSheetDialogThemeDark);
+        }
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_zip_list, new LinearLayout(context), false);
+        dialog.setContentView(view);
+
+        RecyclerView tvZipList = ButterKnife.findById(view, R.id.rv_zip_list);
+        tvZipList.setLayoutManager(new LinearLayoutManager(context));
+        ZipListAdapter adapter = new ZipListAdapter(context);
+        tvZipList.setAdapter(adapter);
+        adapter.setData(fileItemList);
 
         dialog.show();
         return dialog;

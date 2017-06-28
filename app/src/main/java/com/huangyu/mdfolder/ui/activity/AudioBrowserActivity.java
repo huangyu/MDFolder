@@ -154,7 +154,7 @@ public class AudioBrowserActivity extends ThematicActivity implements EasyVideoC
      * @param fileItem 文件
      */
     public void onShowFileInfo(FileItem fileItem) {
-        AlertUtils.showInfoBottomSheet(this, fileItem, null);
+        AlertUtils.showFileInfoBottomSheet(this, fileItem, null);
     }
 
     /**

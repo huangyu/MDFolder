@@ -15,9 +15,8 @@ import com.huangyu.library.mvp.IBaseModel;
 import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
-import com.huangyu.mdfolder.utils.MimeTypeUtils;
 import com.huangyu.mdfolder.utils.SDCardUtils;
-import com.huangyu.mdfolder.utils.Zip4JUtils;
+import com.huangyu.mdfolder.utils.ZipUtils;
 import com.huangyu.mdfolder.utils.comparator.AlphabetComparator;
 import com.huangyu.mdfolder.utils.comparator.SizeComparator;
 import com.huangyu.mdfolder.utils.comparator.TimeComparator;
@@ -74,6 +73,7 @@ public class FileListModel implements IBaseModel {
                 new String[]{"%" + searchStr + "%"}, null);
 
         if (cursor != null) {
+            PackageManager pm = BaseApplication.getInstance().getApplicationContext().getPackageManager();
             ArrayList<FileItem> documentList = new ArrayList<>();
             while (cursor.moveToNext()) {
                 String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.TITLE));
@@ -84,14 +84,23 @@ public class FileListModel implements IBaseModel {
                 String fileRealName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
                 if (FileUtils.isFileExists(filePath) && !isFolder(fileRealName)) {
                     FileItem fileItem = new FileItem();
-                    fileItem.setName(filePath);
+                    fileItem.setName(fileRealName);
                     fileItem.setPath(filePath);
                     fileItem.setSize(fileLength);
                     fileItem.setDate(date);
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(false);
-                    fileItem.setType(MimeTypeUtils.getTypeBySuffix(FileUtils.getSuffix(fileRealName)));
+                    fileItem.setType(Constants.FileType.APK);
                     fileItem.setIsShow(true);
+
+                    if (fileRealName.endsWith(".apk")) {
+                        PackageInfo packageInfo = pm.getPackageArchiveInfo(filePath, PackageManager.GET_ACTIVITIES);
+                        ApplicationInfo appInfo = packageInfo.applicationInfo;
+                        appInfo.sourceDir = filePath;
+                        appInfo.publicSourceDir = filePath;
+                        Drawable icon = appInfo.loadIcon(pm);
+                        fileItem.setApkIcon(icon);
+                    }
                     if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
                         documentList.add(fileItem);
                     }
@@ -305,9 +314,6 @@ public class FileListModel implements IBaseModel {
                     ApplicationInfo appInfo = packageInfo.applicationInfo;
                     appInfo.sourceDir = filePath;
                     appInfo.publicSourceDir = filePath;
-                    String packageName = packageInfo.packageName;
-                    int versionCode = packageInfo.versionCode;
-
                     FileItem fileItem = new FileItem();
                     String fileRealName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
                     fileItem.setName(fileRealName);
@@ -449,7 +455,7 @@ public class FileListModel implements IBaseModel {
      * @return true/false
      */
     public boolean zipFileList(ArrayList<File> resFiles, String zipFilePath) {
-        return Zip4JUtils.zipFile(resFiles, zipFilePath);
+        return ZipUtils.zipFile(resFiles, zipFilePath);
     }
 
     /**
@@ -460,7 +466,7 @@ public class FileListModel implements IBaseModel {
      * @return true/false
      */
     public boolean unzipFileList(String zipFilePath, String toPath) {
-        return Zip4JUtils.unzipFile(zipFilePath, toPath);
+        return ZipUtils.unzipFile(zipFilePath, toPath);
     }
 
     /**
@@ -472,7 +478,7 @@ public class FileListModel implements IBaseModel {
      * @return true/false
      */
     public boolean unzipFileList(String zipFilePath, String toPath, String password) {
-        return Zip4JUtils.unzipFile(zipFilePath, toPath, password);
+        return ZipUtils.unzipFile(zipFilePath, toPath, password);
     }
 
 }

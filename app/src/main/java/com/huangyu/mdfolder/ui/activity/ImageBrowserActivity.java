@@ -137,7 +137,7 @@ public class ImageBrowserActivity extends ThematicActivity {
      * @param fileItem 文件
      */
     public void onShowFileInfo(FileItem fileItem) {
-        AlertUtils.showInfoBottomSheet(this, fileItem, null);
+        AlertUtils.showFileInfoBottomSheet(this, fileItem, null);
     }
 
     /**
