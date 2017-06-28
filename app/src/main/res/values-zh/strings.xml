@@ -78,7 +78,7 @@
     <string name="tips_delete_file">是否删除该文件？</string>
     <string name="tips_show_hide_files">是否显示/隐藏这些文件？</string>
     <string name="tips_zip_files">是否压缩这些文件？</string>
-    <string name="tips_unzip_files">是否解压这些文件？</string>
+    <string name="tips_unzip_file">是否解压该文件？</string>
     <string name="tips_copy_files">是否复制这些文件?</string>
     <string name="tips_cut_files">是否剪切这些文件?</string>
     <string name="tips_delete_successfully">删除成功</string>
@@ -111,6 +111,7 @@
     <string name="tips_file_name_empty">文件名不能为空</string>
     <string name="tips_copy_to_clipboard">已复制到剪贴板</string>
     <string name="tips_not_support">不支持播放</string>
+    <string name="tips_input_password">请输入密码</string>
 
     <string name="pref_settings">设置</string>
     <string name="pref_appearance">外观</string>

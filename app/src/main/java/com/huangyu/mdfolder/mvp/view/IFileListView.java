@@ -51,7 +51,9 @@ public interface IFileListView extends IBaseView {
 
     void showInfoBottomSheet(FileItem fileItem, DialogInterface.OnCancelListener onCancelListener);
 
-    View inflateAlertDialogLayout();
+    View inflateFilenameInputDialogLayout();
+
+    View inflatePasswordInputDialogLayout();
 
     TextInputLayout findTextInputLayout(View view);
 

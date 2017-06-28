@@ -13,7 +13,7 @@ import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.utils.MimeTypeUtils;
 import com.huangyu.mdfolder.utils.SDCardUtils;
-import com.huangyu.mdfolder.utils.ZipUtils;
+import com.huangyu.mdfolder.utils.Zip4JUtils;
 import com.huangyu.mdfolder.utils.comparator.AlphabetComparator;
 import com.huangyu.mdfolder.utils.comparator.SizeComparator;
 import com.huangyu.mdfolder.utils.comparator.TimeComparator;
@@ -21,9 +21,7 @@ import com.huangyu.mdfolder.utils.comparator.TypeComparator;
 import com.huangyu.mdfolder.utils.filter.SearchFilter;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -351,29 +349,31 @@ public class FileListModel implements IBaseModel {
      * @param zipFilePath 文件路径
      * @return true/false
      */
-    public boolean zipFileList(Collection<File> resFiles, String zipFilePath) {
-        try {
-            return ZipUtils.zipFiles(resFiles, zipFilePath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
+    public boolean zipFileList(ArrayList<File> resFiles, String zipFilePath) {
+        return Zip4JUtils.zipFile(resFiles, zipFilePath);
     }
 
     /**
      * 解压缩文件
      *
-     * @param resFiles    文件列表
-     * @param zipFilePath 文件路径
+     * @param zipFilePath 解压文件路径
+     * @param toPath      目标文件路径
      * @return true/false
      */
-    public boolean unzipFileList(Collection<File> resFiles, String zipFilePath) {
-        try {
-            return ZipUtils.unzipFiles(resFiles, zipFilePath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
+    public boolean unzipFileList(String zipFilePath, String toPath) {
+        return Zip4JUtils.unzipFile(zipFilePath, toPath);
+    }
+
+    /**
+     * 解压缩文件
+     *
+     * @param zipFilePath 解压文件路径
+     * @param toPath      目标文件路径
+     * @param password    解压密码
+     * @return true/false
+     */
+    public boolean unzipFileList(String zipFilePath, String toPath, String password) {
+        return Zip4JUtils.unzipFile(zipFilePath, toPath, password);
     }
 
 }

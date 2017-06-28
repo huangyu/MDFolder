@@ -18,6 +18,7 @@ import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
 import com.huangyu.mdfolder.utils.MimeTypeUtils;
+import com.huangyu.mdfolder.utils.Zip4JUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -415,7 +416,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
             return;
         }
 
-        final View view = mView.inflateAlertDialogLayout();
+        final View view = mView.inflateFilenameInputDialogLayout();
         final TextInputLayout textInputLayout = mView.findTextInputLayout(view);
         final EditText editText = mView.findAlertDialogEditText(view);
         mView.showKeyboard(mView.findAlertDialogEditText(view));
@@ -538,7 +539,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
             return;
         }
 
-        final View view = mView.inflateAlertDialogLayout();
+        final View view = mView.inflateFilenameInputDialogLayout();
         final TextInputLayout textInputLayout = mView.findTextInputLayout(view);
         final EditText editText = mView.findAlertDialogEditText(view);
         mView.showKeyboard(mView.findAlertDialogEditText(view));
@@ -661,7 +662,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         if (fileList.size() != 1) {
             mView.showMessage(mView.getResString(R.string.tips_choose_one_file));
         } else {
-            final View view = mView.inflateAlertDialogLayout();
+            final View view = mView.inflateFilenameInputDialogLayout();
             final TextInputLayout textInputLayout = mView.findTextInputLayout(view);
             final EditText editText = mView.findAlertDialogEditText(view);
             final String filename = fileList.get(0).getName();
@@ -889,7 +890,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         mView.showNormalAlert(mView.getResString(R.string.tips_zip_files), mView.getResString(R.string.act_zip), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                final View view = mView.inflateAlertDialogLayout();
+                final View view = mView.inflateFilenameInputDialogLayout();
                 final TextInputLayout textInputLayout = mView.findTextInputLayout(view);
                 final EditText editText = mView.findAlertDialogEditText(view);
                 mView.showKeyboard(mView.findAlertDialogEditText(view));
@@ -920,7 +921,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     }
                                 })
                                         .toList()
-                                        .delay(500, TimeUnit.MILLISECONDS)
+                                        .delay(300, TimeUnit.MILLISECONDS)
                                         .subscribeOn(Schedulers.io())
                                         .observeOn(AndroidSchedulers.mainThread())
                                         .subscribe(new Subscriber<List<File>>() {
@@ -932,7 +933,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                                             @Override
                                             public void onNext(List<File> fileList) {
-                                                boolean result = mFileListModel.zipFileList(fileList, mCurrentPath + File.separator + filename + ".zip");
+                                                ArrayList<File> fileArrayList = new ArrayList<>();
+                                                fileArrayList.addAll(fileList);
+                                                boolean result = mFileListModel.zipFileList(fileArrayList, mCurrentPath + File.separator + filename + ".zip");
                                                 if (result) {
                                                     mView.showMessage(mView.getResString(R.string.tips_zip_successfully));
                                                 } else {
@@ -974,50 +977,121 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * @param fileList 文件列表
      */
     public void onUnzip(final ArrayList<FileItem> fileList) {
-        mView.showNormalAlert(mView.getResString(R.string.tips_unzip_files), mView.getResString(R.string.act_unzip), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Subscription subscription = Observable.from(fileList).map(new Func1<FileItem, File>() {
-                    @Override
-                    public File call(FileItem fileItem) {
-                        return new File(fileItem.getPath());
-                    }
-                })
-                        .toList()
-                        .delay(500, TimeUnit.MILLISECONDS)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<List<File>>() {
+        if (fileList.size() != 1) {
+            mView.showMessage(mView.getResString(R.string.tips_choose_one_file));
+        } else {
+            mView.showNormalAlert(mView.getResString(R.string.tips_unzip_file), mView.getResString(R.string.act_unzip), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    final String filePath = fileList.get(0).getPath();
+                    if (Zip4JUtils.isEncrypted(filePath)) {
+                        final View view = mView.inflatePasswordInputDialogLayout();
+                        final EditText editText = mView.findAlertDialogEditText(view);
+                        mView.showKeyboard(mView.findAlertDialogEditText(view));
+                        mView.showInputFileNameAlert(view, new DialogInterface.OnShowListener() {
                             @Override
-                            public void onStart() {
-                                mView.showProgressDialog(mContext.getString(R.string.tips_unzipping));
-                            }
+                            public void onShow(final DialogInterface dialog) {
+                                Button positionButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                                positionButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        final String password = editText.getText().toString();
+                                        Subscription subscription = Observable.from(fileList).map(new Func1<FileItem, File>() {
+                                            @Override
+                                            public File call(FileItem fileItem) {
+                                                return new File(fileItem.getPath());
+                                            }
+                                        })
+                                                .toList()
+                                                .delay(300, TimeUnit.MILLISECONDS)
+                                                .subscribeOn(Schedulers.io())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe(new Subscriber<List<File>>() {
+                                                    @Override
+                                                    public void onStart() {
+                                                        dialog.dismiss();
+                                                        mView.showProgressDialog(mContext.getString(R.string.tips_unzipping));
+                                                    }
 
-                            @Override
-                            public void onNext(List<File> fileList) {
-                                boolean result = mFileListModel.unzipFileList(fileList, mCurrentPath);
-                                if (result) {
-                                    mView.showMessage(mView.getResString(R.string.tips_unzip_successfully));
-                                } else {
-                                    mView.showMessage(mView.getResString(R.string.tips_unzip_in_error));
-                                }
-                            }
+                                                    @Override
+                                                    public void onNext(List<File> fileList) {
+                                                        boolean result = mFileListModel.unzipFileList(filePath, mCurrentPath, password);
+                                                        if (result) {
+                                                            mView.showMessage(mView.getResString(R.string.tips_unzip_successfully));
+                                                        } else {
+                                                            mView.showMessage(mView.getResString(R.string.tips_unzip_in_error));
+                                                        }
+                                                    }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                mView.showError(e.getMessage());
-                                onCompleted();
-                            }
+                                                    @Override
+                                                    public void onError(Throwable e) {
+                                                        mView.showError(e.getMessage());
+                                                        onCompleted();
+                                                    }
 
-                            @Override
-                            public void onCompleted() {
-                                mView.hideProgressDialog();
-                                mView.finishAction();
+                                                    @Override
+                                                    public void onCompleted() {
+                                                        mView.hideProgressDialog();
+                                                        mView.finishAction();
+                                                    }
+                                                });
+                                        mRxManager.add(subscription);
+                                    }
+                                });
+                                Button negativeButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
+                                negativeButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        dialog.dismiss();
+                                    }
+                                });
                             }
                         });
-                mRxManager.add(subscription);
-            }
-        });
+
+                    } else {
+                        Subscription subscription = Observable.from(fileList).map(new Func1<FileItem, File>() {
+                            @Override
+                            public File call(FileItem fileItem) {
+                                return new File(fileItem.getPath());
+                            }
+                        })
+                                .toList()
+                                .delay(500, TimeUnit.MILLISECONDS)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Subscriber<List<File>>() {
+                                    @Override
+                                    public void onStart() {
+                                        mView.showProgressDialog(mContext.getString(R.string.tips_unzipping));
+                                    }
+
+                                    @Override
+                                    public void onNext(List<File> fileList) {
+                                        boolean result = mFileListModel.unzipFileList(filePath, mCurrentPath);
+                                        if (result) {
+                                            mView.showMessage(mView.getResString(R.string.tips_unzip_successfully));
+                                        } else {
+                                            mView.showMessage(mView.getResString(R.string.tips_unzip_in_error));
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        mView.showError(e.getMessage());
+                                        onCompleted();
+                                    }
+
+                                    @Override
+                                    public void onCompleted() {
+                                        mView.hideProgressDialog();
+                                        mView.finishAction();
+                                    }
+                                });
+                        mRxManager.add(subscription);
+                    }
+                }
+            });
+        }
     }
 
     /**

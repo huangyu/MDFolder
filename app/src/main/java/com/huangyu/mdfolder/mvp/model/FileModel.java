@@ -36,7 +36,7 @@ public class FileModel implements IBaseModel {
                     uri = Uri.fromFile(file);
                 }
                 intent.setDataAndType(uri, getMIMEType(file));
-                context.startActivity(Intent.createChooser(intent, "选择应用打开文件"));
+                context.startActivity(intent);
                 return true;
             } catch (Exception e) {
                 return false;

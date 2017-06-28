@@ -462,9 +462,15 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     @Override
-    public View inflateAlertDialogLayout() {
+    public View inflateFilenameInputDialogLayout() {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         return inflater.inflate(R.layout.dialog_input, new LinearLayout(getContext()), false);
+    }
+
+    @Override
+    public View inflatePasswordInputDialogLayout() {
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        return inflater.inflate(R.layout.dialog_password, new LinearLayout(getContext()), false);
     }
 
     @Override
