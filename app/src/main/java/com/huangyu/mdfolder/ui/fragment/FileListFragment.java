@@ -122,7 +122,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     } else {
                         if (SPUtils.isBuildInMode()) {
                             // 压缩包文件
-                            if(file.getType() == Constants.FileType.ZIP) {
+                            if (file.getType() == Constants.FileType.ZIP) {
                                 AlertUtils.showZipListBottomSheet(getContext(), ZipUtils.listFiles(file.getPath()));
                                 return;
                             }
@@ -186,7 +186,8 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     }
 
                     finishAction();
-                } else if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT) {
+                } else if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT
+                        || mPresenter.mEditType == Constants.EditType.ZIP || mPresenter.mEditType == Constants.EditType.UNZIP) {
                     FileItem file = mAdapter.getItem(position);
                     if (file == null) {
                         return;
@@ -209,7 +210,8 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mAdapter.setOnItemLongClick(new CommonRecyclerViewAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, final int position) {
-                if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT) {
+                if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT
+                        || mPresenter.mEditType == Constants.EditType.ZIP || mPresenter.mEditType == Constants.EditType.UNZIP) {
                     return;
                 }
                 mPresenter.mEditType = Constants.EditType.SELECT;
@@ -396,7 +398,8 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     int index = (Integer) tag;
                     mPresenter.enterCertainFolder(index);
                 }
-                if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT) {
+                if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT
+                        && mPresenter.mEditType != Constants.EditType.ZIP && mPresenter.mEditType != Constants.EditType.UNZIP) {
                     finishAction();
                 }
             }
@@ -604,10 +607,20 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         mPresenter.onShowHideFile(fileList);
                         break;
                     case R.id.action_zip:
-                        mPresenter.onZip(fileList);
+                        mPresenter.mEditType = Constants.EditType.ZIP;
+                        mActionMode = getPasteActonMode();
+                        mAdapter.mSelectedFileList = fileList;
+                        mActionMode.setTitle(mAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
                         break;
                     case R.id.action_unzip:
-                        mPresenter.onUnzip(fileList);
+                        if (fileList.size() != 1) {
+                            showMessage(getResString(R.string.tips_choose_one_file));
+                        } else {
+                            mPresenter.mEditType = Constants.EditType.UNZIP;
+                            mActionMode = getPasteActonMode();
+                            mAdapter.mSelectedFileList = fileList;
+                            mActionMode.setTitle(mAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
+                        }
                         break;
                 }
                 return false;
@@ -615,7 +628,8 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
-                if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT) {
+                if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT
+                        && mPresenter.mEditType != Constants.EditType.ZIP && mPresenter.mEditType != Constants.EditType.UNZIP) {
                     refreshData(true);
                     getActivity().supportInvalidateOptionsMenu();
                     mActionMode = null;
@@ -651,6 +665,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                             mPresenter.onCopy(fileList);
                         } else if (mPresenter.mEditType == Constants.EditType.CUT) {
                             mPresenter.onMove(fileList);
+                        } else if (mPresenter.mEditType == Constants.EditType.ZIP) {
+                            mPresenter.onZip(fileList);
+                        } else if (mPresenter.mEditType == Constants.EditType.UNZIP) {
+                            mPresenter.onUnzip(fileList);
                         }
                         break;
                 }

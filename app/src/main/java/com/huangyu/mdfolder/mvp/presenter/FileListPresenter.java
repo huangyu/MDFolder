@@ -1026,121 +1026,117 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * @param fileList 文件列表
      */
     public void onUnzip(final ArrayList<FileItem> fileList) {
-        if (fileList.size() != 1) {
-            mView.showMessage(mView.getResString(R.string.tips_choose_one_file));
-        } else {
-            mView.showNormalAlert(mView.getResString(R.string.tips_unzip_file), mView.getResString(R.string.act_unzip), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    final String filePath = fileList.get(0).getPath();
-                    if (ZipUtils.isEncrypted(filePath)) {
-                        final View view = mView.inflatePasswordInputDialogLayout();
-                        final EditText editText = mView.findAlertDialogEditText(view);
-                        mView.showKeyboard(mView.findAlertDialogEditText(view));
-                        mView.showInputFileNameAlert(view, new DialogInterface.OnShowListener() {
-                            @Override
-                            public void onShow(final DialogInterface dialog) {
-                                Button positionButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
-                                positionButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        final String password = editText.getText().toString();
-                                        Subscription subscription = Observable.from(fileList).map(new Func1<FileItem, File>() {
-                                            @Override
-                                            public File call(FileItem fileItem) {
-                                                return new File(fileItem.getPath());
-                                            }
-                                        })
-                                                .toList()
-                                                .delay(300, TimeUnit.MILLISECONDS)
-                                                .subscribeOn(Schedulers.io())
-                                                .observeOn(AndroidSchedulers.mainThread())
-                                                .subscribe(new Subscriber<List<File>>() {
-                                                    @Override
-                                                    public void onStart() {
-                                                        dialog.dismiss();
-                                                        mView.showProgressDialog(mContext.getString(R.string.tips_unzipping));
-                                                    }
-
-                                                    @Override
-                                                    public void onNext(List<File> fileList) {
-                                                        boolean result = mFileListModel.unzipFileList(filePath, mCurrentPath, password);
-                                                        if (result) {
-                                                            mView.showMessage(mView.getResString(R.string.tips_unzip_successfully));
-                                                        } else {
-                                                            mView.showMessage(mView.getResString(R.string.tips_unzip_in_error));
-                                                        }
-                                                    }
-
-                                                    @Override
-                                                    public void onError(Throwable e) {
-                                                        mView.showError(e.getMessage());
-                                                        onCompleted();
-                                                    }
-
-                                                    @Override
-                                                    public void onCompleted() {
-                                                        mView.hideProgressDialog();
-                                                        mView.finishAction();
-                                                    }
-                                                });
-                                        mRxManager.add(subscription);
-                                    }
-                                });
-                                Button negativeButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
-                                negativeButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                            }
-                        });
-
-                    } else {
-                        Subscription subscription = Observable.from(fileList).map(new Func1<FileItem, File>() {
-                            @Override
-                            public File call(FileItem fileItem) {
-                                return new File(fileItem.getPath());
-                            }
-                        })
-                                .toList()
-                                .delay(500, TimeUnit.MILLISECONDS)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new Subscriber<List<File>>() {
-                                    @Override
-                                    public void onStart() {
-                                        mView.showProgressDialog(mContext.getString(R.string.tips_unzipping));
-                                    }
-
-                                    @Override
-                                    public void onNext(List<File> fileList) {
-                                        boolean result = mFileListModel.unzipFileList(filePath, mCurrentPath);
-                                        if (result) {
-                                            mView.showMessage(mView.getResString(R.string.tips_unzip_successfully));
-                                        } else {
-                                            mView.showMessage(mView.getResString(R.string.tips_unzip_in_error));
+        mView.showNormalAlert(mView.getResString(R.string.tips_unzip_file), mView.getResString(R.string.act_unzip), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                final String filePath = fileList.get(0).getPath();
+                if (ZipUtils.isEncrypted(filePath)) {
+                    final View view = mView.inflatePasswordInputDialogLayout();
+                    final EditText editText = mView.findAlertDialogEditText(view);
+                    mView.showKeyboard(mView.findAlertDialogEditText(view));
+                    mView.showInputFileNameAlert(view, new DialogInterface.OnShowListener() {
+                        @Override
+                        public void onShow(final DialogInterface dialog) {
+                            Button positionButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                            positionButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    final String password = editText.getText().toString();
+                                    Subscription subscription = Observable.from(fileList).map(new Func1<FileItem, File>() {
+                                        @Override
+                                        public File call(FileItem fileItem) {
+                                            return new File(fileItem.getPath());
                                         }
-                                    }
+                                    })
+                                            .toList()
+                                            .delay(300, TimeUnit.MILLISECONDS)
+                                            .subscribeOn(Schedulers.io())
+                                            .observeOn(AndroidSchedulers.mainThread())
+                                            .subscribe(new Subscriber<List<File>>() {
+                                                @Override
+                                                public void onStart() {
+                                                    dialog.dismiss();
+                                                    mView.showProgressDialog(mContext.getString(R.string.tips_unzipping));
+                                                }
 
-                                    @Override
-                                    public void onError(Throwable e) {
-                                        mView.showError(e.getMessage());
-                                        onCompleted();
-                                    }
+                                                @Override
+                                                public void onNext(List<File> fileList) {
+                                                    boolean result = mFileListModel.unzipFileList(filePath, mCurrentPath, password);
+                                                    if (result) {
+                                                        mView.showMessage(mView.getResString(R.string.tips_unzip_successfully));
+                                                    } else {
+                                                        mView.showMessage(mView.getResString(R.string.tips_unzip_in_error));
+                                                    }
+                                                }
 
-                                    @Override
-                                    public void onCompleted() {
-                                        mView.hideProgressDialog();
-                                        mView.finishAction();
+                                                @Override
+                                                public void onError(Throwable e) {
+                                                    mView.showError(e.getMessage());
+                                                    onCompleted();
+                                                }
+
+                                                @Override
+                                                public void onCompleted() {
+                                                    mView.hideProgressDialog();
+                                                    mView.finishAction();
+                                                }
+                                            });
+                                    mRxManager.add(subscription);
+                                }
+                            });
+                            Button negativeButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
+                            negativeButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.dismiss();
+                                }
+                            });
+                        }
+                    });
+
+                } else {
+                    Subscription subscription = Observable.from(fileList).map(new Func1<FileItem, File>() {
+                        @Override
+                        public File call(FileItem fileItem) {
+                            return new File(fileItem.getPath());
+                        }
+                    })
+                            .toList()
+                            .delay(500, TimeUnit.MILLISECONDS)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Subscriber<List<File>>() {
+                                @Override
+                                public void onStart() {
+                                    mView.showProgressDialog(mContext.getString(R.string.tips_unzipping));
+                                }
+
+                                @Override
+                                public void onNext(List<File> fileList) {
+                                    boolean result = mFileListModel.unzipFileList(filePath, mCurrentPath);
+                                    if (result) {
+                                        mView.showMessage(mView.getResString(R.string.tips_unzip_successfully));
+                                    } else {
+                                        mView.showMessage(mView.getResString(R.string.tips_unzip_in_error));
                                     }
-                                });
-                        mRxManager.add(subscription);
-                    }
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    mView.showError(e.getMessage());
+                                    onCompleted();
+                                }
+
+                                @Override
+                                public void onCompleted() {
+                                    mView.hideProgressDialog();
+                                    mView.finishAction();
+                                }
+                            });
+                    mRxManager.add(subscription);
                 }
-            });
-        }
+            }
+        });
     }
 
     /**
