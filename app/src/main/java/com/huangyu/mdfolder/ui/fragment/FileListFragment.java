@@ -606,13 +606,13 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     case R.id.action_show_hide:
                         mPresenter.onShowHideFile(fileList);
                         break;
-                    case R.id.action_zip:
+                    case R.id.action_compress:
                         mPresenter.mEditType = Constants.EditType.ZIP;
                         mActionMode = getPasteActonMode();
                         mAdapter.mSelectedFileList = fileList;
                         mActionMode.setTitle(mAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
                         break;
-                    case R.id.action_unzip:
+                    case R.id.action_extract:
                         if (fileList.size() != 1) {
                             showMessage(getResString(R.string.tips_choose_one_file));
                         } else {

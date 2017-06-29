@@ -131,7 +131,7 @@ public class VideoBrowserActivity extends ThematicActivity implements EasyVideoC
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_control_type, menu);
+        getMenuInflater().inflate(R.menu.menu_control_browser, menu);
         return true;
     }
 

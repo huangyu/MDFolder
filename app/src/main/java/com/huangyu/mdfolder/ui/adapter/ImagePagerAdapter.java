@@ -7,7 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.github.chrisbanes.photoview.PhotoView;
+import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.bean.FileItem;
 
@@ -42,9 +44,14 @@ public class ImagePagerAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup viewGroup, final int position) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.item_image_pager, viewGroup, false);
         PhotoView photoView = ButterKnife.findById(view, R.id.photo_view);
-        Glide.with(mContext).load(mImageList.get(position).getPath()).into(photoView);
-        viewGroup.addView(view);
-        return view;
+        String suffix = FileUtils.getSuffix(mImageList.get(position).getName());
+        if (suffix.equals("gif")) {
+            Glide.with(mContext).load(mImageList.get(position).getPath()).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(photoView);
+        } else {
+            Glide.with(mContext).load(mImageList.get(position).getPath()).into(photoView);
+        }
+        viewGroup.addView(photoView);
+        return photoView;
     }
 
     @Override

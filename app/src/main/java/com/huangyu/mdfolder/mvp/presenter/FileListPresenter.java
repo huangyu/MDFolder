@@ -282,6 +282,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 .doOnSubscribe(new Action0() {
                     @Override
                     public void call() {
+                        mCurrentPath = "";
                         mFileStack.clear();
                         mScrollYStack.clear();
                         mBeforeScrollY = 0;
@@ -717,7 +718,11 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
             final String filename = fileList.get(0).getName();
             final String filePath = fileList.get(0).getPath();
             editText.setText(filename);
-            editText.setSelection(filename.length());
+            if (filename.contains(".")) {
+                editText.setSelection(0, filename.lastIndexOf("."));
+            } else {
+                editText.setSelection(0, filename.length());
+            }
             mView.showKeyboard(mView.findAlertDialogEditText(view));
             mView.showInputFileNameAlert(view, new DialogInterface.OnShowListener() {
                 @Override

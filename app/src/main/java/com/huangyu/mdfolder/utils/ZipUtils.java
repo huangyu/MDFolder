@@ -35,6 +35,7 @@ public class ZipUtils {
     public static boolean zipFile(ArrayList<File> fileList, String toPath) {
         try {
             ZipFile zipFile = new ZipFile(toPath);
+            zipFile.setFileNameCharset("UTF-8");
             ZipParameters parameters = new ZipParameters();
             parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
             parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
@@ -55,6 +56,7 @@ public class ZipUtils {
     public static boolean unZipFile(String zipFilePath, String toPath) {
         try {
             ZipFile zipFile = new ZipFile(zipFilePath);
+            zipFile.setFileNameCharset("UTF-8");
             zipFile.extractAll(toPath);
         } catch (ZipException e) {
             e.printStackTrace();
@@ -72,6 +74,7 @@ public class ZipUtils {
     public static boolean unZipFile(String zipFilePath, String toPath, String password) {
         try {
             ZipFile zipFile = new ZipFile(zipFilePath);
+            zipFile.setFileNameCharset("UTF-8");
             if (zipFile.isEncrypted()) {
                 zipFile.setPassword(password);
             }
@@ -169,6 +172,7 @@ public class ZipUtils {
         ArrayList<FileItem> fileItemList = new ArrayList<>();
         try {
             ZipFile zipFile = new ZipFile(zipFilePath);
+            zipFile.setFileNameCharset("UTF-8");
             List<FileHeader> fileHeaderList = zipFile.getFileHeaders();
             FileItem fileItem;
             for (FileHeader fileHeader : fileHeaderList) {

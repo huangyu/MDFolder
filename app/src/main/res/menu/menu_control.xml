@@ -44,13 +44,13 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/action_zip"
+        android:id="@+id/action_compress"
         android:orderInCategory="7"
         android:title="@string/menu_compress"
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/action_unzip"
+        android:id="@+id/action_extract"
         android:orderInCategory="8"
         android:title="@string/menu_extract"
         app:showAsAction="ifRoom" />

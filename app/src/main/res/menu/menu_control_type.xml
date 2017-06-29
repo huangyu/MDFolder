@@ -30,4 +30,16 @@
         android:title="@string/menu_move"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_compress"
+        android:orderInCategory="5"
+        android:title="@string/menu_compress"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_extract"
+        android:orderInCategory="6"
+        android:title="@string/menu_extract"
+        app:showAsAction="ifRoom" />
+
 </menu>
