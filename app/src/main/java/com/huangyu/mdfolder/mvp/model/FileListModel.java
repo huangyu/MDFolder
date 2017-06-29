@@ -64,8 +64,7 @@ public class FileListModel implements IBaseModel {
         String[] projection = new String[]{
                 MediaStore.Files.FileColumns.DATA,
                 MediaStore.Files.FileColumns.SIZE,
-                MediaStore.Files.FileColumns.DATE_MODIFIED,
-                MediaStore.Files.FileColumns.MIME_TYPE};
+                MediaStore.Files.FileColumns.DATE_MODIFIED};
 
         Cursor cursor = contentResolver.query(MediaStore.Files.getContentUri("external"), projection,
                 MediaStore.Files.FileColumns.DATA + " like ? ",
@@ -286,8 +285,7 @@ public class FileListModel implements IBaseModel {
         String[] projection = new String[]{
                 MediaStore.Files.FileColumns.DATA,
                 MediaStore.Files.FileColumns.SIZE,
-                MediaStore.Files.FileColumns.DATE_MODIFIED,
-                MediaStore.Files.FileColumns.MIME_TYPE};
+                MediaStore.Files.FileColumns.DATE_MODIFIED};
 
         Cursor cursor = contentResolver.query(MediaStore.Files.getContentUri("external"), projection,
                 MediaStore.Files.FileColumns.DATA + " like ? ",
@@ -334,8 +332,7 @@ public class FileListModel implements IBaseModel {
         String[] projection = new String[]{
                 MediaStore.Files.FileColumns.DATA,
                 MediaStore.Files.FileColumns.SIZE,
-                MediaStore.Files.FileColumns.DATE_MODIFIED,
-                MediaStore.Files.FileColumns.MIME_TYPE};
+                MediaStore.Files.FileColumns.DATE_MODIFIED};
 
         Cursor cursor = contentResolver.query(MediaStore.Files.getContentUri("external"), projection,
                 MediaStore.Files.FileColumns.DATA + " like ? ",

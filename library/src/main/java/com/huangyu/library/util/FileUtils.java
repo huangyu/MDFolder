@@ -546,7 +546,7 @@ public final class FileUtils {
      * @param isRecursive 是否递归进子目录
      * @return 文件链表
      */
-    public static List<File> listFilesInDir(String dirPath, boolean isRecursive) {
+    public static ArrayList<File> listFilesInDir(String dirPath, boolean isRecursive) {
         return listFilesInDir(getFileByPath(dirPath), isRecursive);
     }
 
@@ -557,10 +557,10 @@ public final class FileUtils {
      * @param isRecursive 是否递归进子目录
      * @return 文件链表
      */
-    public static List<File> listFilesInDir(File dir, boolean isRecursive) {
+    public static ArrayList<File> listFilesInDir(File dir, boolean isRecursive) {
         if (!isDir(dir)) return null;
         if (isRecursive) return listFilesInDir(dir);
-        List<File> list = new ArrayList<>();
+        ArrayList<File> list = new ArrayList<>();
         File[] files = dir.listFiles();
         if (files != null && files.length != 0) {
             Collections.addAll(list, files);
@@ -574,7 +574,7 @@ public final class FileUtils {
      * @param dirPath 目录路径
      * @return 文件链表
      */
-    public static List<File> listFilesInDir(String dirPath) {
+    public static ArrayList<File> listFilesInDir(String dirPath) {
         return listFilesInDir(getFileByPath(dirPath));
     }
 
@@ -584,15 +584,15 @@ public final class FileUtils {
      * @param dir 目录
      * @return 文件链表
      */
-    public static List<File> listFilesInDir(File dir) {
+    public static ArrayList<File> listFilesInDir(File dir) {
         if (!isDir(dir)) return null;
-        List<File> list = new ArrayList<>();
+        ArrayList<File> list = new ArrayList<>();
         File[] files = dir.listFiles();
         if (files != null && files.length != 0) {
             for (File file : files) {
                 list.add(file);
                 if (file.isDirectory()) {
-                    List<File> fileList = listFilesInDir(file);
+                    ArrayList<File> fileList = listFilesInDir(file);
                     if (fileList != null) {
                         list.addAll(fileList);
                     }
@@ -611,7 +611,7 @@ public final class FileUtils {
      * @param isRecursive 是否递归进子目录
      * @return 文件链表
      */
-    public static List<File> listFilesInDirWithFilter(String dirPath, String suffix, boolean isRecursive) {
+    public static ArrayList<File> listFilesInDirWithFilter(String dirPath, String suffix, boolean isRecursive) {
         return listFilesInDirWithFilter(getFileByPath(dirPath), suffix, isRecursive);
     }
 
@@ -624,10 +624,10 @@ public final class FileUtils {
      * @param isRecursive 是否递归进子目录
      * @return 文件链表
      */
-    public static List<File> listFilesInDirWithFilter(File dir, String suffix, boolean isRecursive) {
+    public static ArrayList<File> listFilesInDirWithFilter(File dir, String suffix, boolean isRecursive) {
         if (isRecursive) return listFilesInDirWithFilter(dir, suffix);
         if (dir == null || !isDir(dir)) return null;
-        List<File> list = new ArrayList<>();
+        ArrayList<File> list = new ArrayList<>();
         File[] files = dir.listFiles();
         if (files != null && files.length != 0) {
             for (File file : files) {
@@ -647,7 +647,7 @@ public final class FileUtils {
      * @param suffix  后缀名
      * @return 文件链表
      */
-    public static List<File> listFilesInDirWithFilter(String dirPath, String suffix) {
+    public static ArrayList<File> listFilesInDirWithFilter(String dirPath, String suffix) {
         return listFilesInDirWithFilter(getFileByPath(dirPath), suffix);
     }
 
@@ -659,9 +659,9 @@ public final class FileUtils {
      * @param suffix 后缀名
      * @return 文件链表
      */
-    public static List<File> listFilesInDirWithFilter(File dir, String suffix) {
+    public static ArrayList<File> listFilesInDirWithFilter(File dir, String suffix) {
         if (dir == null || !isDir(dir)) return null;
-        List<File> list = new ArrayList<>();
+        ArrayList<File> list = new ArrayList<>();
         File[] files = dir.listFiles();
         if (files != null && files.length != 0) {
             for (File file : files) {
@@ -718,7 +718,7 @@ public final class FileUtils {
      * @param filter  过滤器
      * @return 文件链表
      */
-    public static List<File> listFilesInDirWithFilter(String dirPath, FilenameFilter filter) {
+    public static ArrayList<File> listFilesInDirWithFilter(String dirPath, FilenameFilter filter) {
         return listFilesInDirWithFilter(getFileByPath(dirPath), filter);
     }
 
@@ -754,7 +754,7 @@ public final class FileUtils {
      * @param fileName 文件名
      * @return 文件链表
      */
-    public static List<File> searchFileInDir(String dirPath, String fileName) {
+    public static ArrayList<File> searchFileInDir(String dirPath, String fileName) {
         return searchFileInDir(getFileByPath(dirPath), fileName);
     }
 
@@ -766,9 +766,9 @@ public final class FileUtils {
      * @param fileName 文件名
      * @return 文件链表
      */
-    public static List<File> searchFileInDir(File dir, String fileName) {
+    public static ArrayList<File> searchFileInDir(File dir, String fileName) {
         if (dir == null || !isDir(dir)) return null;
-        List<File> list = new ArrayList<>();
+        ArrayList<File> list = new ArrayList<>();
         File[] files = dir.listFiles();
         if (files != null && files.length != 0) {
             for (File file : files) {

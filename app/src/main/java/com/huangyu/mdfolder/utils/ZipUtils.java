@@ -39,7 +39,13 @@ public class ZipUtils {
             ZipParameters parameters = new ZipParameters();
             parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
             parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
-            zipFile.addFiles(fileList, parameters);
+            for (File file : fileList) {
+                if (file.isDirectory()) {
+                    zipFile.addFolder(file, parameters);
+                } else {
+                    zipFile.addFile(file, parameters);
+                }
+            }
         } catch (ZipException e) {
             e.printStackTrace();
             return false;
@@ -114,6 +120,7 @@ public class ZipUtils {
      * @param zipFilePath 压缩文件路径
      * @param toPath      解压路径
      */
+
     public static boolean unRarFile(String zipFilePath, String toPath) {
         try {
             unRar(new File(zipFilePath), toPath);
@@ -139,8 +146,8 @@ public class ZipUtils {
             } else {
                 entryPath = entry.getFileNameString().trim();
             }
-            entryPath = entryPath.replaceAll("\\\\", "/");
-            file = new File(toPath + "/" + entryPath);
+            entryPath = entryPath.replaceAll("\\\\", File.separator);
+            file = new File(toPath + File.separator + entryPath);
             if (entry.isDirectory()) {
                 file.mkdirs();
             } else {
