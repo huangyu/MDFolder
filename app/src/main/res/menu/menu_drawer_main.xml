@@ -49,7 +49,7 @@
             android:id="@+id/nav_zip"
             android:icon="@mipmap/ic_zip"
             android:orderInCategory="10"
-            android:title="@string/menu_zip_package" />
+            android:title="@string/menu_compress_package" />
     </group>
 
     <group

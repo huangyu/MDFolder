@@ -100,9 +100,10 @@ public class FileListModel implements IBaseModel {
                         appInfo.publicSourceDir = filePath;
                         Drawable icon = appInfo.loadIcon(pm);
                         fileItem.setApkIcon(icon);
-                    }
-                    if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
-                        documentList.add(fileItem);
+
+                        if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
+                            documentList.add(fileItem);
+                        }
                     }
                 }
             }
@@ -465,8 +466,8 @@ public class FileListModel implements IBaseModel {
      * @param toPath      目标文件路径
      * @return true/false
      */
-    public boolean unzipFileList(String zipFilePath, String toPath) {
-        return ZipUtils.unzipFile(zipFilePath, toPath);
+    public boolean unZipFileList(String zipFilePath, String toPath) {
+        return ZipUtils.unZipFile(zipFilePath, toPath);
     }
 
     /**
@@ -477,8 +478,30 @@ public class FileListModel implements IBaseModel {
      * @param password    解压密码
      * @return true/false
      */
-    public boolean unzipFileList(String zipFilePath, String toPath, String password) {
-        return ZipUtils.unzipFile(zipFilePath, toPath, password);
+    public boolean unZipFileList(String zipFilePath, String toPath, String password) {
+        return ZipUtils.unZipFile(zipFilePath, toPath, password);
+    }
+
+    /**
+     * 解压缩文件
+     *
+     * @param zipFilePath 解压文件路径
+     * @param toPath      目标文件路径
+     * @return true/false
+     */
+    public boolean un7zipFileList(String zipFilePath, String toPath) {
+        return ZipUtils.un7zipFile(zipFilePath, toPath);
+    }
+
+    /**
+     * 解压缩文件
+     *
+     * @param zipFilePath 解压文件路径
+     * @param toPath      目标文件路径
+     * @return true/false
+     */
+    public boolean unRarFileList(String zipFilePath, String toPath) {
+        return ZipUtils.unRarFile(zipFilePath, toPath);
     }
 
 }

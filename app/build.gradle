@@ -47,4 +47,5 @@ dependencies {
     compile 'com.github.clans:fab:1.6.4'
     compile 'com.github.chrisbanes:PhotoView:2.0.0'
     compile 'com.afollestad:easyvideoplayer:0.3.0'
+    compile 'com.hzy:un7zip:1.0.0'
 }

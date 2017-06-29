@@ -1,6 +1,7 @@
 package com.huangyu.mdfolder.utils;
 
 import com.huangyu.mdfolder.bean.FileItem;
+import com.hzy.lib7z.Un7Zip;
 
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -10,8 +11,13 @@ import net.lingala.zip4j.util.Zip4jConstants;
 import net.lingala.zip4j.util.Zip4jUtil;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import de.innosystec.unrar.Archive;
+import de.innosystec.unrar.exception.RarException;
 
 /**
  * Created by huangyu on 2017/6/28.
@@ -46,7 +52,7 @@ public class ZipUtils {
      * @param zipFilePath 压缩文件路径
      * @param toPath      解压路径
      */
-    public static boolean unzipFile(String zipFilePath, String toPath) {
+    public static boolean unZipFile(String zipFilePath, String toPath) {
         try {
             ZipFile zipFile = new ZipFile(zipFilePath);
             zipFile.extractAll(toPath);
@@ -63,7 +69,7 @@ public class ZipUtils {
      * @param zipFilePath 压缩文件路径
      * @param toPath      解压路径
      */
-    public static boolean unzipFile(String zipFilePath, String toPath, String password) {
+    public static boolean unZipFile(String zipFilePath, String toPath, String password) {
         try {
             ZipFile zipFile = new ZipFile(zipFilePath);
             if (zipFile.isEncrypted()) {
@@ -77,6 +83,64 @@ public class ZipUtils {
         return true;
     }
 
+    /**
+     * 解压文件
+     *
+     * @param zipFilePath 压缩文件路径
+     * @param toPath      解压路径
+     */
+    public static boolean unRarFile(String zipFilePath, String toPath) {
+        try {
+            unRar(new File(zipFilePath), toPath);
+        } catch (RarException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    private static void unRar(File rarFilePathFile, String toPath) throws RarException, IOException {
+        FileOutputStream fileOut;
+        File file;
+        Archive rarFile = new Archive(rarFilePathFile);
+        de.innosystec.unrar.rarfile.FileHeader entry = rarFile.nextFileHeader();
+        while (entry != null) {
+            String entryPath;
+            if (entry.isUnicode()) {
+                entryPath = entry.getFileNameW().trim();
+            } else {
+                entryPath = entry.getFileNameString().trim();
+            }
+            entryPath = entryPath.replaceAll("\\\\", "/");
+            file = new File(toPath + "/" + entryPath);
+            if (entry.isDirectory()) {
+                file.mkdirs();
+            } else {
+                File parent = file.getParentFile();
+                if (parent != null && !parent.exists()) {
+                    parent.mkdirs();
+                }
+                fileOut = new FileOutputStream(file);
+                rarFile.extractFile(entry, fileOut);
+                fileOut.close();
+            }
+            entry = rarFile.nextFileHeader();
+        }
+        rarFile.close();
+    }
+
+    /**
+     * 解压文件
+     *
+     * @param zipFilePath 压缩文件路径
+     * @param toPath      解压路径
+     */
+    public static boolean un7zipFile(String zipFilePath, String toPath) {
+        return Un7Zip.extract7z(zipFilePath, toPath);
+    }
 
     /**
      * zip文件是否加密

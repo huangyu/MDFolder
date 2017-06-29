@@ -315,7 +315,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                 mView.addTab(mView.getResString(R.string.menu_apk));
                                 break;
                             case Constants.SelectType.MENU_ZIP:
-                                mView.addTab(mView.getResString(R.string.menu_zip_package));
+                                mView.addTab(mView.getResString(R.string.menu_compress_package));
                                 break;
                         }
                         mView.refreshData(fileList, false, 0);
@@ -936,7 +936,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * @param fileList 文件列表
      */
     public void onZip(final ArrayList<FileItem> fileList) {
-        mView.showNormalAlert(mView.getResString(R.string.tips_zip_files), mView.getResString(R.string.act_zip), new DialogInterface.OnClickListener() {
+        mView.showNormalAlert(mView.getResString(R.string.tips_compress_files), mView.getResString(R.string.act_compress), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 final View view = mView.inflateFilenameInputDialogLayout();
@@ -977,7 +977,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                             @Override
                                             public void onStart() {
                                                 dialog.dismiss();
-                                                mView.showProgressDialog(mContext.getString(R.string.tips_zipping));
+                                                mView.showProgressDialog(mContext.getString(R.string.tips_compressing));
                                             }
 
                                             @Override
@@ -986,9 +986,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                                 fileArrayList.addAll(fileList);
                                                 boolean result = mFileListModel.zipFileList(fileArrayList, mCurrentPath + File.separator + filename + ".zip");
                                                 if (result) {
-                                                    mView.showMessage(mView.getResString(R.string.tips_zip_successfully));
+                                                    mView.showMessage(mView.getResString(R.string.tips_compress_successfully));
                                                 } else {
-                                                    mView.showMessage(mView.getResString(R.string.tips_zip_in_error));
+                                                    mView.showMessage(mView.getResString(R.string.tips_compress_in_error));
                                                 }
                                             }
 
@@ -1026,7 +1026,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * @param fileList 文件列表
      */
     public void onUnzip(final ArrayList<FileItem> fileList) {
-        mView.showNormalAlert(mView.getResString(R.string.tips_unzip_file), mView.getResString(R.string.act_unzip), new DialogInterface.OnClickListener() {
+        mView.showNormalAlert(mView.getResString(R.string.tips_extract_file), mView.getResString(R.string.act_extract), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 final String filePath = fileList.get(0).getPath();
@@ -1056,16 +1056,28 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                                 @Override
                                                 public void onStart() {
                                                     dialog.dismiss();
-                                                    mView.showProgressDialog(mContext.getString(R.string.tips_unzipping));
+                                                    mView.showProgressDialog(mContext.getString(R.string.tips_extracting));
                                                 }
 
                                                 @Override
                                                 public void onNext(List<File> fileList) {
-                                                    boolean result = mFileListModel.unzipFileList(filePath, mCurrentPath, password);
+                                                    String suffix = FileUtils.getSuffix(fileList.get(0).getName());
+                                                    boolean result;
+                                                    switch (suffix) {
+                                                        case "7z":
+                                                            result = mFileListModel.un7zipFileList(filePath, mCurrentPath);
+                                                            break;
+                                                        case "rar":
+                                                            result = mFileListModel.unRarFileList(filePath, mCurrentPath);
+                                                            break;
+                                                        default:
+                                                            result = mFileListModel.unZipFileList(filePath, mCurrentPath, password);
+                                                            break;
+                                                    }
                                                     if (result) {
-                                                        mView.showMessage(mView.getResString(R.string.tips_unzip_successfully));
+                                                        mView.showMessage(mView.getResString(R.string.tips_extract_successfully));
                                                     } else {
-                                                        mView.showMessage(mView.getResString(R.string.tips_unzip_in_error));
+                                                        mView.showMessage(mView.getResString(R.string.tips_extract_in_error));
                                                     }
                                                 }
 
@@ -1108,16 +1120,16 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             .subscribe(new Subscriber<List<File>>() {
                                 @Override
                                 public void onStart() {
-                                    mView.showProgressDialog(mContext.getString(R.string.tips_unzipping));
+                                    mView.showProgressDialog(mContext.getString(R.string.tips_extracting));
                                 }
 
                                 @Override
                                 public void onNext(List<File> fileList) {
-                                    boolean result = mFileListModel.unzipFileList(filePath, mCurrentPath);
+                                    boolean result = mFileListModel.unZipFileList(filePath, mCurrentPath);
                                     if (result) {
-                                        mView.showMessage(mView.getResString(R.string.tips_unzip_successfully));
+                                        mView.showMessage(mView.getResString(R.string.tips_extract_successfully));
                                     } else {
-                                        mView.showMessage(mView.getResString(R.string.tips_unzip_in_error));
+                                        mView.showMessage(mView.getResString(R.string.tips_extract_in_error));
                                     }
                                 }
 
