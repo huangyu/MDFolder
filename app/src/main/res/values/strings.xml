@@ -103,7 +103,7 @@
     <string name="tips_add_folder_error">Add folder error.</string>
     <string name="tips_add_file_successfully">Add file successfully.</string>
     <string name="tips_add_folder_successfully">Add folder successfully.</string>
-    <string name="tips_no_permission_to_access_file">No permission to access file.</string>
+    <string name="tips_no_permission_to_access_file">Can not execute file.</string>
     <string name="tips_no_file">Empty.</string>
     <string name="tips_not_complete">This function is not complete.</string>
     <string name="tips_error">Error.</string>

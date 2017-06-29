@@ -125,7 +125,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         if (SPUtils.isBuildInMode()) {
                             // 压缩包文件
                             if (file.getType() == Constants.FileType.COMPRESS) {
-                                AlertUtils.showZipListBottomSheet(getContext(), ZipUtils.listFiles(file.getPath()));
+                                AlertUtils.showZipListBottomSheet(getContext(), ZipUtils.listZipFiles(file.getPath()));
                                 return;
                             }
                             // 单个图片浏览
