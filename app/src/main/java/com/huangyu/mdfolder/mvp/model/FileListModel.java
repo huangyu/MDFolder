@@ -63,7 +63,6 @@ public class FileListModel implements IBaseModel {
     public ArrayList<FileItem> getGlobalFileListBySearch(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{
                 MediaStore.Files.FileColumns.DATA,
-                MediaStore.Files.FileColumns.TITLE,
                 MediaStore.Files.FileColumns.SIZE,
                 MediaStore.Files.FileColumns.DATE_MODIFIED,
                 MediaStore.Files.FileColumns.MIME_TYPE};
@@ -76,7 +75,6 @@ public class FileListModel implements IBaseModel {
             PackageManager pm = BaseApplication.getInstance().getApplicationContext().getPackageManager();
             ArrayList<FileItem> documentList = new ArrayList<>();
             while (cursor.moveToNext()) {
-                String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.TITLE));
                 String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA));
                 String fileLength = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.SIZE));
                 String date = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATE_MODIFIED));
@@ -101,7 +99,7 @@ public class FileListModel implements IBaseModel {
                         Drawable icon = appInfo.loadIcon(pm);
                         fileItem.setApkIcon(icon);
 
-                        if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
+                        if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
                             documentList.add(fileItem);
                         }
                     }
@@ -123,7 +121,6 @@ public class FileListModel implements IBaseModel {
 
     public ArrayList<FileItem> getDocumentList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{MediaStore.Files.FileColumns.DATA,
-                MediaStore.Files.FileColumns.TITLE,
                 MediaStore.Files.FileColumns.SIZE,
                 MediaStore.Files.FileColumns.DATE_MODIFIED,
                 MediaStore.Files.FileColumns.MIME_TYPE};
@@ -149,14 +146,14 @@ public class FileListModel implements IBaseModel {
         if (cursor != null) {
             ArrayList<FileItem> documentList = new ArrayList<>();
             while (cursor.moveToNext()) {
-                String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.TITLE));
                 String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA));
                 String fileLength = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.SIZE));
                 String date = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATE_MODIFIED));
 
+                String fileRealName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
                 if (FileUtils.isFileExists(filePath)) {
                     FileItem fileItem = new FileItem();
-                    fileItem.setName(filePath.substring(filePath.lastIndexOf(File.separator) + 1));
+                    fileItem.setName(fileRealName);
                     fileItem.setPath(filePath);
                     fileItem.setSize(fileLength);
                     fileItem.setDate(date);
@@ -164,7 +161,7 @@ public class FileListModel implements IBaseModel {
                     fileItem.setIsDirectory(false);
                     fileItem.setType(Constants.FileType.DOCUMENT);
                     fileItem.setIsShow(true);
-                    if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
+                    if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
                         documentList.add(fileItem);
                     }
                 }
@@ -177,7 +174,6 @@ public class FileListModel implements IBaseModel {
 
     public ArrayList<FileItem> getVideoList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{MediaStore.Video.VideoColumns.DATA,
-                MediaStore.Video.VideoColumns.DISPLAY_NAME,
                 MediaStore.Video.VideoColumns.SIZE,
                 MediaStore.Video.VideoColumns.DATE_MODIFIED};
 
@@ -188,14 +184,14 @@ public class FileListModel implements IBaseModel {
         if (cursor != null) {
             ArrayList<FileItem> videoList = new ArrayList<>();
             while (cursor.moveToNext()) {
-                String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DISPLAY_NAME));
                 String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DATA));
                 String fileLength = cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.SIZE));
                 String date = cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DATE_MODIFIED));
 
+                String fileRealName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
                 if (FileUtils.isFileExists(filePath)) {
                     FileItem fileItem = new FileItem();
-                    fileItem.setName(fileName);
+                    fileItem.setName(fileRealName);
                     fileItem.setPath(filePath);
                     fileItem.setSize(fileLength);
                     fileItem.setDate(date);
@@ -203,7 +199,7 @@ public class FileListModel implements IBaseModel {
                     fileItem.setIsDirectory(false);
                     fileItem.setType(Constants.FileType.VIDEO);
                     fileItem.setIsShow(true);
-                    if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
+                    if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
                         videoList.add(fileItem);
                     }
                 }
@@ -216,7 +212,6 @@ public class FileListModel implements IBaseModel {
 
     public ArrayList<FileItem> getImageList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{MediaStore.Images.ImageColumns.DATA,
-                MediaStore.Images.ImageColumns.DISPLAY_NAME,
                 MediaStore.Images.ImageColumns.SIZE,
                 MediaStore.Images.ImageColumns.DATE_MODIFIED};
         Cursor cursor = contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null,
@@ -225,13 +220,13 @@ public class FileListModel implements IBaseModel {
             ArrayList<FileItem> imageList = new ArrayList<>();
             while (cursor.moveToNext()) {
                 String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA));
-                String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME));
                 String fileLength = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.SIZE));
                 String date = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_MODIFIED));
 
+                String fileRealName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
                 if (FileUtils.isFileExists(filePath)) {
                     FileItem fileItem = new FileItem();
-                    fileItem.setName(fileName);
+                    fileItem.setName(fileRealName);
                     fileItem.setPath(filePath);
                     fileItem.setSize(fileLength);
                     fileItem.setDate(date);
@@ -239,7 +234,7 @@ public class FileListModel implements IBaseModel {
                     fileItem.setIsDirectory(false);
                     fileItem.setType(Constants.FileType.IMAGE);
                     fileItem.setIsShow(true);
-                    if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
+                    if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
                         imageList.add(fileItem);
                     }
                 }
@@ -252,7 +247,6 @@ public class FileListModel implements IBaseModel {
 
     public ArrayList<FileItem> getAudioList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{MediaStore.Audio.AudioColumns.DATA,
-                MediaStore.Audio.AudioColumns.DISPLAY_NAME,
                 MediaStore.Audio.AudioColumns.SIZE,
                 MediaStore.Audio.AudioColumns.DATE_MODIFIED};
 
@@ -262,14 +256,14 @@ public class FileListModel implements IBaseModel {
         if (cursor != null) {
             ArrayList<FileItem> audioList = new ArrayList<>();
             while (cursor.moveToNext()) {
-                String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DISPLAY_NAME));
                 String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATA));
                 String fileLength = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.SIZE));
                 String date = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATE_MODIFIED));
 
+                String fileRealName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
                 if (FileUtils.isFileExists(filePath)) {
                     FileItem fileItem = new FileItem();
-                    fileItem.setName(fileName);
+                    fileItem.setName(fileRealName);
                     fileItem.setPath(filePath);
                     fileItem.setSize(fileLength);
                     fileItem.setDate(date);
@@ -277,7 +271,7 @@ public class FileListModel implements IBaseModel {
                     fileItem.setIsDirectory(false);
                     fileItem.setType(Constants.FileType.AUDIO);
                     fileItem.setIsShow(true);
-                    if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
+                    if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
                         audioList.add(fileItem);
                     }
                 }
@@ -291,7 +285,6 @@ public class FileListModel implements IBaseModel {
     public ArrayList<FileItem> getApkList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{
                 MediaStore.Files.FileColumns.DATA,
-                MediaStore.Files.FileColumns.TITLE,
                 MediaStore.Files.FileColumns.SIZE,
                 MediaStore.Files.FileColumns.DATE_MODIFIED,
                 MediaStore.Files.FileColumns.MIME_TYPE};
@@ -305,7 +298,6 @@ public class FileListModel implements IBaseModel {
 
             ArrayList<FileItem> apkList = new ArrayList<>();
             while (cursor.moveToNext()) {
-                String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.TITLE));
                 String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA));
                 String fileLength = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.SIZE));
                 String date = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATE_MODIFIED));
@@ -327,7 +319,7 @@ public class FileListModel implements IBaseModel {
                     fileItem.setIsShow(true);
                     Drawable icon = appInfo.loadIcon(pm);
                     fileItem.setApkIcon(icon);
-                    if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
+                    if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
                         apkList.add(fileItem);
                     }
                 }
@@ -341,7 +333,6 @@ public class FileListModel implements IBaseModel {
     public ArrayList<FileItem> getZipList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{
                 MediaStore.Files.FileColumns.DATA,
-                MediaStore.Files.FileColumns.TITLE,
                 MediaStore.Files.FileColumns.SIZE,
                 MediaStore.Files.FileColumns.DATE_MODIFIED,
                 MediaStore.Files.FileColumns.MIME_TYPE};
@@ -353,7 +344,6 @@ public class FileListModel implements IBaseModel {
         if (cursor != null) {
             ArrayList<FileItem> apkList = new ArrayList<>();
             while (cursor.moveToNext()) {
-                String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.TITLE));
                 String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA));
                 String fileLength = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.SIZE));
                 String date = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATE_MODIFIED));
@@ -367,9 +357,9 @@ public class FileListModel implements IBaseModel {
                     fileItem.setDate(date);
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(false);
-                    fileItem.setType(Constants.FileType.ZIP);
+                    fileItem.setType(Constants.FileType.COMPRESS);
                     fileItem.setIsShow(true);
-                    if (TextUtils.isEmpty(searchStr) || fileName.contains(searchStr)) {
+                    if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
                         apkList.add(fileItem);
                     }
                 }

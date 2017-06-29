@@ -20,7 +20,7 @@ public class Constants extends BaseConstants {
         public static final int CUT = 0x00000003;
 
         public static final int ZIP = 0x00000004;
-        
+
         public static final int UNZIP = 0x00000005;
     }
 
@@ -63,7 +63,7 @@ public class Constants extends BaseConstants {
 
         public static final int APK = 0x00000029;
 
-        public static final int ZIP = 0x00000030;
+        public static final int COMPRESS = 0x00000030;
     }
 
     public static class SortType {

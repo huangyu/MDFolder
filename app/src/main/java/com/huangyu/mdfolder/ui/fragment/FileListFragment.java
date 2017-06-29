@@ -27,8 +27,10 @@ import android.widget.LinearLayout;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.huangyu.library.BuildConfig;
 import com.huangyu.library.ui.BaseFragment;
 import com.huangyu.library.ui.CommonRecyclerViewAdapter;
+import com.huangyu.library.util.LogToFileUtils;
 import com.huangyu.library.util.LogUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.Constants;
@@ -122,7 +124,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     } else {
                         if (SPUtils.isBuildInMode()) {
                             // 压缩包文件
-                            if (file.getType() == Constants.FileType.ZIP) {
+                            if (file.getType() == Constants.FileType.COMPRESS) {
                                 AlertUtils.showZipListBottomSheet(getContext(), ZipUtils.listFiles(file.getPath()));
                                 return;
                             }
@@ -461,7 +463,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
     @Override
     public void showError(String error) {
-        LogUtils.logd(error);
+        if (BuildConfig.DEBUG) {
+            LogUtils.logd(error);
+            LogToFileUtils.saveCrashInfoFile(error);
+        }
         AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_error));
     }
 

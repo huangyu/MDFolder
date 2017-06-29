@@ -62,13 +62,18 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
             case Constants.FileType.SINGLE_DOCUMENT:
             case Constants.FileType.SINGLE_AUDIO:
             case Constants.FileType.SINGLE_VIDEO:
-            case Constants.FileType.ZIP:
+            case Constants.FileType.COMPRESS:
                 if (fileItem.isDirectory()) {
 //                    String size = mContext.getString(R.string.str_folder) + FileUtils.getFileOrDirSize(fileItem.getSize());
                     mTvSize.setText(mContext.getString(R.string.str_folder));
                     Glide.with(mContext).load(R.mipmap.ic_folder).into(mIvIcon);
                 } else {
-                    mTvSize.setText(FileUtils.getFileOrDirSize(Long.valueOf(fileItem.getSize())));
+                    try {
+                        mTvSize.setText(FileUtils.getFileOrDirSize(Long.valueOf(fileItem.getSize())));
+                    } catch (Exception e) {
+                        // 部分机器查询出来的文件大小为空，用文件路径来处理
+                        mTvSize.setText(FileUtils.getFileSize(fileItem.getPath()));
+                    }
                     if (FileUtils.getSuffix(fileItem.getName()).equals("aac")) {
                         Glide.with(mContext).load(R.mipmap.ic_aac).into(mIvIcon);
                     } else if (FileUtils.getSuffix(fileItem.getName()).equals("jpg")) {
@@ -174,11 +179,21 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
                 break;
             case Constants.FileType.IMAGE:
             case Constants.FileType.SINGLE_IMAGE:
-                mTvSize.setText(FileUtils.getFileOrDirSize(Long.valueOf(fileItem.getSize())));
+                try {
+                    mTvSize.setText(FileUtils.getFileOrDirSize(Long.valueOf(fileItem.getSize())));
+                } catch (Exception e) {
+                    // 部分机器查询出来的文件大小为空，用文件路径来处理
+                    mTvSize.setText(FileUtils.getFileSize(fileItem.getPath()));
+                }
                 Glide.with(mContext).load(fileItem.getPath()).error(R.mipmap.ic_file).into(mIvIcon);
                 break;
             case Constants.FileType.APK:
-                mTvSize.setText(FileUtils.getFileOrDirSize(Long.valueOf(fileItem.getSize())));
+                try {
+                    mTvSize.setText(FileUtils.getFileOrDirSize(Long.valueOf(fileItem.getSize())));
+                } catch (Exception e) {
+                    // 部分机器查询出来的文件大小为空，用文件路径来处理
+                    mTvSize.setText(FileUtils.getFileSize(fileItem.getPath()));
+                }
                 mIvIcon.setImageDrawable(fileItem.getApkIcon());
                 break;
         }

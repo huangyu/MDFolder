@@ -1,6 +1,8 @@
 package com.huangyu.library.app;
 
 import android.content.Context;
+import android.os.Looper;
+import android.widget.Toast;
 
 import com.huangyu.library.util.LogToFileUtils;
 
@@ -51,7 +53,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             //如果用户没有处理则让系统默认的异常处理器来处理
             mDefaultHandler.uncaughtException(thread, ex);
         } else {
-//            ActivityManager.getInstance().AppExitAndRestart(mContext);
+            ActivityManager.getInstance().AppExit(mContext, false);
         }
     }
 
@@ -65,15 +67,15 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         if (ex == null) {
             return false;
         }
-//        //使用Toast来显示异常信息
-//        new Thread() {
-//            @Override
-//            public void run() {
-//                Looper.prepare();
-//                Toast.makeText(mContext, "很抱歉,程序出现异常,即将退出.", Toast.LENGTH_LONG).show();
-//                Looper.loop();
-//            }
-//        }.start();
+        //使用Toast来显示异常信息
+        new Thread() {
+            @Override
+            public void run() {
+                Looper.prepare();
+                Toast.makeText(mContext, "很抱歉,程序出现异常,即将退出.", Toast.LENGTH_LONG).show();
+                Looper.loop();
+            }
+        }.start();
         // 收集设备参数信息
         LogToFileUtils.collectDeviceInfo(mContext);
         // 保存日志文件

@@ -160,3 +160,7 @@
   **[] $VALUES;
   public *;
 }
+
+#unrar
+-dontwarn de.innosystec.unrar.**
+-keep class de.innosystec.unrar.** {*;}

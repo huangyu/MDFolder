@@ -101,7 +101,7 @@ public class MimeTypeUtils {
         } else if (suffix.equals("gif")) {
             return Constants.FileType.SINGLE_IMAGE;
         } else if (suffix.endsWith("zip")) {
-            return Constants.FileType.ZIP;
+            return Constants.FileType.COMPRESS;
         } else if (suffix.endsWith("apk")) {
             return Constants.FileType.APK;
         } else {
