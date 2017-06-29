@@ -304,7 +304,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                 mView.addTab(mView.getResString(R.string.menu_document));
                                 break;
                             case Constants.SelectType.MENU_PHOTO:
-                                mView.addTab(mView.getResString(R.string.menu_photo));
+                                mView.addTab(mView.getResString(R.string.menu_image));
                                 break;
                             case Constants.SelectType.MENU_MUSIC:
                                 mView.addTab(mView.getResString(R.string.menu_audio));

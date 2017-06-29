@@ -24,7 +24,7 @@
             android:id="@+id/nav_photo"
             android:icon="@mipmap/ic_photo"
             android:orderInCategory="5"
-            android:title="@string/menu_photo" />
+            android:title="@string/menu_image" />
         <item
             android:id="@+id/nav_music"
             android:icon="@mipmap/ic_music"
