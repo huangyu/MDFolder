@@ -226,6 +226,7 @@ public class ZipUtils {
                 fileItem.setName(fileName);
                 fileItem.setDate(String.valueOf(Zip4jUtil.dosToJavaTme(fileHeader.getLastModFileTime())));
                 fileItem.setSize(String.valueOf(fileHeader.getUncompressedSize()));
+                fileItem.setPath(zipFilePath);
                 fileItemList.add(fileItem);
             }
         } catch (Exception e) {

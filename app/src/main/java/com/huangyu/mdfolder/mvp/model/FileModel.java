@@ -11,6 +11,10 @@ import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.utils.MimeTypeUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +43,7 @@ public class FileModel implements IBaseModel {
                 } else {
                     uri = Uri.fromFile(file);
                 }
-                intent.setDataAndType(uri, getMIMEType(file));
+                intent.setDataAndType(uri, MimeTypeUtils.getMIMEType(file.getPath()));
                 context.startActivity(intent);
                 return true;
             } catch (Exception e) {
@@ -90,8 +94,15 @@ public class FileModel implements IBaseModel {
         context.startActivity(Intent.createChooser(intent, "Share"));
     }
 
-    private String getMIMEType(File file) {
-        return MimeTypeUtils.getMIMEType(file.getPath());
+    public void inputStreamToFile(InputStream is, File file) throws IOException {
+        OutputStream os = new FileOutputStream(file);
+        int bytesRead;
+        byte[] buffer = new byte[8192];
+        while ((bytesRead = is.read(buffer, 0, 8192)) != -1) {
+            os.write(buffer, 0, bytesRead);
+        }
+        os.close();
+        is.close();
     }
 
     public boolean isFileExists(String path) {

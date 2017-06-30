@@ -14,6 +14,8 @@ public class BaseConstants {
 
     public static final String LOG_PATH = ROOT_PATH + "Log" + File.separator;
 
+    public static final String TEMP_PATH = ROOT_PATH + "Temp" + File.separator;
+
     public static final String API_URL = "https://api.tianapi.com/";
 
 }

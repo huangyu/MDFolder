@@ -15,13 +15,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.huangyu.library.ui.CommonRecyclerViewAdapter;
 import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.R;
+import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
+import com.huangyu.mdfolder.mvp.model.FileModel;
 import com.huangyu.mdfolder.ui.adapter.ZipListAdapter;
 
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.model.FileHeader;
+
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 
@@ -205,13 +213,45 @@ public class AlertUtils {
         }
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_zip_list, new LinearLayout(context), false);
         dialog.setContentView(view);
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                FileUtils.createFolder(Constants.TEMP_PATH);
+            }
+        });
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                FileUtils.deleteDir(Constants.TEMP_PATH);
+            }
+        });
 
         RecyclerView tvZipList = ButterKnife.findById(view, R.id.rv_zip_list);
         tvZipList.setLayoutManager(new LinearLayoutManager(context));
-        ZipListAdapter adapter = new ZipListAdapter(context);
+        final ZipListAdapter adapter = new ZipListAdapter(context);
         tvZipList.setAdapter(adapter);
         adapter.setData(fileItemList);
-
+        adapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                FileModel fileModel = new FileModel();
+                FileItem fileItem = adapter.getItem(position);
+                try {
+                    ZipFile zipFile = new ZipFile(fileItem.getPath());
+                    List<FileHeader> fileHeaderList = zipFile.getFileHeaders();
+                    for (int i = 0; i < fileHeaderList.size(); i++) {
+                        if (i == position) {
+                            InputStream is = zipFile.getInputStream(fileHeaderList.get(i));
+                            File file = new File(Constants.TEMP_PATH, fileItem.getName());
+                            fileModel.inputStreamToFile(is, file);
+                            fileModel.openFile(context, file);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         dialog.show();
         return dialog;
     }
