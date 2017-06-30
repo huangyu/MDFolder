@@ -216,7 +216,7 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
             mVDivider.setVisibility(View.VISIBLE);
         }
 
-        if (isSelected(position) && isInSelectPath(fileItem)) {
+        if (getSelectedItemCount() > 0 && isSelected(position) && isSelected(fileItem)) {
             holder.itemView.setSelected(true);
         } else {
             holder.itemView.setSelected(false);
@@ -228,7 +228,7 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
         return R.layout.item_file_list;
     }
 
-    private boolean isInSelectPath(FileItem fileItem) {
+    private boolean isSelected(FileItem fileItem) {
         // 考虑正在选择的情况
         if (mSelectedFileList == null) {
             if (mSelectArray == null || mSelectArray.size() == 0) {

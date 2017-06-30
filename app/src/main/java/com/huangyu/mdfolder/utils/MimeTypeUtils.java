@@ -40,69 +40,69 @@ public class MimeTypeUtils {
      * 根据文件后缀获取文件类型
      */
     public static int getTypeBySuffix(String suffix) {
-        if (suffix.equals("doc")) {
+        if (suffix.equals(".doc")) {
             return Constants.FileType.SINGLE_DOCUMENT;
-        } else if (suffix.equals("docx")) {
+        } else if (suffix.equals(".docx")) {
             return Constants.FileType.SINGLE_DOCUMENT;
-        } else if (suffix.equals("ppt")) {
+        } else if (suffix.equals(".ppt")) {
             return Constants.FileType.SINGLE_DOCUMENT;
-        } else if (suffix.equals("pptx")) {
+        } else if (suffix.equals(".pptx")) {
             return Constants.FileType.SINGLE_DOCUMENT;
-        } else if (suffix.equals("xls")) {
+        } else if (suffix.equals(".xls")) {
             return Constants.FileType.SINGLE_DOCUMENT;
-        } else if (suffix.equals("xlsx")) {
+        } else if (suffix.equals(".xlsx")) {
             return Constants.FileType.SINGLE_DOCUMENT;
-        } else if (suffix.equals("pdf")) {
+        } else if (suffix.equals(".pdf")) {
             return Constants.FileType.SINGLE_DOCUMENT;
-        } else if (suffix.equals("3gp")) {
+        } else if (suffix.equals(".3gp")) {
             return Constants.FileType.SINGLE_VIDEO;
-        } else if (suffix.equals("mp4")) {
+        } else if (suffix.equals(".mp4")) {
             return Constants.FileType.SINGLE_VIDEO;
-        } else if (suffix.equals("webm")) {
+        } else if (suffix.equals(".webm")) {
             return Constants.FileType.SINGLE_VIDEO;
-        } else if (suffix.equals("mkv")) {
+        } else if (suffix.equals(".mkv")) {
             return Constants.FileType.SINGLE_VIDEO;
-        } else if (suffix.equals("ts")) {
+        } else if (suffix.equals(".ts")) {
             return Constants.FileType.SINGLE_VIDEO;
-        } else if (suffix.equals("wav")) {
+        } else if (suffix.equals(".wav")) {
             return Constants.FileType.SINGLE_VIDEO;
-        } else if (suffix.equals("flv")) {
+        } else if (suffix.equals(".flv")) {
             return Constants.FileType.SINGLE_VIDEO;
-        } else if (suffix.equals("flac")) {
+        } else if (suffix.equals(".flac")) {
             return Constants.FileType.SINGLE_AUDIO;
-        } else if (suffix.equals("ogg")) {
+        } else if (suffix.equals(".ogg")) {
             return Constants.FileType.SINGLE_AUDIO;
-        } else if (suffix.equals("mid")) {
+        } else if (suffix.equals(".mid")) {
             return Constants.FileType.SINGLE_AUDIO;
-        } else if (suffix.equals("xmf")) {
+        } else if (suffix.equals(".xmf")) {
             return Constants.FileType.SINGLE_AUDIO;
-        } else if (suffix.equals("mxmf")) {
+        } else if (suffix.equals(".mxmf")) {
             return Constants.FileType.SINGLE_AUDIO;
-        } else if (suffix.equals("rtttl")) {
+        } else if (suffix.equals(".rtttl")) {
             return Constants.FileType.SINGLE_AUDIO;
-        } else if (suffix.equals("rtx")) {
+        } else if (suffix.equals(".rtx")) {
             return Constants.FileType.SINGLE_AUDIO;
-        } else if (suffix.equals("ota")) {
+        } else if (suffix.equals(".ota")) {
             return Constants.FileType.SINGLE_AUDIO;
-        } else if (suffix.equals("imy")) {
+        } else if (suffix.equals(".imy")) {
             return Constants.FileType.SINGLE_AUDIO;
-        } else if (suffix.equals("mp3")) {
+        } else if (suffix.equals(".mp3")) {
             return Constants.FileType.SINGLE_AUDIO;
-        } else if (suffix.equals("bmp")) {
+        } else if (suffix.equals(".bmp")) {
             return Constants.FileType.SINGLE_IMAGE;
-        } else if (suffix.equals("jpg")) {
+        } else if (suffix.equals(".jpg")) {
             return Constants.FileType.SINGLE_IMAGE;
-        } else if (suffix.equals("jpeg")) {
+        } else if (suffix.equals(".jpeg")) {
             return Constants.FileType.SINGLE_IMAGE;
-        } else if (suffix.equals("png")) {
+        } else if (suffix.equals(".png")) {
             return Constants.FileType.SINGLE_IMAGE;
-        } else if (suffix.equals("webp")) {
+        } else if (suffix.equals(".webp")) {
             return Constants.FileType.SINGLE_IMAGE;
-        } else if (suffix.equals("gif")) {
+        } else if (suffix.equals(".gif")) {
             return Constants.FileType.SINGLE_IMAGE;
-        } else if (suffix.endsWith("zip")) {
+        } else if (suffix.endsWith(".zip")) {
             return Constants.FileType.COMPRESS;
-        } else if (suffix.endsWith("apk")) {
+        } else if (suffix.endsWith(".apk")) {
             return Constants.FileType.APK;
         } else {
             return Constants.FileType.FILE;

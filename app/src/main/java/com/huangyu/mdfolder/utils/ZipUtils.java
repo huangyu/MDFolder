@@ -12,6 +12,7 @@ import net.lingala.zip4j.util.Zip4jConstants;
 import net.lingala.zip4j.util.Zip4jUtil;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -120,48 +121,58 @@ public class ZipUtils {
      * @param zipFilePath 压缩文件路径
      * @param toPath      解压路径
      */
-
     public static boolean unRarFile(String zipFilePath, String toPath) {
-        try {
-            unRar(new File(zipFilePath), toPath);
-        } catch (RarException e) {
-            e.printStackTrace();
-            return false;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+        unRar(new File(zipFilePath), toPath);
         return true;
     }
 
-    private static void unRar(File rarFilePathFile, String toPath) throws RarException, IOException {
+    private static void unRar(File rarFilePathFile, String toPath) {
         FileOutputStream fileOut;
         File file;
-        Archive rarFile = new Archive(rarFilePathFile);
-        de.innosystec.unrar.rarfile.FileHeader entry = rarFile.nextFileHeader();
-        while (entry != null) {
-            String entryPath;
-            if (entry.isUnicode()) {
-                entryPath = entry.getFileNameW().trim();
+        Archive rarFile = null;
+        try {
+            rarFile = new Archive(rarFilePathFile);
+        } catch (RarException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        de.innosystec.unrar.rarfile.FileHeader fh = rarFile.nextFileHeader();
+        while (fh != null) {
+            String filePath;
+            if (fh.isUnicode()) {
+                filePath = fh.getFileNameW().trim();
             } else {
-                entryPath = entry.getFileNameString().trim();
+                filePath = fh.getFileNameString().trim();
             }
-            entryPath = entryPath.replaceAll("\\\\", File.separator);
-            file = new File(toPath + File.separator + entryPath);
-            if (entry.isDirectory()) {
+            filePath = filePath.replaceAll("\\\\", File.separator);
+            file = new File(toPath, filePath);
+            if (fh.isDirectory()) {
                 file.mkdirs();
             } else {
                 File parent = file.getParentFile();
                 if (parent != null && !parent.exists()) {
                     parent.mkdirs();
                 }
-                fileOut = new FileOutputStream(file);
-                rarFile.extractFile(entry, fileOut);
-                fileOut.close();
+                try {
+                    fileOut = new FileOutputStream(file);
+                    rarFile.extractFile(fh, fileOut);
+                    fileOut.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (RarException e) {
+                    e.printStackTrace();
+                }
             }
-            entry = rarFile.nextFileHeader();
+            fh = rarFile.nextFileHeader();
         }
-        rarFile.close();
+        try {
+            rarFile.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

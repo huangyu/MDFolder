@@ -1526,4 +1526,15 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         return mFileModel.openFile(context, file);
     }
 
+    /**
+     * 分享文件
+     *
+     * @param context  上下文
+     * @param fileList 文件列表
+     * @return 是否分享成功
+     */
+    public boolean shareFile(Context context, List<File> fileList) {
+        return mFileModel.shareFile(context, fileList);
+    }
+
 }

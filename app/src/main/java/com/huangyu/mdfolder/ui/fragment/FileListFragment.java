@@ -51,6 +51,7 @@ import com.jakewharton.rxbinding.view.RxView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
@@ -538,6 +539,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     public void finishAction() {
+        mSearchStr = "";
         if (mActionMode != null) {
             mActionMode.finish();
         }
@@ -592,6 +594,15 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         break;
                     case R.id.action_info:
                         mPresenter.onShowFileInfo(fileList);
+                        break;
+                    case R.id.action_share:
+                        File file;
+                        List<File> files = new ArrayList<>();
+                        for (FileItem fileItem : fileList) {
+                            file = new File(fileItem.getPath());
+                            files.add(file);
+                        }
+                        mPresenter.shareFile(getContext(), files);
                         break;
                     case R.id.action_delete:
                         mPresenter.onDelete(fileList);

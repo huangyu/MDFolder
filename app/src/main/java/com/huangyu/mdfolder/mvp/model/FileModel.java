@@ -11,6 +11,8 @@ import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.utils.MimeTypeUtils;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by huangyu on 2017-5-24.
@@ -20,7 +22,9 @@ public class FileModel implements IBaseModel {
     /**
      * 打开文件
      *
-     * @param file 文件
+     * @param context 上下文
+     * @param file    文件
+     * @return true/false
      */
     public boolean openFile(Context context, File file) {
         if (file != null && !file.isDirectory() && file.exists()) {
@@ -45,16 +49,49 @@ public class FileModel implements IBaseModel {
         return false;
     }
 
+    /**
+     * 分享文件
+     *
+     * @param context  上下文
+     * @param fileList 文件列表
+     * @return true/false
+     */
+    public boolean shareFile(Context context, List<File> fileList) {
+        try {
+            boolean multiple = fileList.size() > 1;
+            Intent intent = new Intent(multiple ? android.content.Intent.ACTION_SEND_MULTIPLE : android.content.Intent.ACTION_SEND);
+            if (multiple) {
+                shareMultiFiles(context, intent, fileList);
+            } else {
+                shareSingleFile(context, intent, fileList.get(0));
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    private void shareSingleFile(Context context, Intent intent, File file) {
+        String mimeType = MimeTypeUtils.getMIMEType(file.getPath());
+        intent.setType(mimeType);
+        Uri uri = FileProvider.getUriForFile(context, "com.huangyu.mdfolder.fileprovider", file);
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        context.startActivity(Intent.createChooser(intent, "Share"));
+    }
+
+    private void shareMultiFiles(Context context, Intent intent, List<File> fileList) {
+        ArrayList<Uri> uriArrayList = new ArrayList<>();
+        for (File file : fileList) {
+            Uri uri = FileProvider.getUriForFile(context, "com.huangyu.mdfolder.fileprovider", file);
+            uriArrayList.add(uri);
+        }
+        intent.setType("*/*");
+        intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriArrayList);
+        context.startActivity(Intent.createChooser(intent, "Share"));
+    }
+
     private String getMIMEType(File file) {
         return MimeTypeUtils.getMIMEType(file.getPath());
-    }
-
-    public boolean hasFilePermission(String path) {
-        return new File(path).canExecute();
-    }
-
-    public boolean hasFilePermission(File file) {
-        return file.canExecute();
     }
 
     public boolean isFileExists(String path) {

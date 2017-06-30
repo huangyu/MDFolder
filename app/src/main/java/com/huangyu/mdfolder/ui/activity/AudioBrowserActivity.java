@@ -20,10 +20,13 @@ import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.mvp.model.FileListModel;
+import com.huangyu.mdfolder.mvp.model.FileModel;
 import com.huangyu.mdfolder.ui.adapter.AudioPagerAdapter;
 import com.huangyu.mdfolder.utils.AlertUtils;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -55,6 +58,7 @@ public class AudioBrowserActivity extends ThematicActivity implements EasyVideoC
 
     private ArrayList<FileItem> mFileList;
     private FileListModel mFileListModel;
+    private FileModel mFileModel;
     private int mCurrentPosition;
 
     @Override
@@ -71,6 +75,7 @@ public class AudioBrowserActivity extends ThematicActivity implements EasyVideoC
     @SuppressWarnings("unchecked")
     protected void initView(Bundle savedInstanceState) {
         mFileListModel = new FileListModel();
+        mFileModel = new FileModel();
         mFileList = (ArrayList<FileItem>) getIntent().getSerializableExtra(getString(R.string.intent_audio_list));
         mCurrentPosition = getIntent().getIntExtra(getString(R.string.intent_audio_position), 0);
         mAdapter = new AudioPagerAdapter(this, mFileList, this);
@@ -143,6 +148,12 @@ public class AudioBrowserActivity extends ThematicActivity implements EasyVideoC
                 break;
             case R.id.action_delete:
                 onDelete(mFileList.get(mCurrentPosition));
+                break;
+            case R.id.action_share:
+                List<File> files = new ArrayList<>();
+                File file = new File(mFileList.get(mCurrentPosition).getPath());
+                files.add(file);
+                mFileModel.shareFile(this, files);
                 break;
         }
         return super.onOptionsItemSelected(item);

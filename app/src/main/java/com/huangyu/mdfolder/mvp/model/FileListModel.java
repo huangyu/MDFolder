@@ -44,20 +44,20 @@ public class FileListModel implements IBaseModel {
         }
     }
 
-//    public List<File> getAppsFileList(String searchStr) {
-//        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(), new ApkFilter(searchStr), true);
+//    public ArrayList<File> getAppsFileList(String searchStr) {
+//        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(false), new ApkFilter(searchStr), true);
 //    }
 //
-//    public List<File> getMusicFileList(String searchStr) {
-//        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(), new MusicFilter(searchStr), true);
+//    public ArrayList<File> getMusicFileList(String searchStr) {
+//        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(false), new MusicFilter(searchStr), true);
 //    }
 //
-//    public List<File> getPhotoFileList(String searchStr) {
-//        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(), new PhotoFilter(searchStr), true);
+//    public ArrayList<File> getPhotoFileList(String searchStr) {
+//        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(false), new PhotoFilter(searchStr), true);
 //    }
 //
-//    public List<File> getVideoFileList(String searchStr) {
-//        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(), new VideoFilter(searchStr), true);
+//    public ArrayList<File> getVideoFileList(String searchStr) {
+//        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(false), new VideoFilter(searchStr), true);
 //    }
 
     public ArrayList<FileItem> getGlobalFileListBySearch(String searchStr, ContentResolver contentResolver) {
