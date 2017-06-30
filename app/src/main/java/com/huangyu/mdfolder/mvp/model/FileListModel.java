@@ -15,8 +15,8 @@ import com.huangyu.library.mvp.IBaseModel;
 import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
-import com.huangyu.mdfolder.utils.SDCardUtils;
 import com.huangyu.mdfolder.utils.CompressUtils;
+import com.huangyu.mdfolder.utils.SDCardUtils;
 import com.huangyu.mdfolder.utils.comparator.AlphabetComparator;
 import com.huangyu.mdfolder.utils.comparator.SizeComparator;
 import com.huangyu.mdfolder.utils.comparator.TimeComparator;
@@ -26,6 +26,8 @@ import com.huangyu.mdfolder.utils.filter.SearchFilter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by huangyu on 2017-5-24.
@@ -242,6 +244,74 @@ public class FileListModel implements IBaseModel {
             return imageList;
         }
         return null;
+    }
+
+    public ArrayList<FileItem> getPhotoAlbum(String searchStr, ContentResolver contentResolver) {
+        String[] STORE_IMAGES = {
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media.DISPLAY_NAME,
+                MediaStore.Images.Media.DATE_ADDED,
+                MediaStore.Images.Media.BUCKET_ID,
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.Media.SIZE,
+                MediaStore.Images.Media.DATE_MODIFIED
+        };
+        Cursor cursor = MediaStore.Images.Media.query(
+                contentResolver,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, STORE_IMAGES);
+        Map<String, FileItem> albumFolderMap = new HashMap<>();
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                int imageId = cursor.getInt(0);
+                String filePath = cursor.getString(1);
+                String fileName = cursor.getString(2);
+                long addTime = cursor.getLong(3);
+
+                int bucketId = cursor.getInt(4);
+                String bucketName = cursor.getString(5);
+                String fileLength = cursor.getString(6);
+                String date = cursor.getString(7);
+
+                String fileRealName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
+                if (FileUtils.isFileExists(filePath)) {
+                    FileItem fileItem = new FileItem();
+                    fileItem.setName(fileRealName);
+                    fileItem.setPath(filePath);
+                    fileItem.setSize(fileLength);
+                    fileItem.setDate(date);
+                    fileItem.setParent(null);
+                    fileItem.setIsDirectory(false);
+                    fileItem.setType(Constants.FileType.IMAGE);
+                    fileItem.setIsShow(true);
+
+                    FileItem albumFolder = albumFolderMap.get(bucketName);
+                    if (albumFolder != null) {
+                        if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
+                            albumFolder.addPhoto(fileItem);
+                        }
+                    } else {
+                        albumFolder = new FileItem();
+                        albumFolder.setName(bucketName);
+                        if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
+                            albumFolder.addPhoto(fileItem);
+                        }
+
+                        albumFolderMap.put(bucketName, albumFolder);
+                    }
+                }
+            }
+            cursor.close();
+        }
+        ArrayList<FileItem> albumFolders = new ArrayList<>();
+
+        for (Map.Entry<String, FileItem> folderEntry : albumFolderMap.entrySet()) {
+            FileItem albumFolder = folderEntry.getValue();
+//            Collections.sort(albumFolder.getImages());
+            albumFolders.add(albumFolder);
+        }
+        return albumFolders;
     }
 
     public ArrayList<FileItem> getAudioList(String searchStr, ContentResolver contentResolver) {

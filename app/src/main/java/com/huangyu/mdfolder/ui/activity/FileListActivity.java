@@ -21,6 +21,7 @@ import com.huangyu.library.app.ActivityManager;
 import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.Constants;
+import com.huangyu.mdfolder.ui.fragment.AlbumFolderFragment;
 import com.huangyu.mdfolder.ui.fragment.FileListFragment;
 import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.SDCardUtils;
@@ -53,8 +54,10 @@ public class FileListActivity extends ThematicActivity implements NavigationView
 
     private SearchView mSearchView;
     private FileListFragment mFileListFragment;
+    private AlbumFolderFragment mAlbumFolderFragment;
     private boolean isSearchViewShow;
     private long mCurrentTime;
+    private int selectedPosition = -1;
 
     @Override
     protected int getLayoutId() {
@@ -68,6 +71,9 @@ public class FileListActivity extends ThematicActivity implements NavigationView
 
     @Override
     protected void initView(Bundle savedInstanceState) {
+        mFileListFragment = new FileListFragment();
+        mAlbumFolderFragment = new AlbumFolderFragment();
+
         setSupportActionBar(mToolbar);
 
         if (isLightMode()) {
@@ -98,9 +104,53 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     @Override
     protected void onResume() {
         super.onResume();
-        if (isChanged()) {
+//        if (isChanged()) {
+        if (selectedPosition != 4) {
             replaceFragment();
         }
+        getWindow().getDecorView().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                switch (selectedPosition) {
+                    case 2:
+                        mRxManager.post("toRoot", "");
+                        break;
+                    case 1:
+                        mRxManager.post("toStorage", true);
+                        break;
+                    case 5:
+                        mRxManager.post("toMusic", "");
+                        break;
+                    case 4:
+//                        mRxManager.post("toPhoto", "");
+                        mAlbumFolderFragment = new AlbumFolderFragment();
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.rl_content, mAlbumFolderFragment)
+                                .commitAllowingStateLoss();
+                        break;
+                    case 6:
+                        mRxManager.post("toVideo", "");
+                        break;
+                    case 7:
+                        mRxManager.post("toDocument", "");
+                        break;
+                    case 3:
+                        mRxManager.post("toDownload", "");
+                        break;
+                    case 8:
+                        mRxManager.post("toApk", "");
+                        break;
+                    case 9:
+                        mRxManager.post("toZip", "");
+                        break;
+                    default:
+                        mRxManager.post("toStorage", false);
+                        break;
+                }
+            }
+        }, 200);
+//        }
     }
 
     @Override
@@ -124,7 +174,11 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             return;
         }
 
-        if (mFileListFragment != null && mFileListFragment.onBackPressed()) {
+        if (mFileListFragment != null && mFileListFragment.isVisible() && mFileListFragment.onBackPressed()) {
+            return;
+        }
+
+        if (mAlbumFolderFragment != null && mAlbumFolderFragment.isVisible() && mAlbumFolderFragment.onBackPressed()) {
             return;
         }
 
@@ -229,38 +283,56 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         mDrawerLayout.closeDrawer(GravityCompat.START);
 
+        if (item.getItemId() != R.id.nav_photo) {
+            replaceFragment();
+        }
         getWindow().getDecorView().postDelayed(new Runnable() {
             @Override
             public void run() {
                 switch (item.getItemId()) {
                     case R.id.nav_root:
+                        selectedPosition = 2;
                         mRxManager.post("toRoot", "");
                         break;
                     case R.id.nav_inner_storage:
+                        selectedPosition = 0;
                         mRxManager.post("toStorage", false);
                         break;
                     case R.id.nav_outer_storage:
+                        selectedPosition = 1;
                         mRxManager.post("toStorage", true);
                         break;
                     case R.id.nav_music:
+                        selectedPosition = 5;
                         mRxManager.post("toMusic", "");
                         break;
                     case R.id.nav_photo:
-                        mRxManager.post("toPhoto", "");
+                        selectedPosition = 4;
+//                        mRxManager.post("toPhoto", "");
+                        mAlbumFolderFragment = new AlbumFolderFragment();
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.rl_content, mAlbumFolderFragment)
+                                .commitAllowingStateLoss();
                         break;
                     case R.id.nav_video:
+                        selectedPosition = 6;
                         mRxManager.post("toVideo", "");
                         break;
                     case R.id.nav_document:
+                        selectedPosition = 7;
                         mRxManager.post("toDocument", "");
                         break;
                     case R.id.nav_download:
+                        selectedPosition = 3;
                         mRxManager.post("toDownload", "");
                         break;
                     case R.id.nav_apk:
+                        selectedPosition = 8;
                         mRxManager.post("toApk", "");
                         break;
                     case R.id.nav_zip:
+                        selectedPosition = 9;
                         mRxManager.post("toZip", "");
                         break;
                     case R.id.nav_settings:
@@ -284,6 +356,12 @@ public class FileListActivity extends ThematicActivity implements NavigationView
         String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         if (EasyPermissions.hasPermissions(this, perms)) {
             replaceFragment();
+            getWindow().getDecorView().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mRxManager.post("toStorage", false);
+                }
+            }, 200);
         } else {
             EasyPermissions.requestPermissions(this, getString(R.string.tips_require_file_permissions), PERMISSION_ACCESS_FILES, perms);
         }
@@ -298,6 +376,12 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     @Override
     public void onPermissionsGranted(int requestCode, List<String> perms) {
         replaceFragment();
+        getWindow().getDecorView().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mRxManager.post("toStorage", false);
+            }
+        }, 200);
     }
 
     @Override

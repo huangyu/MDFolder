@@ -45,9 +45,9 @@ import com.huangyu.mdfolder.ui.activity.VideoBrowserActivity;
 import com.huangyu.mdfolder.ui.adapter.FileListAdapter;
 import com.huangyu.mdfolder.ui.widget.TabView;
 import com.huangyu.mdfolder.utils.AlertUtils;
+import com.huangyu.mdfolder.utils.CompressUtils;
 import com.huangyu.mdfolder.utils.KeyboardUtils;
 import com.huangyu.mdfolder.utils.SPUtils;
-import com.huangyu.mdfolder.utils.CompressUtils;
 import com.jakewharton.rxbinding.view.RxView;
 
 import java.io.File;
@@ -133,7 +133,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                                     AlertUtils.showCompressListBottomSheet(getContext(), CompressUtils.listRarFiles(file.getPath()), ".rar");
                                 } else {
                                     if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
-                                        AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_no_permission_to_access_file));
+                                        AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_can_not_access_file));
                                     }
                                 }
                                 return;
@@ -188,11 +188,11 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                             }
                             // 打开文件
                             else if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
-                                AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_no_permission_to_access_file));
+                                AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_can_not_access_file));
                             }
                         } else {
                             if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
-                                AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_no_permission_to_access_file));
+                                AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_can_not_access_file));
                             }
                         }
                     }
@@ -270,7 +270,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
         initRxManagerActions();
 
-        mPresenter.onLoadStorageFileList(false, mSearchStr);
+//        mPresenter.onLoadStorageFileList(false, mSearchStr);
     }
 
     private void initRxManagerActions() {
@@ -290,7 +290,6 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     mSearchStr = text;
                     mPresenter.onRefreshInSwipe(mSearchStr, false);
                 }
-
             }
         });
 

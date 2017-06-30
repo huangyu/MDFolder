@@ -104,7 +104,7 @@
     <string name="tips_add_folder_error">新增文件夹失败</string>
     <string name="tips_add_file_successfully">新增文件成功</string>
     <string name="tips_add_folder_successfully">新增文件夹成功</string>
-    <string name="tips_no_permission_to_access_file">无法访问文件</string>
+    <string name="tips_can_not_access_file">无法访问文件</string>
     <string name="tips_no_file">没有找到文件</string>
     <string name="tips_not_complete">此功能尚未实现</string>
     <string name="tips_error">操作失败</string>

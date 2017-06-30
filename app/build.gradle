@@ -48,4 +48,5 @@ dependencies {
     compile 'com.github.chrisbanes:PhotoView:2.0.0'
     compile 'com.afollestad:easyvideoplayer:0.3.0'
     compile 'com.hzy:un7zip:1.0.0'
+    compile 'com.yanzhenjie:album:1.0.7'
 }

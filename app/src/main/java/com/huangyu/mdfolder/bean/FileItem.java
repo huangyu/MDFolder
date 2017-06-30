@@ -3,6 +3,7 @@ package com.huangyu.mdfolder.bean;
 import android.graphics.drawable.Drawable;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by huangyu on 2017-6-19.
@@ -18,6 +19,7 @@ public class FileItem implements Serializable {
     private int type;
     private boolean isShow;
     private Drawable apkIcon;
+    private ArrayList<FileItem> images = new ArrayList<>();
 
     public FileItem() {
 
@@ -93,6 +95,14 @@ public class FileItem implements Serializable {
 
     public void setApkIcon(Drawable apkIcon) {
         this.apkIcon = apkIcon;
+    }
+
+    public ArrayList<FileItem> getImages() {
+        return images;
+    }
+
+    public void addPhoto(FileItem photo) {
+        this.images.add(photo);
     }
 
 }
