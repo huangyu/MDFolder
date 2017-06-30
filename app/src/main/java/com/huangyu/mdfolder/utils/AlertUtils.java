@@ -216,6 +216,7 @@ public class AlertUtils {
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
+                FileUtils.createFolder(Constants.ROOT_PATH);
                 FileUtils.createFolder(Constants.TEMP_PATH);
             }
         });
@@ -223,6 +224,7 @@ public class AlertUtils {
             @Override
             public void onCancel(DialogInterface dialog) {
                 FileUtils.deleteDir(Constants.TEMP_PATH);
+                FileUtils.deleteDir(Constants.ROOT_PATH);
             }
         });
 
