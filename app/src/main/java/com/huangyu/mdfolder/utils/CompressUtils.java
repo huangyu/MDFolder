@@ -25,9 +25,9 @@ import de.innosystec.unrar.exception.RarException;
  * Created by huangyu on 2017/6/28.
  */
 
-public class ZipUtils {
+public class CompressUtils {
 
-    private ZipUtils() {
+    private CompressUtils() {
         throw new UnsupportedOperationException("u can't instantiate me...");
     }
 
@@ -118,20 +118,20 @@ public class ZipUtils {
     /**
      * 解压rar文件
      *
-     * @param zipFilePath 压缩文件路径
+     * @param rarFilePath 压缩文件路径
      * @param toPath      解压路径
      */
-    public static boolean unRarFile(String zipFilePath, String toPath) {
-        unRar(new File(zipFilePath), toPath);
+    public static boolean unRarFile(String rarFilePath, String toPath) {
+        unRar(new File(rarFilePath), toPath);
         return true;
     }
 
-    private static void unRar(File rarFilePathFile, String toPath) {
+    private static void unRar(File rarPathFile, String toPath) {
         FileOutputStream fileOut;
         File file;
         Archive rarFile = null;
         try {
-            rarFile = new Archive(rarFilePathFile);
+            rarFile = new Archive(rarPathFile);
         } catch (RarException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -139,14 +139,14 @@ public class ZipUtils {
         }
         de.innosystec.unrar.rarfile.FileHeader fh = rarFile.nextFileHeader();
         while (fh != null) {
-            String filePath;
+            String fileName;
             if (fh.isUnicode()) {
-                filePath = fh.getFileNameW().trim();
+                fileName = fh.getFileNameW().trim();
             } else {
-                filePath = fh.getFileNameString().trim();
+                fileName = fh.getFileNameString().trim();
             }
-            filePath = filePath.replaceAll("\\\\", File.separator);
-            file = new File(toPath, filePath);
+            fileName = fileName.replaceAll("\\\\", File.separator);
+            file = new File(toPath, fileName);
             if (fh.isDirectory()) {
                 file.mkdirs();
             } else {
@@ -229,6 +229,35 @@ public class ZipUtils {
                 fileItem.setPath(zipFilePath);
                 fileItemList.add(fileItem);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return fileItemList;
+    }
+
+    public static ArrayList<FileItem> listRarFiles(String rarFilePath) {
+        ArrayList<FileItem> fileItemList = new ArrayList<>();
+        try {
+            Archive rarFile = new Archive(new File(rarFilePath));
+            de.innosystec.unrar.rarfile.FileHeader fh = rarFile.nextFileHeader();
+            FileItem fileItem;
+            while (fh != null) {
+                String fileName;
+                if (fh.isUnicode()) {
+                    fileName = fh.getFileNameW().trim();
+                } else {
+                    fileName = fh.getFileNameString().trim();
+                }
+                fileName = fileName.replaceAll("\\\\", File.separator);
+                fileItem = new FileItem();
+                fileItem.setName(fileName);
+                fileItem.setDate(DateUtils.dateToString(fh.getMTime()));
+                fileItem.setSize(String.valueOf(fh.getFullUnpackSize()));
+                fileItem.setPath(rarFilePath);
+                fileItemList.add(fileItem);
+                fh = rarFile.nextFileHeader();
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }

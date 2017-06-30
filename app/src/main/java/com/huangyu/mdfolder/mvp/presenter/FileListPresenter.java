@@ -23,7 +23,7 @@ import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
 import com.huangyu.mdfolder.utils.MimeTypeUtils;
-import com.huangyu.mdfolder.utils.ZipUtils;
+import com.huangyu.mdfolder.utils.CompressUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -1037,7 +1037,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 final String filePath = fileList.get(0).getPath();
                 String suffix = FileUtils.getSuffix(fileList.get(0).getName());
                 switch (suffix) {
-                    case "7z":
+                    case ".7z":
                         Subscription subscription = Observable.from(fileList).map(new Func1<FileItem, File>() {
                             @Override
                             public File call(FileItem fileItem) {
@@ -1078,7 +1078,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                 });
                         mRxManager.add(subscription);
                         break;
-                    case "rar":
+                    case ".rar":
                         Subscription subscription2 = Observable.from(fileList).map(new Func1<FileItem, File>() {
                             @Override
                             public File call(FileItem fileItem) {
@@ -1120,7 +1120,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                         mRxManager.add(subscription2);
                         break;
                     default:
-                        if (ZipUtils.isEncrypted(filePath)) {
+                        if (CompressUtils.isEncrypted(filePath)) {
                             final View view = mView.inflatePasswordInputDialogLayout();
                             final EditText editText = mView.findAlertDialogEditText(view);
                             mView.showKeyboard(mView.findAlertDialogEditText(view));
@@ -1151,19 +1151,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                                                         @Override
                                                         public void onNext(List<File> fileList) {
-                                                            String suffix = FileUtils.getSuffix(fileList.get(0).getName());
-                                                            boolean result;
-                                                            switch (suffix) {
-                                                                case "7z":
-                                                                    result = mFileListModel.un7zipFileList(filePath, mCurrentPath);
-                                                                    break;
-                                                                case "rar":
-                                                                    result = mFileListModel.unRarFileList(filePath, mCurrentPath);
-                                                                    break;
-                                                                default:
-                                                                    result = mFileListModel.unZipFileList(filePath, mCurrentPath, password);
-                                                                    break;
-                                                            }
+                                                            boolean result = mFileListModel.unZipFileList(filePath, mCurrentPath, password);
                                                             if (result) {
                                                                 mView.showMessage(mView.getResString(R.string.tips_extract_successfully));
                                                             } else {
@@ -1383,7 +1371,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 fileItemList = mFileListModel.getApkList(searchStr, mContext.getContentResolver());
                 break;
             case Constants.SelectType.MENU_ZIP:
-                fileItemList = mFileListModel.getZipList(searchStr, mContext.getContentResolver());
+                fileItemList = mFileListModel.getCompressList(searchStr, mContext.getContentResolver());
                 break;
         }
 

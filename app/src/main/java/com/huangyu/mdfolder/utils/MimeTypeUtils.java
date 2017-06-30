@@ -102,6 +102,10 @@ public class MimeTypeUtils {
             return Constants.FileType.SINGLE_IMAGE;
         } else if (suffix.endsWith(".zip")) {
             return Constants.FileType.COMPRESS;
+        } else if (suffix.endsWith(".rar")) {
+            return Constants.FileType.COMPRESS;
+        } else if (suffix.endsWith(".7z")) {
+            return Constants.FileType.COMPRESS;
         } else if (suffix.endsWith(".apk")) {
             return Constants.FileType.APK;
         } else {

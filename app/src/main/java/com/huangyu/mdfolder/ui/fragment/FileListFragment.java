@@ -30,6 +30,7 @@ import com.github.clans.fab.FloatingActionMenu;
 import com.huangyu.library.BuildConfig;
 import com.huangyu.library.ui.BaseFragment;
 import com.huangyu.library.ui.CommonRecyclerViewAdapter;
+import com.huangyu.library.util.FileUtils;
 import com.huangyu.library.util.LogToFileUtils;
 import com.huangyu.library.util.LogUtils;
 import com.huangyu.mdfolder.R;
@@ -46,7 +47,7 @@ import com.huangyu.mdfolder.ui.widget.TabView;
 import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.KeyboardUtils;
 import com.huangyu.mdfolder.utils.SPUtils;
-import com.huangyu.mdfolder.utils.ZipUtils;
+import com.huangyu.mdfolder.utils.CompressUtils;
 import com.jakewharton.rxbinding.view.RxView;
 
 import java.io.File;
@@ -126,7 +127,15 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         if (SPUtils.isBuildInMode()) {
                             // 压缩包文件
                             if (file.getType() == Constants.FileType.COMPRESS) {
-                                AlertUtils.showZipListBottomSheet(getContext(), ZipUtils.listZipFiles(file.getPath()));
+                                if (FileUtils.getSuffix(file.getName()).equals(".zip")) {
+                                    AlertUtils.showCompressListBottomSheet(getContext(), CompressUtils.listZipFiles(file.getPath()), ".zip");
+                                } else if (FileUtils.getSuffix(file.getName()).equals(".rar")) {
+                                    AlertUtils.showCompressListBottomSheet(getContext(), CompressUtils.listRarFiles(file.getPath()), ".rar");
+                                } else {
+                                    if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
+                                        AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_no_permission_to_access_file));
+                                    }
+                                }
                                 return;
                             }
                             // 单个图片浏览

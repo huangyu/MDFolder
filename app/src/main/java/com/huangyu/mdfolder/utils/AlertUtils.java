@@ -21,17 +21,19 @@ import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.mvp.model.FileModel;
-import com.huangyu.mdfolder.ui.adapter.ZipListAdapter;
+import com.huangyu.mdfolder.ui.adapter.CompressListAdapter;
 
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.model.FileHeader;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
+import de.innosystec.unrar.Archive;
 
 /**
  * Created by huangyu on 2017-5-22.
@@ -204,14 +206,14 @@ public class AlertUtils {
      * @param context context
      * @return
      */
-    public static BottomSheetDialog showZipListBottomSheet(final Context context, ArrayList<FileItem> fileItemList) {
+    public static BottomSheetDialog showCompressListBottomSheet(final Context context, ArrayList<FileItem> fileItemList, final String type) {
         BottomSheetDialog dialog;
         if (SPUtils.isLightMode()) {
             dialog = new BottomSheetDialog(context, R.style.BottomSheetDialogTheme);
         } else {
             dialog = new BottomSheetDialog(context, R.style.BottomSheetDialogThemeDark);
         }
-        View view = LayoutInflater.from(context).inflate(R.layout.dialog_zip_list, new LinearLayout(context), false);
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_compress_list, new LinearLayout(context), false);
         dialog.setContentView(view);
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
@@ -228,10 +230,10 @@ public class AlertUtils {
             }
         });
 
-        RecyclerView tvZipList = ButterKnife.findById(view, R.id.rv_zip_list);
-        tvZipList.setLayoutManager(new LinearLayoutManager(context));
-        final ZipListAdapter adapter = new ZipListAdapter(context);
-        tvZipList.setAdapter(adapter);
+        RecyclerView tvCompressList = ButterKnife.findById(view, R.id.rv_compress_list);
+        tvCompressList.setLayoutManager(new LinearLayoutManager(context));
+        final CompressListAdapter adapter = new CompressListAdapter(context);
+        tvCompressList.setAdapter(adapter);
         adapter.setData(fileItemList);
         adapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
             @Override
@@ -239,14 +241,35 @@ public class AlertUtils {
                 FileModel fileModel = new FileModel();
                 FileItem fileItem = adapter.getItem(position);
                 try {
-                    ZipFile zipFile = new ZipFile(fileItem.getPath());
-                    List<FileHeader> fileHeaderList = zipFile.getFileHeaders();
-                    for (int i = 0; i < fileHeaderList.size(); i++) {
-                        if (i == position) {
-                            InputStream is = zipFile.getInputStream(fileHeaderList.get(i));
-                            File file = new File(Constants.TEMP_PATH, fileItem.getName());
-                            fileModel.inputStreamToFile(is, file);
-                            fileModel.openFile(context, file);
+                    if (type.equals(".zip")) {
+                        ZipFile zipFile = new ZipFile(fileItem.getPath());
+                        List<FileHeader> fileHeaderList = zipFile.getFileHeaders();
+                        for (int i = 0; i < fileHeaderList.size(); i++) {
+                            if (i == position) {
+                                InputStream is = zipFile.getInputStream(fileHeaderList.get(i));
+                                File file = new File(Constants.TEMP_PATH, fileItem.getName());
+                                if (file.exists()) {
+                                    file.delete();
+                                }
+                                fileModel.inputStreamToFile(is, file);
+                                fileModel.openFile(context, file);
+                            }
+                        }
+                    } else if (type.equals(".rar")) {
+                        Archive rarFile = new Archive(new File(fileItem.getPath()));
+                        List<de.innosystec.unrar.rarfile.FileHeader> fileHeaderList = rarFile.getFileHeaders();
+                        String fileName = fileItem.getName();
+                        for (int i = 0; i < fileHeaderList.size(); i++) {
+                            if (i == position) {
+                                File file = new File(Constants.TEMP_PATH, fileName.substring(fileName.lastIndexOf("/") + 1));
+                                if (file.exists()) {
+                                    file.delete();
+                                }
+                                FileOutputStream fileOut = new FileOutputStream(file);
+                                rarFile.extractFile(fileHeaderList.get(i), fileOut);
+                                fileOut.close();
+                                fileModel.openFile(context, file);
+                            }
                         }
                     }
                 } catch (Exception e) {

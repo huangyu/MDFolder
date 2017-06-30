@@ -15,9 +15,9 @@ import com.huangyu.mdfolder.utils.DateUtils;
 /**
  * Created by huangyu on 2017-6-20.
  */
-public class ZipListAdapter extends CommonRecyclerViewAdapter<FileItem> {
+public class CompressListAdapter extends CommonRecyclerViewAdapter<FileItem> {
 
-    public ZipListAdapter(Context context) {
+    public CompressListAdapter(Context context) {
         super(context);
     }
 
@@ -45,7 +45,12 @@ public class ZipListAdapter extends CommonRecyclerViewAdapter<FileItem> {
 
         tvName.setText(data.getName());
         tvSize.setText(FileUtils.getFileOrDirSize(Long.valueOf(data.getSize())));
-        tvTime.setText(DateUtils.getFormatDate(Long.valueOf(data.getDate())));
+        try {
+            tvTime.setText(DateUtils.getFormatDate(Long.valueOf(data.getDate())));
+        } catch (Exception e) {
+            // rar
+            tvTime.setText(data.getDate());
+        }
 
         if (position == getItemCount() - 1) {
             vDivider.setVisibility(View.GONE);

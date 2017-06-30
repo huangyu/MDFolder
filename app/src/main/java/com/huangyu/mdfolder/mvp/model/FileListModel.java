@@ -16,7 +16,7 @@ import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.utils.SDCardUtils;
-import com.huangyu.mdfolder.utils.ZipUtils;
+import com.huangyu.mdfolder.utils.CompressUtils;
 import com.huangyu.mdfolder.utils.comparator.AlphabetComparator;
 import com.huangyu.mdfolder.utils.comparator.SizeComparator;
 import com.huangyu.mdfolder.utils.comparator.TimeComparator;
@@ -328,15 +328,17 @@ public class FileListModel implements IBaseModel {
         return null;
     }
 
-    public ArrayList<FileItem> getZipList(String searchStr, ContentResolver contentResolver) {
+    public ArrayList<FileItem> getCompressList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{
                 MediaStore.Files.FileColumns.DATA,
                 MediaStore.Files.FileColumns.SIZE,
                 MediaStore.Files.FileColumns.DATE_MODIFIED};
 
         Cursor cursor = contentResolver.query(MediaStore.Files.getContentUri("external"), projection,
-                MediaStore.Files.FileColumns.DATA + " like ? ",
-                new String[]{"%" + ".zip"}, null);
+                MediaStore.Files.FileColumns.DATA + " like ? or " +
+                        MediaStore.Files.FileColumns.DATA + " like ? or " +
+                        MediaStore.Files.FileColumns.DATA + " like ? ",
+                new String[]{"%" + ".zip", "%" + ".rar", "%" + ".7z"}, null);
 
         if (cursor != null) {
             ArrayList<FileItem> apkList = new ArrayList<>();
@@ -443,7 +445,7 @@ public class FileListModel implements IBaseModel {
      * @return true/false
      */
     public boolean zipFileList(ArrayList<File> resFiles, String zipFilePath) {
-        return ZipUtils.zipFile(resFiles, zipFilePath);
+        return CompressUtils.zipFile(resFiles, zipFilePath);
     }
 
     /**
@@ -454,7 +456,7 @@ public class FileListModel implements IBaseModel {
      * @return true/false
      */
     public boolean unZipFileList(String zipFilePath, String toPath) {
-        return ZipUtils.unZipFile(zipFilePath, toPath);
+        return CompressUtils.unZipFile(zipFilePath, toPath);
     }
 
     /**
@@ -466,7 +468,7 @@ public class FileListModel implements IBaseModel {
      * @return true/false
      */
     public boolean unZipFileList(String zipFilePath, String toPath, String password) {
-        return ZipUtils.unZipFile(zipFilePath, toPath, password);
+        return CompressUtils.unZipFile(zipFilePath, toPath, password);
     }
 
     /**
@@ -477,7 +479,7 @@ public class FileListModel implements IBaseModel {
      * @return true/false
      */
     public boolean un7zipFileList(String zipFilePath, String toPath) {
-        return ZipUtils.un7zipFile(zipFilePath, toPath);
+        return CompressUtils.un7zipFile(zipFilePath, toPath);
     }
 
     /**
@@ -488,7 +490,7 @@ public class FileListModel implements IBaseModel {
      * @return true/false
      */
     public boolean unRarFileList(String zipFilePath, String toPath) {
-        return ZipUtils.unRarFile(zipFilePath, toPath);
+        return CompressUtils.unRarFile(zipFilePath, toPath);
     }
 
 }
