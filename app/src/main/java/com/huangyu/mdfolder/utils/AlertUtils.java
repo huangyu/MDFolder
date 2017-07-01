@@ -244,10 +244,11 @@ public class AlertUtils {
                     if (type.equals(".zip")) {
                         ZipFile zipFile = new ZipFile(fileItem.getPath());
                         List<FileHeader> fileHeaderList = zipFile.getFileHeaders();
+                        String fileName = fileItem.getName();
                         for (int i = 0; i < fileHeaderList.size(); i++) {
                             if (i == position) {
                                 InputStream is = zipFile.getInputStream(fileHeaderList.get(i));
-                                File file = new File(Constants.TEMP_PATH, fileItem.getName());
+                                File file = new File(Constants.TEMP_PATH, fileName.substring(fileName.lastIndexOf("/") + 1));
                                 if (file.exists()) {
                                     file.delete();
                                 }

@@ -574,22 +574,14 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         return getActivity().startActionMode(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                if (mPresenter.mSelectType == Constants.SelectType.MENU_FILE || mPresenter.mSelectType == Constants.SelectType.MENU_DOWNLOAD) {
-                    mode.getMenuInflater().inflate(R.menu.menu_control, menu);
-                } else {
-                    mode.getMenuInflater().inflate(R.menu.menu_control_type, menu);
-                }
+                mode.getMenuInflater().inflate(R.menu.menu_control, menu);
                 return true;
             }
 
             @Override
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
                 menu.clear();
-                if (mPresenter.mSelectType == Constants.SelectType.MENU_FILE || mPresenter.mSelectType == Constants.SelectType.MENU_DOWNLOAD) {
-                    mode.getMenuInflater().inflate(R.menu.menu_control, menu);
-                } else {
-                    mode.getMenuInflater().inflate(R.menu.menu_control_type, menu);
-                }
+                mode.getMenuInflater().inflate(R.menu.menu_control, menu);
                 return true;
             }
 

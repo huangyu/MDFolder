@@ -277,14 +277,14 @@ public class FileListModel implements IBaseModel {
                 String fileRealName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
                 if (FileUtils.isFileExists(filePath)) {
                     FileItem fileItem = new FileItem();
-                    fileItem.setName(fileRealName);
-                    fileItem.setPath(filePath);
-                    fileItem.setSize(fileLength);
-                    fileItem.setDate(date);
-                    fileItem.setParent(null);
-                    fileItem.setIsDirectory(false);
-                    fileItem.setType(Constants.FileType.IMAGE);
-                    fileItem.setIsShow(true);
+//                    fileItem.setName(fileRealName);
+//                    fileItem.setPath(filePath);
+//                    fileItem.setSize(fileLength);
+//                    fileItem.setDate(date);
+//                    fileItem.setParent(null);
+//                    fileItem.setIsDirectory(false);
+//                    fileItem.setType(Constants.FileType.IMAGE);
+//                    fileItem.setIsShow(true);
 
                     FileItem albumFolder = albumFolderMap.get(bucketName);
                     if (albumFolder != null) {
@@ -296,9 +296,8 @@ public class FileListModel implements IBaseModel {
                         albumFolder.setName(bucketName);
                         if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
                             albumFolder.addPhoto(fileItem);
+                            albumFolderMap.put(bucketName, albumFolder);
                         }
-
-                        albumFolderMap.put(bucketName, albumFolder);
                     }
                 }
             }
@@ -312,6 +311,55 @@ public class FileListModel implements IBaseModel {
             albumFolders.add(albumFolder);
         }
         return albumFolders;
+    }
+
+    public ArrayList<FileItem> getPhotoList(String searchStr, FileItem albumFolder, ContentResolver contentResolver) {
+        String[] STORE_IMAGES = {
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media.DISPLAY_NAME,
+                MediaStore.Images.Media.DATE_ADDED,
+                MediaStore.Images.Media.BUCKET_ID,
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.Media.SIZE,
+                MediaStore.Images.Media.DATE_MODIFIED
+        };
+        Cursor cursor = MediaStore.Images.Media.query(
+                contentResolver,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, STORE_IMAGES, MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " = ? "
+                , new String[]{albumFolder.getName()}, null);
+        ArrayList<FileItem> fileItemList = new ArrayList<>();
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                int imageId = cursor.getInt(0);
+                String filePath = cursor.getString(1);
+                String fileName = cursor.getString(2);
+                long addTime = cursor.getLong(3);
+                int bucketId = cursor.getInt(4);
+                String bucketName = cursor.getString(5);
+                String fileLength = cursor.getString(6);
+                String date = cursor.getString(7);
+
+                String fileRealName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
+                if (FileUtils.isFileExists(filePath)) {
+                    FileItem fileItem = new FileItem();
+                    fileItem.setName(fileRealName);
+                    fileItem.setPath(filePath);
+                    fileItem.setSize(fileLength);
+                    fileItem.setDate(date);
+                    fileItem.setParent(null);
+                    fileItem.setIsDirectory(false);
+                    fileItem.setType(Constants.FileType.IMAGE);
+                    fileItem.setIsShow(true);
+                    if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
+                        fileItemList.add(fileItem);
+                    }
+                }
+            }
+            cursor.close();
+        }
+        return fileItemList;
     }
 
     public ArrayList<FileItem> getAudioList(String searchStr, ContentResolver contentResolver) {

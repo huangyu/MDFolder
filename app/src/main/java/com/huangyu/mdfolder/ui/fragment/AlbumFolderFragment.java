@@ -1,21 +1,32 @@
 package com.huangyu.mdfolder.ui.fragment;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.view.ActionMode;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.huangyu.library.BuildConfig;
-import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.library.ui.BaseFragment;
 import com.huangyu.library.ui.CommonRecyclerViewAdapter;
 import com.huangyu.library.util.LogToFileUtils;
@@ -23,34 +34,30 @@ import com.huangyu.library.util.LogUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
-import com.huangyu.mdfolder.mvp.model.FileListModel;
-import com.huangyu.mdfolder.mvp.model.FileModel;
+import com.huangyu.mdfolder.mvp.presenter.AlbumFolderPresenter;
+import com.huangyu.mdfolder.mvp.view.IAlbumFolderView;
 import com.huangyu.mdfolder.ui.activity.FileListActivity;
 import com.huangyu.mdfolder.ui.activity.ImageBrowserActivity;
 import com.huangyu.mdfolder.ui.adapter.AlbumFolderAdapter;
 import com.huangyu.mdfolder.ui.adapter.AlbumImageAdapter;
 import com.huangyu.mdfolder.ui.widget.TabView;
 import com.huangyu.mdfolder.utils.AlertUtils;
+import com.huangyu.mdfolder.utils.KeyboardUtils;
 import com.huangyu.mdfolder.utils.SPUtils;
 import com.yanzhenjie.album.widget.recyclerview.AlbumVerticalGirdDecoration;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
-import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
+import butterknife.ButterKnife;
 import rx.functions.Action1;
-import rx.functions.Func0;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by huangyu on 2017-5-23.
  */
-public class AlbumFolderFragment extends BaseFragment {
+public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFolderPresenter> implements IAlbumFolderView {
 
     @Bind(R.id.cl_main)
     CoordinatorLayout mCoordinatorLayout;
@@ -72,13 +79,10 @@ public class AlbumFolderFragment extends BaseFragment {
 
     private AlbumFolderAdapter mAdapter;
     private AlbumImageAdapter mImageAdapter;
-    private FileListModel mFileListModel;
     private String mSearchStr;
-    private int mSortType;
-    private int mOrderType;
-    private FileModel mFileModel;
-    private FileItem mCurrentAlbum;
-    private boolean isInAlbum;
+    private ActionMode mActionMode;
+
+    private ProgressDialog progressDialog;
 
     @Override
     protected int getLayoutId() {
@@ -86,39 +90,42 @@ public class AlbumFolderFragment extends BaseFragment {
     }
 
     @Override
-    protected IBaseView initAttachView() {
-        return null;
+    protected IAlbumFolderView initAttachView() {
+        return this;
     }
 
     @Override
     protected void initView(Bundle savedInstanceState) {
-        mFileListModel = new FileListModel();
-        mFileModel = new FileModel();
-
-        if (savedInstanceState == null) {
-            isInAlbum = true;
-        } else {
-            isInAlbum = savedInstanceState.getBoolean("isInAlbum");
-        }
-
         mIvCenter.setColorFilter(getResources().getColor(R.color.colorDarkGray));
 
         mImageAdapter = new AlbumImageAdapter(getContext());
         mImageAdapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                FileItem file = mImageAdapter.getItem(position);
-                if (file == null) {
-                    return;
-                }
-                if (SPUtils.isBuildInMode()) {
-                    Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
-                    intent.putExtra(getString(R.string.intent_image_list), mImageAdapter.getDataList());
-                    intent.putExtra(getString(R.string.intent_image_position), position);
-                    getActivity().startActivity(intent);
+                if (mPresenter.mEditType == Constants.EditType.NONE) {
+                    FileItem file = mImageAdapter.getItem(position);
+                    if (file == null) {
+                        finishAction();
+                        return;
+                    }
+                    if (SPUtils.isBuildInMode()) {
+                        Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
+                        intent.putExtra(getString(R.string.intent_image_list), mImageAdapter.getDataList());
+                        intent.putExtra(getString(R.string.intent_image_position), position);
+                        getActivity().startActivity(intent);
+                    } else {
+                        if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
+                            AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_can_not_access_file));
+                        }
+                    }
+                } else if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT
+                        || mPresenter.mEditType == Constants.EditType.ZIP || mPresenter.mEditType == Constants.EditType.UNZIP) {
                 } else {
-                    if (!mFileModel.openFile(getContext(), new File(file.getPath()))) {
-                        AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_can_not_access_file));
+                    mPresenter.mEditType = Constants.EditType.SELECT;
+                    mImageAdapter.switchSelectedState(position);
+                    mActionMode.setTitle(mImageAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
+                    if (mImageAdapter.getSelectedItemCount() == 0) {
+                        finishAction();
                     }
                 }
             }
@@ -126,7 +133,16 @@ public class AlbumFolderFragment extends BaseFragment {
         mImageAdapter.setOnItemLongClick(new CommonRecyclerViewAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, int position) {
-
+                if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT
+                        || mPresenter.mEditType == Constants.EditType.ZIP || mPresenter.mEditType == Constants.EditType.UNZIP) {
+                    return;
+                }
+                mPresenter.mEditType = Constants.EditType.SELECT;
+                mImageAdapter.switchSelectedState(position);
+                if (mActionMode == null) {
+                    mActionMode = getControlActionMode();
+                }
+                mActionMode.setTitle(mImageAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
             }
         });
 
@@ -134,18 +150,11 @@ public class AlbumFolderFragment extends BaseFragment {
         mAdapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                FileItem albumFolder = mAdapter.getItem(position);
-                mCurrentAlbum = albumFolder;
-                loadImage();
+                mPresenter.mCurrentAlbum = mAdapter.getItem(position);
+                mPresenter.loadImage(mSearchStr, true);
             }
         });
 
-        mAdapter.setOnItemLongClick(new CommonRecyclerViewAdapter.OnItemLongClickListener() {
-            @Override
-            public void onItemLongClick(View view, final int position) {
-
-            }
-        });
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -164,10 +173,10 @@ public class AlbumFolderFragment extends BaseFragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (isInAlbum) {
-                    loadAlbum();
+                if (mPresenter.isInAlbum) {
+                    mPresenter.loadAlbum(mSearchStr);
                 } else {
-                    loadImage();
+                    mPresenter.loadImage(mSearchStr, true);
                 }
             }
         });
@@ -177,11 +186,11 @@ public class AlbumFolderFragment extends BaseFragment {
         mRxManager.on("onSortType", new Action1<Integer>() {
             @Override
             public void call(Integer sortType) {
-                mSortType = sortType;
-                if (isInAlbum) {
-                    loadAlbum();
+                mPresenter.mSortType = sortType;
+                if (mPresenter.isInAlbum) {
+                    mPresenter.loadAlbum(mSearchStr);
                 } else {
-                    loadImage();
+                    mPresenter.loadImage(mSearchStr, true);
                 }
             }
         });
@@ -189,11 +198,11 @@ public class AlbumFolderFragment extends BaseFragment {
         mRxManager.on("onOrderType", new Action1<Integer>() {
             @Override
             public void call(Integer orderType) {
-                mOrderType = orderType;
-                if (isInAlbum) {
-                    loadAlbum();
+                mPresenter.mOrderType = orderType;
+                if (mPresenter.isInAlbum) {
+                    mPresenter.loadAlbum(mSearchStr);
                 } else {
-                    loadImage();
+                    mPresenter.loadImage(mSearchStr, true);
                 }
             }
         });
@@ -202,7 +211,11 @@ public class AlbumFolderFragment extends BaseFragment {
             @Override
             public void call(String text) {
                 mSearchStr = text;
-                loadAlbum();
+                if (mPresenter.isInAlbum) {
+                    mPresenter.loadAlbum(mSearchStr);
+                } else {
+                    mPresenter.loadImage(mSearchStr, true);
+                }
             }
         });
     }
@@ -210,17 +223,11 @@ public class AlbumFolderFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (isInAlbum) {
-            loadAlbum();
+        if (mPresenter.isInAlbum) {
+            mPresenter.loadAlbum(mSearchStr);
         } else {
-            loadImage();
+            mPresenter.loadImage(mSearchStr, true);
         }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean("isInAlbum", isInAlbum);
     }
 
     public void startRefresh() {
@@ -235,7 +242,7 @@ public class AlbumFolderFragment extends BaseFragment {
         mTabView.addTab(getString(R.string.str_image), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadAlbum();
+                mPresenter.loadAlbum(mSearchStr);
             }
         });
     }
@@ -254,146 +261,262 @@ public class AlbumFolderFragment extends BaseFragment {
         AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_error));
     }
 
-    private void refreshAlbum(ArrayList<FileItem> albumFolderList) {
-        mAdapter.clearData(true);
-        mAdapter.setData(albumFolderList);
-        mRecyclerView.setAdapter(mAdapter);
+    public void showMessage(String message) {
+        AlertUtils.showSnack(mCoordinatorLayout, message);
     }
 
-    private void refreshImage(ArrayList<FileItem> albumFolderList) {
-        mImageAdapter.clearData(true);
-        mImageAdapter.setData(albumFolderList);
+    @Override
+    public void showKeyboard(final EditText editText) {
+        getActivity().getWindow().getDecorView().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                KeyboardUtils.showSoftInput(editText);
+            }
+        }, 200);
+    }
+
+    @Override
+    public void hideKeyboard(final EditText editText) {
+        getActivity().getWindow().getDecorView().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                KeyboardUtils.hideSoftInput(getContext(), editText);
+            }
+        }, 200);
+    }
+
+    @Override
+    public void showInfoBottomSheet(FileItem fileItem, DialogInterface.OnCancelListener onCancelListener) {
+        AlertUtils.showFileInfoBottomSheet(getContext(), fileItem, onCancelListener);
+    }
+
+    @Override
+    public View inflateFilenameInputDialogLayout() {
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        return inflater.inflate(R.layout.dialog_input, new LinearLayout(getContext()), false);
+    }
+
+    @Override
+    public View inflatePasswordInputDialogLayout() {
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        return inflater.inflate(R.layout.dialog_password, new LinearLayout(getContext()), false);
+    }
+
+    @Override
+    public TextInputLayout findTextInputLayout(View view) {
+        return (TextInputLayout) ButterKnife.findById(view, R.id.til_tips);
+    }
+
+    @Override
+    public EditText findAlertDialogEditText(View view) {
+        return (AppCompatEditText) ButterKnife.findById(view, R.id.et_name);
+    }
+
+    @Override
+    public AlertDialog showInputFileNameAlert(View view, DialogInterface.OnShowListener onShowListener) {
+        return AlertUtils.showCustomAlert(getContext(), "", view, onShowListener);
+    }
+
+    @Override
+    public AlertDialog showNormalAlert(String message, String positiveString, DialogInterface.OnClickListener positiveClick) {
+        return AlertUtils.showNormalAlert(getContext(), message, positiveString, positiveClick);
+    }
+
+    @Override
+    public void showProgressDialog(String message) {
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setTitle(getString(R.string.tips_alert));
+        progressDialog.setMessage(message);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+
+    @Override
+    public void hideProgressDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
+
+    public String getResString(@StringRes int resId) {
+        return getContext().getString(resId);
+    }
+
+    private void refreshData(boolean ifClearSelected) {
+        mPresenter.loadImage(mSearchStr, ifClearSelected);
+    }
+
+    public void refreshData(ArrayList<FileItem> imageList, boolean ifClearSelected) {
+        mImageAdapter.clearData(ifClearSelected);
+
+        if (imageList == null || imageList.isEmpty()) {
+            mLlEmpty.setVisibility(View.VISIBLE);
+        } else {
+            mLlEmpty.setVisibility(View.GONE);
+            mImageAdapter.setData(imageList);
+        }
         mRecyclerView.setAdapter(mImageAdapter);
     }
 
+    public void refreshAlbum(ArrayList<FileItem> albumFolderList) {
+        mAdapter.clearData(true);
+
+        if (albumFolderList == null || albumFolderList.isEmpty()) {
+            mLlEmpty.setVisibility(View.VISIBLE);
+        } else {
+            mLlEmpty.setVisibility(View.GONE);
+            mAdapter.setData(albumFolderList);
+        }
+        mRecyclerView.setAdapter(mAdapter);
+    }
+
+    public void finishAction() {
+        mSearchStr = "";
+        if (mActionMode != null) {
+            mActionMode.finish();
+        }
+        mPresenter.mEditType = Constants.EditType.NONE;
+    }
+
     public boolean onBackPressed() {
-        if (isInAlbum) {
+        if (mPresenter.isInAlbum) {
             return false;
         } else {
-            loadAlbum();
+            mPresenter.loadAlbum(mSearchStr);
             return true;
         }
     }
 
-    private void loadAlbum() {
-        Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
+    private ActionMode getControlActionMode() {
+        return getActivity().startActionMode(new ActionMode.Callback() {
             @Override
-            public Observable<ArrayList<FileItem>> call() {
-                return Observable.just(mFileListModel.getPhotoAlbum(mSearchStr, getContext().getContentResolver()));
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                mode.getMenuInflater().inflate(R.menu.menu_control_image, menu);
+                return true;
             }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .doOnSubscribe(new Action0() {
-                    @Override
-                    public void call() {
 
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<ArrayList<FileItem>>() {
-                    @Override
-                    public void onStart() {
-                        showTabs();
-                        startRefresh();
-                    }
-
-                    @Override
-                    public void onNext(ArrayList<FileItem> albumFolderList) {
-                        refreshAlbum(albumFolderList);
-                        isInAlbum = true;
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        showError(e.getMessage());
-                        onCompleted();
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        stopRefresh();
-                    }
-                });
-        mRxManager.add(subscription);
-    }
-
-    private void loadImage() {
-        Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
             @Override
-            public Observable<ArrayList<FileItem>> call() {
-                return Observable.just(getCurrentImageList(mCurrentAlbum));
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                menu.clear();
+                mode.getMenuInflater().inflate(R.menu.menu_control_image, menu);
+                return true;
             }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .doOnSubscribe(new Action0() {
-                    @Override
-                    public void call() {
 
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<ArrayList<FileItem>>() {
-                    @Override
-                    public void onStart() {
-                        showTabs();
-                        startRefresh();
-                    }
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                final ArrayList<FileItem> fileList = mImageAdapter.getSelectedDataList();
+                switch (item.getItemId()) {
+                    case R.id.action_rename:
+                        mPresenter.onRenameFile(fileList);
+                        break;
+                    case R.id.action_info:
+                        mPresenter.onShowFileInfo(fileList);
+                        break;
+                    case R.id.action_share:
+                        File file;
+                        List<File> files = new ArrayList<>();
+                        for (FileItem fileItem : fileList) {
+                            file = new File(fileItem.getPath());
+                            files.add(file);
+                        }
+                        mPresenter.shareFile(getContext(), files);
+                        break;
+                    case R.id.action_delete:
+                        mPresenter.onDelete(fileList);
+                        break;
+//                    case R.id.action_copy:
+//                        mPresenter.mEditType = Constants.EditType.COPY;
+//                        mActionMode = getPasteActonMode();
+//                        mImageAdapter.mSelectedFileList = fileList;
+//                        mActionMode.setTitle(mAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
+//                        break;
+//                    case R.id.action_move:
+//                        mPresenter.mEditType = Constants.EditType.CUT;
+//                        mActionMode = getPasteActonMode();
+//                        mImageAdapter.mSelectedFileList = fileList;
+//                        mActionMode.setTitle(mAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
+//                        break;
+                    case R.id.action_show_hide:
+                        mPresenter.onShowHideFile(fileList);
+                        break;
+//                    case R.id.action_compress:
+//                        mPresenter.mEditType = Constants.EditType.ZIP;
+//                        mActionMode = getPasteActonMode();
+//                        mImageAdapter.mSelectedFileList = fileList;
+//                        mActionMode.setTitle(mAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
+//                        break;
+//                    case R.id.action_extract:
+//                        if (fileList.size() != 1) {
+//                            showMessage(getResString(R.string.tips_choose_one_file));
+//                        } else {
+//                            mPresenter.mEditType = Constants.EditType.UNZIP;
+//                            mActionMode = getPasteActonMode();
+//                            mImageAdapter.mSelectedFileList = fileList;
+//                            mActionMode.setTitle(mAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
+//                        }
+//                        break;
+                }
+                return false;
+            }
 
-                    @Override
-                    public void onNext(ArrayList<FileItem> albumFolderList) {
-                        refreshImage(albumFolderList);
-                        isInAlbum = false;
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        showError(e.getMessage());
-                        onCompleted();
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        stopRefresh();
-                    }
-                });
-        mRxManager.add(subscription);
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT
+                        && mPresenter.mEditType != Constants.EditType.ZIP && mPresenter.mEditType != Constants.EditType.UNZIP) {
+                    refreshData(true);
+                    getActivity().supportInvalidateOptionsMenu();
+                    mActionMode = null;
+                    mPresenter.mEditType = Constants.EditType.NONE;
+                } else {
+                    refreshData(false);
+                }
+            }
+        });
     }
 
-    private ArrayList<FileItem> getCurrentImageList(FileItem albumFolder) {
-        ArrayList<FileItem> fileItemList;
-
-        fileItemList = albumFolder.getImages();
-
-        if (fileItemList == null) {
-            return null;
-        }
-
-        switch (mSortType) {
-            case Constants.SortType.TYPE:
-                fileItemList = mFileListModel.orderByType(fileItemList);
-                break;
-            case Constants.SortType.TIME:
-                fileItemList = mFileListModel.orderByTime(fileItemList);
-                break;
-            case Constants.SortType.ALPHABET:
-                fileItemList = mFileListModel.orderByAlphabet(fileItemList);
-                break;
-            case Constants.SortType.SIZE:
-                fileItemList = mFileListModel.orderBySize(fileItemList);
-                break;
-        }
-
-        switch (mOrderType) {
-            case Constants.OrderType.DESC:
-                break;
-            case Constants.OrderType.ASC:
-                mFileListModel.orderByOrder(fileItemList);
-                break;
-        }
-
-        return fileItemList;
-    }
+//    private ActionMode getPasteActonMode() {
+//        return getActivity().startActionMode(new ActionMode.Callback() {
+//            @Override
+//            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+//                mode.getMenuInflater().inflate(R.menu.menu_paste, menu);
+//                return true;
+//            }
+//
+//            @Override
+//            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+//                menu.clear();
+//                mode.getMenuInflater().inflate(R.menu.menu_paste, menu);
+//                return true;
+//            }
+//
+//            @Override
+//            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+//                final ArrayList<FileItem> fileList = mImageAdapter.mSelectedFileList;
+//                switch (item.getItemId()) {
+//                    case R.id.action_paste:
+//                        if (mPresenter.mEditType == Constants.EditType.COPY) {
+//                            mPresenter.onCopy(fileList);
+//                        } else if (mPresenter.mEditType == Constants.EditType.CUT) {
+//                            mPresenter.onMove(fileList);
+//                        } else if (mPresenter.mEditType == Constants.EditType.ZIP) {
+//                            mPresenter.onZip(fileList);
+//                        } else if (mPresenter.mEditType == Constants.EditType.UNZIP) {
+//                            mPresenter.onUnzip(fileList);
+//                        }
+//                        break;
+//                }
+//                return false;
+//            }
+//
+//            @Override
+//            public void onDestroyActionMode(ActionMode mode) {
+//                refreshData(true);
+//                getActivity().supportInvalidateOptionsMenu();
+//                mActionMode = null;
+//                mPresenter.mEditType = Constants.EditType.NONE;
+//                mImageAdapter.mSelectedFileList = null;
+//            }
+//        });
+//    }
 
 }

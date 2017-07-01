@@ -27,17 +27,21 @@ import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.ui.activity.FileListActivity;
 
+import java.util.ArrayList;
+
 /**
  * Created by huangyu on 2017/6/30.
  */
 public class AlbumImageAdapter extends CommonRecyclerViewAdapter<FileItem> {
+
+    public ArrayList<FileItem> mSelectedFileList;
 
     public AlbumImageAdapter(Context context) {
         super(context);
     }
 
     @Override
-    public void convert(CommonRecyclerViewHolder holder, FileItem data, int position) {
+    public void convert(CommonRecyclerViewHolder holder, FileItem fileItem, int position) {
         ImageView ivImage = holder.getView(R.id.iv_image);
         TextView tvName = holder.getView(R.id.tv_name);
         TextView tvSize = holder.getView(R.id.tv_size);
@@ -53,19 +57,46 @@ public class AlbumImageAdapter extends CommonRecyclerViewAdapter<FileItem> {
             tvSize.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryTextWhite));
         }
 
-        Glide.with(mContext).load(data.getPath()).into(ivImage);
-        tvName.setText(data.getName());
+        Glide.with(mContext).load(fileItem.getPath()).into(ivImage);
+        tvName.setText(fileItem.getName());
         try {
-            tvSize.setText(FileUtils.getFileOrDirSize(Long.valueOf(data.getSize())));
+            tvSize.setText(FileUtils.getFileOrDirSize(Long.valueOf(fileItem.getSize())));
         } catch (Exception e) {
             // 部分机器查询出来的文件大小为空，用文件路径来处理
-            tvSize.setText(FileUtils.getFileSize(data.getPath()));
+            tvSize.setText(FileUtils.getFileSize(fileItem.getPath()));
         }
+
+        if (getSelectedItemCount() > 0 && isSelected(position) && isSelected(fileItem)) {
+            holder.itemView.setSelected(true);
+        } else {
+            holder.itemView.setSelected(false);
+        }
+
     }
 
     @Override
     public int getLayoutResource() {
         return R.layout.item_album_image;
+    }
+
+    private boolean isSelected(FileItem fileItem) {
+        // 考虑正在选择的情况
+        if (mSelectedFileList == null) {
+            if (mSelectArray == null || mSelectArray.size() == 0) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        // 判断路径是否一致
+        else {
+            for (FileItem selectFile : mSelectedFileList) {
+                if (fileItem.getPath().equals(selectFile.getPath())) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
 }

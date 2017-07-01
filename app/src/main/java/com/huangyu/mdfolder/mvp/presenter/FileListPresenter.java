@@ -22,6 +22,7 @@ import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
+import com.huangyu.mdfolder.utils.MediaScanner;
 import com.huangyu.mdfolder.utils.MimeTypeUtils;
 import com.huangyu.mdfolder.utils.CompressUtils;
 
@@ -55,6 +56,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     private FileModel mFileModel;
     private Stack<String> mFileStack;   // 文件路径栈
     private Stack<Integer> mScrollYStack;   // 列表position栈
+    private MediaScanner mMediaScanner;
 
     private String mCurrentPath; // 当前路径
     private int mBeforeScrollY; // 当前position
@@ -65,6 +67,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
     @Override
     public void create() {
+        mMediaScanner = new MediaScanner(mContext);
         mFileListModel = new FileListModel();
         mFileModel = new FileModel();
         mFileStack = new Stack<>();
@@ -546,6 +549,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                             return;
                                         }
                                         if (mFileModel.addFile(filePath)) {
+                                            mMediaScanner.scanFile(new File(filePath), MimeTypeUtils.getMIMEType(filePath));
                                             mView.showMessage(mView.getResString(R.string.tips_add_file_successfully));
                                             mView.refreshData(false, 0);
                                         } else {
@@ -669,6 +673,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                             return;
                                         }
                                         if (mFileModel.addFolder(filePath)) {
+                                            mMediaScanner.scanFile(new File(filePath), MimeTypeUtils.getMIMEType(filePath));
                                             mView.showMessage(mView.getResString(R.string.tips_add_folder_successfully));
                                             mView.refreshData(false, 0);
                                         } else {
@@ -748,6 +753,8 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                 @Override
                                 public void call(Subscriber<? super Boolean> subscriber) {
                                     boolean result = mFileModel.renameFile(filePath, editText.getText().toString());
+                                    File parentFile = new File(filePath).getParentFile();
+                                    mMediaScanner.scanFile(parentFile, MimeTypeUtils.getMIMEType(parentFile.getPath()));
                                     subscriber.onNext(result);
                                     subscriber.onCompleted();
                                 }
@@ -823,6 +830,8 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         } else {
                                             result = mFileModel.showFile(file.getPath(), file.getName());
                                         }
+                                        File parentFile = new File(file.getPath()).getParentFile();
+                                        mMediaScanner.scanFile(parentFile, MimeTypeUtils.getMIMEType(parentFile.getPath()));
                                         return result;
                                     }
                                 })
@@ -902,6 +911,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         } else {
                                             result = mFileModel.deleteFile(file.getPath());
                                         }
+                                        mMediaScanner.delete(mContext, file.getPath());
                                         return result;
                                     }
                                 })
@@ -989,7 +999,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                             public void onNext(List<File> fileList) {
                                                 ArrayList<File> fileArrayList = new ArrayList<>();
                                                 fileArrayList.addAll(fileList);
-                                                boolean result = mFileListModel.zipFileList(fileArrayList, mCurrentPath + File.separator + filename + ".zip");
+                                                String newPath = mCurrentPath + File.separator + filename + ".zip";
+                                                boolean result = mFileListModel.zipFileList(fileArrayList, newPath);
+                                                mMediaScanner.scanFile(new File(newPath), MimeTypeUtils.getMIMEType(newPath));
                                                 if (result) {
                                                     mView.showMessage(mView.getResString(R.string.tips_compress_successfully));
                                                 } else {
@@ -1057,6 +1069,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     @Override
                                     public void onNext(List<File> fileList) {
                                         boolean result = mFileListModel.un7zipFileList(filePath, mCurrentPath);
+                                        mMediaScanner.scanFile(new File(mCurrentPath), MimeTypeUtils.getMIMEType(mCurrentPath));
                                         if (result) {
                                             mView.showMessage(mView.getResString(R.string.tips_extract_successfully));
                                         } else {
@@ -1098,6 +1111,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     @Override
                                     public void onNext(List<File> fileList) {
                                         boolean result = mFileListModel.unRarFileList(filePath, mCurrentPath);
+                                        mMediaScanner.scanFile(new File(mCurrentPath), MimeTypeUtils.getMIMEType(mCurrentPath));
                                         if (result) {
                                             mView.showMessage(mView.getResString(R.string.tips_extract_successfully));
                                         } else {
@@ -1152,6 +1166,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                                         @Override
                                                         public void onNext(List<File> fileList) {
                                                             boolean result = mFileListModel.unZipFileList(filePath, mCurrentPath, password);
+                                                            mMediaScanner.scanFile(new File(mCurrentPath), MimeTypeUtils.getMIMEType(mCurrentPath));
                                                             if (result) {
                                                                 mView.showMessage(mView.getResString(R.string.tips_extract_successfully));
                                                             } else {
@@ -1204,6 +1219,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         @Override
                                         public void onNext(List<File> fileList) {
                                             boolean result = mFileListModel.unZipFileList(filePath, mCurrentPath);
+                                            mMediaScanner.scanFile(new File(mCurrentPath), MimeTypeUtils.getMIMEType(mCurrentPath));
                                             if (result) {
                                                 mView.showMessage(mView.getResString(R.string.tips_extract_successfully));
                                             } else {
@@ -1250,11 +1266,13 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             @Override
                             public Boolean call(FileItem file) {
                                 boolean result;
+                                String newPath = mCurrentPath + File.separator + file.getName();
                                 if (o.getKey()) {
-                                    result = mFileModel.copyFolder(file.getPath(), mCurrentPath + File.separator + file.getName());
+                                    result = mFileModel.copyFolder(file.getPath(), newPath);
                                 } else {
-                                    result = mFileModel.copyFile(file.getPath(), mCurrentPath + File.separator + file.getName());
+                                    result = mFileModel.copyFile(file.getPath(), newPath);
                                 }
+                                mMediaScanner.scanFile(new File(newPath), MimeTypeUtils.getMIMEType(newPath));
                                 return result;
                             }
                         }).subscribe(new Subscriber<Boolean>() {
@@ -1305,11 +1323,13 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             @Override
                             public Boolean call(FileItem file) {
                                 boolean result;
+                                String newPath = mCurrentPath + File.separator + file.getName();
                                 if (o.getKey()) {
-                                    result = mFileModel.moveFolder(file.getPath(), mCurrentPath + File.separator + file.getName());
+                                    result = mFileModel.moveFolder(file.getPath(), newPath);
                                 } else {
-                                    result = mFileModel.moveFile(file.getPath(), mCurrentPath + File.separator + file.getName());
+                                    result = mFileModel.moveFile(file.getPath(), newPath);
                                 }
+                                mMediaScanner.scanFile(new File(newPath), MimeTypeUtils.getMIMEType(newPath));
                                 return result;
                             }
                         }).subscribe(new Subscriber<Boolean>() {

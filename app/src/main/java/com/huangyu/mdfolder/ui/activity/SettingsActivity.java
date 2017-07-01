@@ -43,7 +43,7 @@ public class SettingsActivity extends ThematicActivity {
     private void replaceFragment() {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.rl_content, new SettingsFragment())
+                .replace(R.id.rl_file, new SettingsFragment())
                 .commitAllowingStateLoss();
     }
 

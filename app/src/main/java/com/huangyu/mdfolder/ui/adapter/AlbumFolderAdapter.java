@@ -36,7 +36,7 @@ public class AlbumFolderAdapter extends CommonRecyclerViewAdapter<FileItem> {
     }
 
     @Override
-    public void convert(CommonRecyclerViewHolder holder, FileItem data, int position) {
+    public void convert(CommonRecyclerViewHolder holder, FileItem fileItem, int position) {
         ImageView ivImage = holder.getView(R.id.iv_image);
         TextView tvName = holder.getView(R.id.tv_name);
         TextView tvSize = holder.getView(R.id.tv_size);
@@ -54,8 +54,8 @@ public class AlbumFolderAdapter extends CommonRecyclerViewAdapter<FileItem> {
             Glide.with(mContext).load(R.drawable.album).into(ivImage);
         }
 
-        tvName.setText(data.getName());
-        tvSize.setText(String.valueOf(data.getImages().size()));
+        tvName.setText(fileItem.getName());
+        tvSize.setText(String.valueOf(fileItem.getImages().size()));
     }
 
     @Override

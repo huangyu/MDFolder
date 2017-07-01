@@ -49,8 +49,11 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     @Bind(R.id.nav_view)
     NavigationView mNavigationView;
 
-    @Bind(R.id.rl_content)
-    RelativeLayout mRelativeLayout;
+    @Bind(R.id.rl_file)
+    RelativeLayout mRlFile;
+
+    @Bind(R.id.rl_album)
+    RelativeLayout mRLAlbum;
 
     private SearchView mSearchView;
     private FileListFragment mFileListFragment;
@@ -104,53 +107,52 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     @Override
     protected void onResume() {
         super.onResume();
-//        if (isChanged()) {
-        if (selectedPosition != 4) {
+        if (isChanged()) {
             replaceFragment();
-        }
-        getWindow().getDecorView().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                switch (selectedPosition) {
-                    case 2:
-                        mRxManager.post("toRoot", "");
-                        break;
-                    case 1:
-                        mRxManager.post("toStorage", true);
-                        break;
-                    case 5:
-                        mRxManager.post("toMusic", "");
-                        break;
-                    case 4:
-//                        mRxManager.post("toPhoto", "");
-                        mAlbumFolderFragment = new AlbumFolderFragment();
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.rl_content, mAlbumFolderFragment)
-                                .commitAllowingStateLoss();
-                        break;
-                    case 6:
-                        mRxManager.post("toVideo", "");
-                        break;
-                    case 7:
-                        mRxManager.post("toDocument", "");
-                        break;
-                    case 3:
-                        mRxManager.post("toDownload", "");
-                        break;
-                    case 8:
-                        mRxManager.post("toApk", "");
-                        break;
-                    case 9:
-                        mRxManager.post("toZip", "");
-                        break;
-                    default:
-                        mRxManager.post("toStorage", false);
-                        break;
-                }
+            if (selectedPosition != 4) {
+                mRlFile.setVisibility(View.VISIBLE);
+                mRLAlbum.setVisibility(View.GONE);
             }
-        }, 200);
-//        }
+            getWindow().getDecorView().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    switch (selectedPosition) {
+                        case 2:
+                            mRxManager.post("toRoot", "");
+                            break;
+                        case 1:
+                            mRxManager.post("toStorage", true);
+                            break;
+                        case 5:
+                            mRxManager.post("toMusic", "");
+                            break;
+                        case 4:
+//                        mRxManager.post("toPhoto", "");
+                            mRlFile.setVisibility(View.GONE);
+                            mRLAlbum.setVisibility(View.VISIBLE);
+                            break;
+                        case 6:
+                            mRxManager.post("toVideo", "");
+                            break;
+                        case 7:
+                            mRxManager.post("toDocument", "");
+                            break;
+                        case 3:
+                            mRxManager.post("toDownload", "");
+                            break;
+                        case 8:
+                            mRxManager.post("toApk", "");
+                            break;
+                        case 9:
+                            mRxManager.post("toZip", "");
+                            break;
+                        default:
+                            mRxManager.post("toStorage", false);
+                            break;
+                    }
+                }
+            }, 200);
+        }
     }
 
     @Override
@@ -161,9 +163,11 @@ public class FileListActivity extends ThematicActivity implements NavigationView
 
     private void replaceFragment() {
         mFileListFragment = new FileListFragment();
+        mAlbumFolderFragment = new AlbumFolderFragment();
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.rl_content, mFileListFragment)
+                .replace(R.id.rl_file, mFileListFragment)
+                .replace(R.id.rl_album, mAlbumFolderFragment)
                 .commitAllowingStateLoss();
     }
 
@@ -284,7 +288,8 @@ public class FileListActivity extends ThematicActivity implements NavigationView
         mDrawerLayout.closeDrawer(GravityCompat.START);
 
         if (item.getItemId() != R.id.nav_photo) {
-            replaceFragment();
+            mRlFile.setVisibility(View.VISIBLE);
+            mRLAlbum.setVisibility(View.GONE);
         }
         getWindow().getDecorView().postDelayed(new Runnable() {
             @Override
@@ -309,11 +314,8 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                     case R.id.nav_photo:
                         selectedPosition = 4;
 //                        mRxManager.post("toPhoto", "");
-                        mAlbumFolderFragment = new AlbumFolderFragment();
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.rl_content, mAlbumFolderFragment)
-                                .commitAllowingStateLoss();
+                        mRlFile.setVisibility(View.GONE);
+                        mRLAlbum.setVisibility(View.VISIBLE);
                         break;
                     case R.id.nav_video:
                         selectedPosition = 6;
@@ -386,7 +388,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
 
     @Override
     public void onPermissionsDenied(int requestCode, List<String> perms) {
-        AlertUtils.showSnack(mRelativeLayout, getString(R.string.tips_no_permissions), getString(R.string.act_exit), new View.OnClickListener() {
+        AlertUtils.showSnack(mRlFile, getString(R.string.tips_no_permissions), getString(R.string.act_exit), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ActivityManager.getInstance().finishAllActivity();

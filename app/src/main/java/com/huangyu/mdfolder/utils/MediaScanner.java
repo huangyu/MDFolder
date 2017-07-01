@@ -4,64 +4,64 @@ import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 
+import java.io.File;
+
 /**
  * Created by huangyu on 2017/6/29.
  */
 
-public class MediaScanner implements MediaScannerConnection.MediaScannerConnectionClient {
+public class MediaScanner {
 
-    /**
-     * 扫描对象
-     */
-    private MediaScannerConnection mediaScanConn = null;
-    private int scanTimes = 0;
-    /**
-     * 文件路径集合
-     **/
-    private String[] filePaths;
-    /**
-     * 文件MimeType集合
-     **/
-    private String[] mimeTypes;
+    private MediaScannerConnection mConn = null;
+    private ScannerClient mClient = null;
+    private File mFile = null;
+    private String mMimeType = null;
 
     public MediaScanner(Context context) {
-        mediaScanConn = new MediaScannerConnection(context, this);
-    }
-
-    /**
-     * 扫描文件
-     *
-     * @param filePaths
-     * @param mimeTypes
-     */
-    public void scanFiles(String[] filePaths, String[] mimeTypes) {
-        this.filePaths = filePaths;
-        this.mimeTypes = mimeTypes;
-        mediaScanConn.connect();
-    }
-
-    @Override
-    public void onMediaScannerConnected() {
-        for (int i = 0; i < filePaths.length; i++) {
-            mediaScanConn.scanFile(filePaths[i], mimeTypes[i]);
+        if (mClient == null) {
+            mClient = new ScannerClient();
         }
-        filePaths = null;
-        mimeTypes = null;
+        if (mConn == null) {
+            mConn = new MediaScannerConnection(context, mClient);
+        }
     }
 
-    /**
-     * 扫描完成
-     *
-     * @param path
-     * @param uri
-     */
-    @Override
-    public void onScanCompleted(String path, Uri uri) {
-        scanTimes++;
-        if (scanTimes == filePaths.length) {
-            mediaScanConn.disconnect();
-            scanTimes = 0;
+    class ScannerClient implements MediaScannerConnection.MediaScannerConnectionClient {
+
+        public void onMediaScannerConnected() {
+            if (mFile == null) {
+                return;
+            }
+            scan(mFile, mMimeType);
         }
+
+        public void onScanCompleted(String path, Uri uri) {
+            mConn.disconnect();
+        }
+
+        private void scan(File file, String type) {
+            if (file.isFile()) {
+                mConn.scanFile(file.getAbsolutePath(), null);
+                return;
+            }
+            File[] files = file.listFiles();
+            if (files == null) {
+                return;
+            }
+            for (File f : file.listFiles()) {
+                scan(f, type);
+            }
+        }
+    }
+
+    public void scanFile(File file, String mimeType) {
+        mFile = file;
+        mMimeType = mimeType;
+        mConn.connect();
+    }
+
+    public void delete(Context context, String filePath) {
+        context.getContentResolver().delete(Uri.fromFile(new File(filePath)), null, null);
     }
 
 }
