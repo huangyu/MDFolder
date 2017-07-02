@@ -278,7 +278,7 @@ public class FileListModel implements IBaseModel {
                 if (FileUtils.isFileExists(filePath)) {
                     FileItem fileItem = new FileItem();
 //                    fileItem.setName(fileRealName);
-//                    fileItem.setPath(filePath);
+                    fileItem.setPath(filePath);
 //                    fileItem.setSize(fileLength);
 //                    fileItem.setDate(date);
 //                    fileItem.setParent(null);

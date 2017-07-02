@@ -46,12 +46,12 @@ public class AlbumFolderAdapter extends CommonRecyclerViewAdapter<FileItem> {
             holder.itemView.setBackgroundResource(R.drawable.select_item);
             tvName.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryText));
             tvSize.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryText));
-            Glide.with(mContext).load(R.drawable.album).into(ivImage);
+            Glide.with(mContext).load(fileItem.getImages().get(0).getPath()).into(ivImage);
         } else {
             holder.itemView.setBackgroundResource(R.drawable.select_item_dark);
             tvName.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryTextWhite));
             tvSize.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryTextWhite));
-            Glide.with(mContext).load(R.drawable.album).into(ivImage);
+            Glide.with(mContext).load(fileItem.getImages().get(0).getPath()).into(ivImage);
         }
 
         tvName.setText(fileItem.getName());

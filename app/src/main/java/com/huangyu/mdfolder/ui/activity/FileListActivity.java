@@ -119,35 +119,45 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                     switch (selectedPosition) {
                         case 2:
                             mRxManager.post("toRoot", "");
+                            mNavigationView.setCheckedItem(R.id.nav_root);
                             break;
                         case 1:
                             mRxManager.post("toStorage", true);
+                            mNavigationView.setCheckedItem(R.id.nav_outer_storage);
                             break;
                         case 5:
                             mRxManager.post("toMusic", "");
+                            mNavigationView.setCheckedItem(R.id.nav_music);
                             break;
                         case 4:
 //                        mRxManager.post("toPhoto", "");
                             mRlFile.setVisibility(View.GONE);
                             mRLAlbum.setVisibility(View.VISIBLE);
+                            mNavigationView.setCheckedItem(R.id.nav_photo);
                             break;
                         case 6:
                             mRxManager.post("toVideo", "");
+                            mNavigationView.setCheckedItem(R.id.nav_video);
                             break;
                         case 7:
                             mRxManager.post("toDocument", "");
+                            mNavigationView.setCheckedItem(R.id.nav_document);
                             break;
                         case 3:
                             mRxManager.post("toDownload", "");
+                            mNavigationView.setCheckedItem(R.id.nav_download);
                             break;
                         case 8:
                             mRxManager.post("toApk", "");
+                            mNavigationView.setCheckedItem(R.id.nav_apk);
                             break;
                         case 9:
                             mRxManager.post("toZip", "");
+                            mNavigationView.setCheckedItem(R.id.nav_zip);
                             break;
                         default:
                             mRxManager.post("toStorage", false);
+                            mNavigationView.setCheckedItem(R.id.nav_inner_storage);
                             break;
                     }
                 }
@@ -188,6 +198,20 @@ public class FileListActivity extends ThematicActivity implements NavigationView
 
         if (mSearchView != null && mSearchView.isShown() && isSearchViewShow) {
             resetSearch();
+            return;
+        }
+
+        if (selectedPosition != 0) {
+            if (selectedPosition != 4) {
+                mRlFile.setVisibility(View.VISIBLE);
+                mRLAlbum.setVisibility(View.GONE);
+            } else {
+                mRlFile.setVisibility(View.GONE);
+                mRLAlbum.setVisibility(View.VISIBLE);
+            }
+            mRxManager.post("toStorage", false);
+            selectedPosition = 0;
+            mNavigationView.setCheckedItem(R.id.nav_inner_storage);
             return;
         }
 
@@ -343,7 +367,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                 }
                 resetSearch();
             }
-        }, 250);
+        }, 200);
         return true;
     }
 

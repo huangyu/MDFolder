@@ -1490,7 +1490,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         boolean isRemoved = false;
         while (mFileStack.size() > index + 1) {
             mFileStack.pop();
-            if (mFileStack.size() > index + 2) {
+            if (mScrollYStack.size() > index + 2) {
                 mScrollYStack.pop();
             }
             mView.removeTab();
