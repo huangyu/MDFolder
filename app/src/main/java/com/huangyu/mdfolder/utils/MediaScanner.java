@@ -3,6 +3,7 @@ package com.huangyu.mdfolder.utils;
 import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.provider.MediaStore;
 
 import java.io.File;
 
@@ -61,7 +62,7 @@ public class MediaScanner {
     }
 
     public void delete(Context context, String filePath) {
-        context.getContentResolver().delete(Uri.fromFile(new File(filePath)), null, null);
+        context.getContentResolver().delete(MediaStore.Files.getContentUri("external"), MediaStore.Files.FileColumns.DATA + " =? ", new String[]{filePath});
     }
 
 }

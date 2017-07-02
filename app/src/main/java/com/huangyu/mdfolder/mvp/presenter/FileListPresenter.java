@@ -22,9 +22,9 @@ import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
+import com.huangyu.mdfolder.utils.CompressUtils;
 import com.huangyu.mdfolder.utils.MediaScanner;
 import com.huangyu.mdfolder.utils.MimeTypeUtils;
-import com.huangyu.mdfolder.utils.CompressUtils;
 
 import java.io.File;
 import java.util.ArrayList;

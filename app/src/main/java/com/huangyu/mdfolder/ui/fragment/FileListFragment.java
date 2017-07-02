@@ -138,31 +138,58 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                                 }
                                 return;
                             }
-                            // 单个图片浏览
+                            // 同目录下图片浏览
                             if (file.getType() == Constants.FileType.SINGLE_IMAGE) {
+                                int currentPosition = 0;
                                 ArrayList<FileItem> arrayList = new ArrayList<>();
-                                arrayList.add(file);
+                                ArrayList<FileItem> dataList = mAdapter.getDataList();
+                                for (int i = 0; i < dataList.size(); i++) {
+                                    if (dataList.get(i).getType() == Constants.FileType.SINGLE_IMAGE) {
+                                        if (dataList.get(i).getPath().equals(file.getPath())) {
+                                            currentPosition = i;
+                                        }
+                                        arrayList.add(file);
+                                    }
+                                }
                                 Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
                                 intent.putExtra(getString(R.string.intent_image_list), arrayList);
-                                intent.putExtra(getString(R.string.intent_image_position), 0);
+                                intent.putExtra(getString(R.string.intent_image_position), currentPosition);
                                 getActivity().startActivity(intent);
                             }
-                            // 单个视频浏览
+                            // 同目录视频浏览
                             else if (file.getType() == Constants.FileType.SINGLE_VIDEO) {
+                                int currentPosition = 0;
                                 ArrayList<FileItem> arrayList = new ArrayList<>();
-                                arrayList.add(file);
+                                ArrayList<FileItem> dataList = mAdapter.getDataList();
+                                for (int i = 0; i < dataList.size(); i++) {
+                                    if (dataList.get(i).getType() == Constants.FileType.SINGLE_VIDEO) {
+                                        if (dataList.get(i).getPath().equals(file.getPath())) {
+                                            currentPosition = i;
+                                        }
+                                        arrayList.add(file);
+                                    }
+                                }
                                 Intent intent = new Intent(getActivity(), VideoBrowserActivity.class);
                                 intent.putExtra(getString(R.string.intent_video_list), arrayList);
-                                intent.putExtra(getString(R.string.intent_video_position), 0);
+                                intent.putExtra(getString(R.string.intent_video_position), currentPosition);
                                 getActivity().startActivity(intent);
                             }
-                            // 单个音频浏览
+                            // 同目录音频浏览
                             else if (file.getType() == Constants.FileType.SINGLE_AUDIO) {
+                                int currentPosition = 0;
                                 ArrayList<FileItem> arrayList = new ArrayList<>();
-                                arrayList.add(file);
+                                ArrayList<FileItem> dataList = mAdapter.getDataList();
+                                for (int i = 0; i < dataList.size(); i++) {
+                                    if (dataList.get(i).getType() == Constants.FileType.SINGLE_AUDIO) {
+                                        if (dataList.get(i).getPath().equals(file.getPath())) {
+                                            currentPosition = i;
+                                        }
+                                        arrayList.add(file);
+                                    }
+                                }
                                 Intent intent = new Intent(getActivity(), AudioBrowserActivity.class);
                                 intent.putExtra(getString(R.string.intent_audio_list), arrayList);
-                                intent.putExtra(getString(R.string.intent_audio_position), 0);
+                                intent.putExtra(getString(R.string.intent_audio_position), currentPosition);
                                 getActivity().startActivity(intent);
                             }
                             // 进入图片浏览
