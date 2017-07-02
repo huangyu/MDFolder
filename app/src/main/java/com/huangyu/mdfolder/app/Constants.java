@@ -7,7 +7,7 @@ import com.huangyu.library.app.BaseConstants;
  */
 public class Constants extends BaseConstants {
 
-    public static final int PERMISSION_ACCESS_FILES = 0x10000001;
+    public static final int PERMISSION_ACCESS_FILES = 0x01;
 
     public static class EditType {
 

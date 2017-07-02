@@ -304,22 +304,22 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                         mView.removeAllTabs();
                         switch (fileType) {
                             case Constants.SelectType.MENU_DOCUMENT:
-                                mView.addTab(mView.getResString(R.string.menu_document));
+                                mView.addTab(mView.getResString(R.string.menu_document) + "  " + fileList.size());
                                 break;
                             case Constants.SelectType.MENU_PHOTO:
-                                mView.addTab(mView.getResString(R.string.menu_image));
+                                mView.addTab(mView.getResString(R.string.menu_image) + "  " + fileList.size());
                                 break;
                             case Constants.SelectType.MENU_MUSIC:
-                                mView.addTab(mView.getResString(R.string.menu_audio));
+                                mView.addTab(mView.getResString(R.string.menu_audio) + "  " + fileList.size());
                                 break;
                             case Constants.SelectType.MENU_VIDEO:
-                                mView.addTab(mView.getResString(R.string.menu_video));
+                                mView.addTab(mView.getResString(R.string.menu_video) + "  " + fileList.size());
                                 break;
                             case Constants.SelectType.MENU_APK:
-                                mView.addTab(mView.getResString(R.string.menu_apk));
+                                mView.addTab(mView.getResString(R.string.menu_apk) + "  " + fileList.size());
                                 break;
                             case Constants.SelectType.MENU_ZIP:
-                                mView.addTab(mView.getResString(R.string.menu_compress_package));
+                                mView.addTab(mView.getResString(R.string.menu_compress_package) + "  " + fileList.size());
                                 break;
                         }
                         mView.refreshData(fileList, false, 0);
@@ -1443,14 +1443,17 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 if (file.isDirectory()) {
 //                    fileItem.setSize(FileUtils.getDirLength(file));
                     fileItem.setSize("0");
+                    fileItem.setCount(file.list().length);
                 } else {
                     fileItem.setSize(String.valueOf(FileUtils.getFileLength(file)));
+                    fileItem.setCount(0);
                 }
                 fileItem.setDate(String.valueOf(file.lastModified() / 1000));
                 fileItem.setIsDirectory(file.isDirectory());
                 fileItem.setParent(file.getParent());
                 fileItem.setType(MimeTypeUtils.getTypeBySuffix(FileUtils.getSuffix(file.getName())));
                 fileItem.setIsShow(!file.isHidden());
+
                 if (file.getName().endsWith(".apk")) {
                     PackageInfo packageInfo = pm.getPackageArchiveInfo(file.getPath(), PackageManager.GET_ACTIVITIES);
                     ApplicationInfo appInfo = packageInfo.applicationInfo;

@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.DecimalFormat;
 
 import static android.os.Environment.getExternalStorageState;
 
@@ -124,6 +125,54 @@ public final class SDCardUtils {
     public static String getDataPath() {
         if (!isSDCardEnable()) return null;
         return Environment.getExternalStorageDirectory().getPath() + File.separator + "data" + File.separator;
+    }
+
+    /**
+     * 获取SD卡存储空间信息
+     *
+     * @param sdcardPath sd卡路径
+     * @return 存储空间信息
+     */
+    public static String getSDCardSizeInfo(String sdcardPath) {
+        double freeSize = getSDFreeSize(sdcardPath);
+        double allSize = getSDAllSize(sdcardPath);
+        double usageSize = allSize - freeSize;
+        DecimalFormat df = new DecimalFormat("#.00");
+        return " (" + df.format(usageSize) + "GB/" + df.format(allSize) + "GB" + ")";
+    }
+
+    /**
+     * 获取SD卡剩余空间大小
+     *
+     * @param sdcardPath sd卡路径
+     * @return 剩余空间大小
+     */
+    public static double getSDFreeSize(String sdcardPath) {
+        StatFs sf = new StatFs(sdcardPath);
+        if (Build.VERSION.SDK_INT > 18) {
+            return sf.getFreeBytes() / 1024.00 / 1024.00 / 1024.00;
+        } else {
+            int blockSize = sf.getBlockSize();
+            int freeBlocks = sf.getAvailableBlocks();
+            return Math.abs((freeBlocks * blockSize) / 1024.00 / 1024.00 / 100.00);
+        }
+    }
+
+    /**
+     * 获取SD卡总空间大小
+     *
+     * @param sdcardPath sd卡路径
+     * @return 总空间大小
+     */
+    public static double getSDAllSize(String sdcardPath) {
+        StatFs sf = new StatFs(sdcardPath);
+        if (Build.VERSION.SDK_INT > 18) {
+            return sf.getTotalBytes() / 1024.00 / 1024.00 / 1024.00;
+        } else {
+            int blockSize = sf.getBlockSize();
+            int allBlocks = sf.getBlockCount();
+            return Math.abs((allBlocks * blockSize) / 1024.00 / 1024.00 / 100);
+        }
     }
 
     /**

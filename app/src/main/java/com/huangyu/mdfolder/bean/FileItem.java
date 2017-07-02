@@ -20,6 +20,7 @@ public class FileItem implements Serializable {
     private boolean isShow;
     private Drawable apkIcon;
     private ArrayList<FileItem> images = new ArrayList<>();
+    private int count;
 
     public FileItem() {
 
@@ -105,4 +106,11 @@ public class FileItem implements Serializable {
         this.images.add(photo);
     }
 
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
 }

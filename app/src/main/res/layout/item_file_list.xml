@@ -32,14 +32,29 @@
             android:id="@+id/tv_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="48dp"
             android:layout_marginLeft="72dp"
-            android:layout_marginRight="16dp"
+            android:layout_marginRight="48dp"
             android:layout_marginStart="72dp"
             android:ellipsize="end"
             android:textColor="@color/colorPrimaryText"
             android:textSize="16sp"
             tools:text="Title" />
+
+        <TextView
+            android:id="@+id/tv_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/tv_name"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:maxLines="1"
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="12sp"
+            tools:text="Count" />
 
         <TextView
             android:id="@+id/tv_size"

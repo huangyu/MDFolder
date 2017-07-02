@@ -82,12 +82,12 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
                 .subscribe(new Subscriber<ArrayList<FileItem>>() {
                     @Override
                     public void onStart() {
-                        mView.showTabs();
                         mView.startRefresh();
                     }
 
                     @Override
                     public void onNext(ArrayList<FileItem> albumFolderList) {
+                        mView.addTab(mView.getResString(R.string.str_image) + "  " + albumFolderList.size());
                         mView.refreshAlbum(albumFolderList);
                         isInAlbum = true;
                     }
@@ -125,12 +125,12 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
                 .subscribe(new Subscriber<ArrayList<FileItem>>() {
                     @Override
                     public void onStart() {
-                        mView.showTabs();
                         mView.startRefresh();
                     }
 
                     @Override
                     public void onNext(ArrayList<FileItem> imageList) {
+                        mView.addTab(mView.getResString(R.string.str_image) + "  " + imageList.size());
                         mView.refreshData(imageList, ifClearSelected);
                         isInAlbum = false;
                     }

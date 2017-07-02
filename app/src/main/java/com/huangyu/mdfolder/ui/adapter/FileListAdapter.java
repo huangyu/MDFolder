@@ -32,6 +32,7 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
     public void convert(CommonRecyclerViewHolder holder, FileItem fileItem, int position) {
         ImageView mIvIcon = holder.getView(R.id.iv_icon);
         TextView mTvName = holder.getView(R.id.tv_name);
+        TextView mTvCount = holder.getView(R.id.tv_count);
         TextView mTvSize = holder.getView(R.id.tv_size);
         TextView mTvTime = holder.getView(R.id.tv_time);
         View mVDivider = holder.getView(R.id.v_divider);
@@ -42,12 +43,14 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
         if (activity.isLightMode()) {
             holder.itemView.setBackgroundResource(R.drawable.select_item);
             mTvName.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryText));
+            mTvCount.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryText));
             mTvSize.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryText));
             mTvTime.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryText));
             mVDivider.setBackgroundResource(R.color.colorDivider);
         } else {
             holder.itemView.setBackgroundResource(R.drawable.select_item_dark);
             mTvName.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryTextWhite));
+            mTvCount.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryTextWhite));
             mTvSize.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryTextWhite));
             mTvTime.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryTextWhite));
             mVDivider.setBackgroundResource(R.color.colorDividerWhite);
@@ -65,9 +68,11 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
             case Constants.FileType.COMPRESS:
                 if (fileItem.isDirectory()) {
 //                    String size = mContext.getString(R.string.str_folder) + FileUtils.getFileOrDirSize(fileItem.getSize());
+                    mTvCount.setText(String.valueOf(fileItem.getCount()));
                     mTvSize.setText(mContext.getString(R.string.str_folder));
                     Glide.with(mContext).load(R.mipmap.ic_folder).into(mIvIcon);
                 } else {
+                    mTvCount.setText("");
                     try {
                         mTvSize.setText(FileUtils.getFileOrDirSize(Long.valueOf(fileItem.getSize())));
                     } catch (Exception e) {

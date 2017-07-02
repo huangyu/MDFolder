@@ -181,8 +181,6 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
             }
         });
 
-        addTab();
-
         mRxManager.on("onSortType", new Action1<Integer>() {
             @Override
             public void call(Integer sortType) {
@@ -238,13 +236,9 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
-    public void addTab() {
-        mTabView.addTab(getString(R.string.str_image), new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mPresenter.loadAlbum(mSearchStr);
-            }
-        });
+    public void addTab(String s) {
+        mTabView.removeAllTabs();
+        mTabView.addTab(s, null);
     }
 
     public void showTabs() {

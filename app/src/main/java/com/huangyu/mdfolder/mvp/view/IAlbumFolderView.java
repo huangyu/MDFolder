@@ -31,6 +31,8 @@ public interface IAlbumFolderView extends IBaseView {
 
     void finishAction();
 
+    void addTab(String s);
+
     String getResString(int res);
 
     void showMessage(String message);

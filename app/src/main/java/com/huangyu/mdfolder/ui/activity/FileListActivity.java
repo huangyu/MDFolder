@@ -98,8 +98,11 @@ public class FileListActivity extends ThematicActivity implements NavigationView
         if (!TextUtils.isEmpty(outerSdcardPath)) {
             MenuItem item = mNavigationView.getMenu().add(R.id.nav_group_folder, R.id.nav_outer_storage, 2, getString(R.string.menu_outer_storage));
             item.setIcon(R.mipmap.ic_sd);
+            item.setTitle(getString(R.string.menu_inner_storage) + " " + SDCardUtils.getSDCardSizeInfo(SDCardUtils.getStoragePath(this, true)));
         }
         mNavigationView.getMenu().setGroupCheckable(R.id.nav_group_folder, true, true);
+
+        mNavigationView.getMenu().getItem(0).setTitle(getString(R.string.menu_inner_storage) + " " + SDCardUtils.getSDCardSizeInfo(SDCardUtils.getStoragePath(this, false)));
 
         requirePermissions();
     }
