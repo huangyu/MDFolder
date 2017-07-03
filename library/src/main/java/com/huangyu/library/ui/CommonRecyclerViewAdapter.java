@@ -77,6 +77,24 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
         notifyItemChanged(position);
     }
 
+    public void selectAll() {
+        for (int i = 0; i < mDataList.size(); i++) {
+            mSelectArray.put(i, true);
+        }
+        notifyDataSetChanged();
+    }
+
+    public void inverseAll() {
+        for (int i = 0; i < mDataList.size(); i++) {
+            if (mSelectArray.get(i, false)) {
+                mSelectArray.delete(i);
+            } else {
+                mSelectArray.put(i, true);
+            }
+        }
+        notifyDataSetChanged();
+    }
+
     public void clearSelectedState() {
         ArrayList<Integer> selection = getSelectedItemList();
         mSelectArray.clear();

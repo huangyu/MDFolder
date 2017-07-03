@@ -750,27 +750,30 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                 }, 2000);
                                 return;
                             }
-                            Subscription subscription = Observable.create(new Observable.OnSubscribe<Boolean>() {
-                                @Override
-                                public void call(Subscriber<? super Boolean> subscriber) {
-                                    boolean result = mFileModel.renameFile(filePath, editText.getText().toString());
-                                    File parentFile = new File(filePath).getParentFile();
-                                    mMediaScanner.scanFile(parentFile, MimeTypeUtils.getMIMEType(parentFile.getPath()));
-                                    subscriber.onNext(result);
-                                    subscriber.onCompleted();
-                                }
-                            })
+                            Subscription subscription = Observable.just(null)
                                     .subscribeOn(Schedulers.io())
+                                    .observeOn(Schedulers.io())
+                                    .map(new Func1<Object, Boolean>() {
+                                        @Override
+                                        public Boolean call(Object o) {
+                                            boolean result = mFileModel.renameFile(filePath, editText.getText().toString());
+                                            String newPath = new File(filePath).getParent() + File.separator + editText.getText().toString();
+                                            mMediaScanner.scanFile(new File(newPath), null);
+                                            return result;
+                                        }
+                                    })
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(new Subscriber<Boolean>() {
                                         @Override
                                         public void onStart() {
                                             dialog.dismiss();
+                                            mView.startRefresh();
                                         }
 
                                         @Override
                                         public void onNext(Boolean result) {
                                             if (result) {
+                                                mMediaScanner.delete(mContext, filePath);
                                                 mView.showMessage(mView.getResString(R.string.tips_rename_successfully));
                                             } else {
                                                 mView.showMessage(mView.getResString(R.string.tips_rename_in_error));
@@ -785,6 +788,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                                         @Override
                                         public void onCompleted() {
+                                            mView.stopRefresh();
                                             mView.finishAction();
                                         }
                                     });
@@ -828,11 +832,13 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         boolean result;
                                         if (o.getKey()) {
                                             result = mFileModel.hideFile(file.getPath(), file.getName());
+                                            String newPath = new File(file.getPath()).getParent() + File.separator + "." + file.getName();
+                                            mMediaScanner.scanFile(new File(newPath), null);
                                         } else {
                                             result = mFileModel.showFile(file.getPath(), file.getName());
+                                            String newPath = new File(file.getPath()).getParent() + File.separator + file.getName().replaceFirst("\\.", "");
+                                            mMediaScanner.scanFile(new File(newPath), null);
                                         }
-                                        File parentFile = new File(file.getPath()).getParentFile();
-                                        mMediaScanner.scanFile(parentFile, MimeTypeUtils.getMIMEType(parentFile.getPath()));
                                         return result;
                                     }
                                 })
@@ -1444,10 +1450,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 if (file.isDirectory()) {
 //                    fileItem.setSize(FileUtils.getDirLength(file));
                     fileItem.setSize("0");
-                    if(file.list() != null && file.list().length > 0) {
+                    if (file.list() != null && file.list().length > 0) {
                         fileItem.setCount(file.list().length);
-                    }
-                    else {
+                    } else {
                         fileItem.setCount(0);
                     }
                 } else {

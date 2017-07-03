@@ -449,6 +449,22 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
 //                            mActionMode.setTitle(mAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
 //                        }
 //                        break;
+                    case R.id.action_select_all:
+                        mPresenter.mEditType = Constants.EditType.SELECT;
+                        mImageAdapter.selectAll();
+                        mActionMode.setTitle(mImageAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
+                        if (mImageAdapter.getSelectedItemCount() == 0) {
+                            finishAction();
+                        }
+                        break;
+                    case R.id.action_inverse_all:
+                        mPresenter.mEditType = Constants.EditType.SELECT;
+                        mImageAdapter.inverseAll();
+                        mActionMode.setTitle(mImageAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
+                        if (mImageAdapter.getSelectedItemCount() == 0) {
+                            finishAction();
+                        }
+                        break;
                 }
                 return false;
             }

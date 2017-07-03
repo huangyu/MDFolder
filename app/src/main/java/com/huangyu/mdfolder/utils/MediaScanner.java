@@ -61,8 +61,8 @@ public class MediaScanner {
         mConn.connect();
     }
 
-    public void delete(Context context, String filePath) {
-        context.getContentResolver().delete(MediaStore.Files.getContentUri("external"), MediaStore.Files.FileColumns.DATA + " =? ", new String[]{filePath});
+    public int delete(Context context, String filePath) {
+        return context.getContentResolver().delete(MediaStore.Files.getContentUri("external"), MediaStore.Files.FileColumns.DATA + " =? ", new String[]{filePath});
     }
 
 }

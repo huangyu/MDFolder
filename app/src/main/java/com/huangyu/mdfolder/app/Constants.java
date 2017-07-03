@@ -9,6 +9,8 @@ public class Constants extends BaseConstants {
 
     public static final int PERMISSION_ACCESS_FILES = 0x01;
 
+    public static final int STORAGE_REQUEST_CODE = 0x02;
+
     public static class EditType {
 
         public static final int NONE = 0x00000000;

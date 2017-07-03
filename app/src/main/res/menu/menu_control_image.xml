@@ -50,6 +50,18 @@
         android:title="@string/menu_show_hide"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/action_select_all"
+        android:orderInCategory="10"
+        android:title="@string/menu_select_all"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_inverse_all"
+        android:orderInCategory="11"
+        android:title="@string/menu_inverse_all"
+        app:showAsAction="ifRoom" />
+
     <!--<item-->
         <!--android:id="@+id/action_compress"-->
         <!--android:orderInCategory="8"-->

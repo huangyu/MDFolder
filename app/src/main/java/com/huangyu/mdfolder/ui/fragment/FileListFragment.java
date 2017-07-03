@@ -665,6 +665,22 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                             mActionMode.setTitle(mAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
                         }
                         break;
+                    case R.id.action_select_all:
+                        mPresenter.mEditType = Constants.EditType.SELECT;
+                        mAdapter.selectAll();
+                        mActionMode.setTitle(mAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
+                        if (mAdapter.getSelectedItemCount() == 0) {
+                            finishAction();
+                        }
+                        break;
+                    case R.id.action_inverse_all:
+                        mPresenter.mEditType = Constants.EditType.SELECT;
+                        mAdapter.inverseAll();
+                        mActionMode.setTitle(mAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
+                        if (mAdapter.getSelectedItemCount() == 0) {
+                            finishAction();
+                        }
+                        break;
                 }
                 return false;
             }

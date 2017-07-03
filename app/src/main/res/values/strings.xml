@@ -48,6 +48,8 @@
     <string name="menu_compress">Compress</string>
     <string name="menu_extract">Extract</string>
     <string name="menu_show_hide">Show/Hide</string>
+    <string name="menu_select_all">Select all</string>
+    <string name="menu_inverse_all">Reverse all</string>
     <string name="menu_sort_by_type">Sort by type</string>
     <string name="menu_sort_by_time">Sort by time</string>
     <string name="menu_sort_by_alphabet">Sort by alphabet</string>
@@ -114,6 +116,7 @@
     <string name="tips_copy_to_clipboard">&#160;is copied to clipboard.</string>
     <string name="tips_not_support">Not Support to play.</string>
     <string name="tips_input_password">Please input password.</string>
+    <string name="tips_cannot_access_sdcard">Cannot write sdcard when SDK &lt; 21.</string>
 
     <string name="pref_settings">Settings</string>
     <string name="pref_appearance">Appearance</string>

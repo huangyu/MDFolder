@@ -1,10 +1,14 @@
 package com.huangyu.mdfolder.ui.activity;
 
 import android.Manifest;
+import android.content.Intent;
+import android.content.UriPermission;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
+import android.support.v4.provider.DocumentFile;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -26,6 +30,7 @@ import com.huangyu.mdfolder.ui.fragment.FileListFragment;
 import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.SDCardUtils;
 
+import java.io.File;
 import java.util.List;
 
 import butterknife.Bind;
@@ -34,6 +39,7 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static com.huangyu.mdfolder.app.Constants.PERMISSION_ACCESS_FILES;
+import static com.huangyu.mdfolder.app.Constants.STORAGE_REQUEST_CODE;
 
 public class FileListActivity extends ThematicActivity implements NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
 
@@ -422,6 +428,64 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             }
         });
 
+    }
+
+    private void checkSdCardPermission() {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            File sdcard = new File(SDCardUtils.getStoragePath(this, true));
+            List<UriPermission> permissions = getContentResolver().getPersistedUriPermissions();
+            DocumentFile documentFile;
+            boolean needPermissions = true;
+            for (UriPermission permission : permissions) {
+                if (permission.isWritePermission()) {
+                    documentFile = DocumentFile.fromTreeUri(this, permission.getUri());
+                    if (documentFile != null) {
+                        if (documentFile.lastModified() == sdcard.lastModified()) {
+                            needPermissions = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (needPermissions) {
+                startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), STORAGE_REQUEST_CODE);
+            } else {
+
+            }
+        } else {
+            // 无法使用此功能
+            AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_cannot_access_sdcard));
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == STORAGE_REQUEST_CODE && resultCode == RESULT_OK) {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+                File sdcard = new File(SDCardUtils.getStoragePath(this, true));
+
+                boolean needPermissions = true;
+                DocumentFile documentFile = DocumentFile.fromTreeUri(this, data.getData());
+                if (documentFile != null) {
+                    if (documentFile.lastModified() == sdcard.lastModified()) {
+                        needPermissions = false;
+                    }
+                }
+
+                if (needPermissions) {
+                    startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), STORAGE_REQUEST_CODE);
+                } else {
+//                    getContentResolver().takePersistableUriPermission(data.getData(),
+//                            Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//                    DocumentFile doc = DocumentFile.fromTreeUri(this, data.getData());
+                }
+            } else {
+                // 无法使用此功能
+                AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_cannot_access_sdcard));
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
 }
