@@ -148,7 +148,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                                         if (dataList.get(i).getPath().equals(file.getPath())) {
                                             currentPosition = i;
                                         }
-                                        arrayList.add(file);
+                                        arrayList.add(dataList.get(i));
                                     }
                                 }
                                 Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
@@ -166,7 +166,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                                         if (dataList.get(i).getPath().equals(file.getPath())) {
                                             currentPosition = i;
                                         }
-                                        arrayList.add(file);
+                                        arrayList.add(dataList.get(i));
                                     }
                                 }
                                 Intent intent = new Intent(getActivity(), VideoBrowserActivity.class);
@@ -184,7 +184,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                                         if (dataList.get(i).getPath().equals(file.getPath())) {
                                             currentPosition = i;
                                         }
-                                        arrayList.add(file);
+                                        arrayList.add(dataList.get(i));
                                     }
                                 }
                                 Intent intent = new Intent(getActivity(), AudioBrowserActivity.class);

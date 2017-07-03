@@ -117,6 +117,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                     @Override
                     public void onError(Throwable e) {
+                        e.printStackTrace();
                         mView.showError(e.getMessage());
                         onCompleted();
                     }
@@ -1443,7 +1444,12 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 if (file.isDirectory()) {
 //                    fileItem.setSize(FileUtils.getDirLength(file));
                     fileItem.setSize("0");
-                    fileItem.setCount(file.list().length);
+                    if(file.list() != null && file.list().length > 0) {
+                        fileItem.setCount(file.list().length);
+                    }
+                    else {
+                        fileItem.setCount(0);
+                    }
                 } else {
                     fileItem.setSize(String.valueOf(FileUtils.getFileLength(file)));
                     fileItem.setCount(0);
