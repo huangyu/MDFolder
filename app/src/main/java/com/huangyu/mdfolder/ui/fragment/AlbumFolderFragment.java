@@ -40,11 +40,11 @@ import com.huangyu.mdfolder.ui.activity.FileListActivity;
 import com.huangyu.mdfolder.ui.activity.ImageBrowserActivity;
 import com.huangyu.mdfolder.ui.adapter.AlbumFolderAdapter;
 import com.huangyu.mdfolder.ui.adapter.AlbumImageAdapter;
+import com.huangyu.mdfolder.ui.widget.AlbumVerticalGirdDecoration;
 import com.huangyu.mdfolder.ui.widget.TabView;
 import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.KeyboardUtils;
 import com.huangyu.mdfolder.utils.SPUtils;
-import com.yanzhenjie.album.widget.recyclerview.AlbumVerticalGirdDecoration;
 
 import java.io.File;
 import java.util.ArrayList;

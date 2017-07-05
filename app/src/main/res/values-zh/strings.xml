@@ -117,7 +117,7 @@
     <string name="tips_copy_to_clipboard">已复制到剪贴板</string>
     <string name="tips_not_support">不支持播放</string>
     <string name="tips_input_password">请输入密码</string>
-    <string name="tips_cannot_access_sdcard">SDK &lt; 21，无法写入SD卡</string>
+    <string name="tips_cannot_access_sdcard">无法写入SD卡</string>
 
     <string name="pref_settings">设置</string>
     <string name="pref_appearance">外观</string>

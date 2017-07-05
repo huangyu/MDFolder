@@ -26,7 +26,7 @@ import com.huangyu.mdfolder.utils.filter.SearchFilter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -246,7 +246,7 @@ public class FileListModel implements IBaseModel {
         return null;
     }
 
-    public ArrayList<FileItem> getPhotoAlbum(String searchStr, ContentResolver contentResolver) {
+    public ArrayList<FileItem> getPhotoAlbumList(String searchStr, ContentResolver contentResolver) {
         String[] STORE_IMAGES = {
                 MediaStore.Images.Media._ID,
                 MediaStore.Images.Media.DATA,
@@ -259,8 +259,8 @@ public class FileListModel implements IBaseModel {
         };
         Cursor cursor = MediaStore.Images.Media.query(
                 contentResolver,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, STORE_IMAGES);
-        Map<String, FileItem> albumFolderMap = new HashMap<>();
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, STORE_IMAGES, null, MediaStore.Images.Media.DISPLAY_NAME + " asc");
+        Map<String, FileItem> albumFolderMap = new LinkedHashMap<>();
 
         if (cursor != null) {
             while (cursor.moveToNext()) {
@@ -294,6 +294,9 @@ public class FileListModel implements IBaseModel {
                     } else {
                         albumFolder = new FileItem();
                         albumFolder.setName(bucketName);
+                        if (TextUtils.isEmpty(albumFolder.getPath())) {
+                            albumFolder.setPath(filePath);
+                        }
                         if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
                             albumFolder.addPhoto(fileItem);
                             albumFolderMap.put(bucketName, albumFolder);

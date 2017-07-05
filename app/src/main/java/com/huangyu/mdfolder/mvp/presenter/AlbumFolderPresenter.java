@@ -67,7 +67,7 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
         Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
             @Override
             public Observable<ArrayList<FileItem>> call() {
-                return Observable.just(mFileListModel.getPhotoAlbum(searchStr, mContext.getContentResolver()));
+                return Observable.just(mFileListModel.getPhotoAlbumList(searchStr, mContext.getContentResolver()));
             }
         })
                 .subscribeOn(Schedulers.io())

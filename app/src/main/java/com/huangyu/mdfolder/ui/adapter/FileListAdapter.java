@@ -77,103 +77,103 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
                         // 部分机器查询出来的文件大小为空，用文件路径来处理
                         mTvSize.setText(FileUtils.getFileSize(fileItem.getPath()));
                     }
-                    if (FileUtils.getSuffix(fileItem.getName()).equals("aac")) {
+                    if (FileUtils.getSuffix(fileItem.getName()).equals(".aac")) {
                         Glide.with(mContext).load(R.mipmap.ic_aac).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("jpg")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".jpg")) {
                         Glide.with(mContext).load(R.mipmap.ic_jpg).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("doc")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".doc")) {
                         Glide.with(mContext).load(R.mipmap.ic_doc).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("zip")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".zip")) {
                         Glide.with(mContext).load(R.mipmap.ic_zip).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("sys")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".sys")) {
                         Glide.with(mContext).load(R.mipmap.ic_sys).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("dwg")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".dwg")) {
                         Glide.with(mContext).load(R.mipmap.ic_dwg).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("ace")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".ace")) {
                         Glide.with(mContext).load(R.mipmap.ic_dwg).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("iso")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".iso")) {
                         Glide.with(mContext).load(R.mipmap.ic_iso).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("ini")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".ini")) {
                         Glide.with(mContext).load(R.mipmap.ic_ini).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("css")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".css")) {
                         Glide.with(mContext).load(R.mipmap.ic_css).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("aut")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".aut")) {
                         Glide.with(mContext).load(R.mipmap.ic_aut).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("js")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".js")) {
                         Glide.with(mContext).load(R.mipmap.ic_js).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("avi")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".avi")) {
                         Glide.with(mContext).load(R.mipmap.ic_avi).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("txt")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".txt")) {
                         Glide.with(mContext).load(R.mipmap.ic_txt).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("db")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".db")) {
                         Glide.with(mContext).load(R.mipmap.ic_db).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("swf")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".swf")) {
                         Glide.with(mContext).load(R.mipmap.ic_swf).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("rss")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".rss")) {
                         Glide.with(mContext).load(R.mipmap.ic_rss).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("flac")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".flac")) {
                         Glide.with(mContext).load(R.mipmap.ic_flac).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("png")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".png")) {
                         Glide.with(mContext).load(R.mipmap.ic_png).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("cad")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".cad")) {
                         Glide.with(mContext).load(R.mipmap.ic_cad).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("pdf")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".pdf")) {
                         Glide.with(mContext).load(R.mipmap.ic_pdf).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("docx")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".docx")) {
                         Glide.with(mContext).load(R.mipmap.ic_docx).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("ps")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".ps")) {
                         Glide.with(mContext).load(R.mipmap.ic_ps).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("ai")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".ai")) {
                         Glide.with(mContext).load(R.mipmap.ic_ai).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("mpg")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".mpg")) {
                         Glide.with(mContext).load(R.mipmap.ic_mpg).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("bin")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".bin")) {
                         Glide.with(mContext).load(R.mipmap.ic_bin).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("exe")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".exe")) {
                         Glide.with(mContext).load(R.mipmap.ic_exe).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("mp3")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".mp3")) {
                         Glide.with(mContext).load(R.mipmap.ic_mp3).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("xlsx")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".xlsx")) {
                         Glide.with(mContext).load(R.mipmap.ic_xlsx).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("rar")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".rar")) {
                         Glide.with(mContext).load(R.mipmap.ic_rar).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("tiff")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".tiff")) {
                         Glide.with(mContext).load(R.mipmap.ic_tiff).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("dwf")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".dwf")) {
                         Glide.with(mContext).load(R.mipmap.ic_dwf).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("rtf")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".rtf")) {
                         Glide.with(mContext).load(R.mipmap.ic_rtf).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("php")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".php")) {
                         Glide.with(mContext).load(R.mipmap.ic_php).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("mov")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".mov")) {
                         Glide.with(mContext).load(R.mipmap.ic_mov).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("mkv")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".mkv")) {
                         Glide.with(mContext).load(R.mipmap.ic_mkv).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("bmp")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".bmp")) {
                         Glide.with(mContext).load(R.mipmap.ic_bmp).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("mp4")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".mp4")) {
                         Glide.with(mContext).load(R.mipmap.ic_mp4).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("svg")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".svg")) {
                         Glide.with(mContext).load(R.mipmap.ic_svg).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("psd")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".psd")) {
                         Glide.with(mContext).load(R.mipmap.ic_psd).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("xls")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".xls")) {
                         Glide.with(mContext).load(R.mipmap.ic_xls).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("dmg")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".dmg")) {
                         Glide.with(mContext).load(R.mipmap.ic_dmg).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("ppt") || FileUtils.getSuffix(fileItem.getName()).equals("pptx")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".ppt") || FileUtils.getSuffix(fileItem.getName()).equals(".pptx")) {
                         Glide.with(mContext).load(R.mipmap.ic_ppt).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("html")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".html")) {
                         Glide.with(mContext).load(R.mipmap.ic_html).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("gif")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".gif")) {
                         Glide.with(mContext).load(R.mipmap.ic_gif).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("htm")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".htm")) {
                         Glide.with(mContext).load(R.mipmap.ic_htm).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("cdr")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".cdr")) {
                         Glide.with(mContext).load(R.mipmap.ic_cdr).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("eps")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".eps")) {
                         Glide.with(mContext).load(R.mipmap.ic_eps).into(mIvIcon);
-                    } else if (FileUtils.getSuffix(fileItem.getName()).equals("java")) {
+                    } else if (FileUtils.getSuffix(fileItem.getName()).equals(".java")) {
                         Glide.with(mContext).load(R.mipmap.ic_java).into(mIvIcon);
                     } else {
                         Glide.with(mContext).load(R.mipmap.ic_file).into(mIvIcon);

@@ -758,7 +758,10 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         public Boolean call(Object o) {
                                             boolean result = mFileModel.renameFile(filePath, editText.getText().toString());
                                             String newPath = new File(filePath).getParent() + File.separator + editText.getText().toString();
-                                            mMediaScanner.scanFile(new File(newPath), null);
+                                            if (result) {
+                                                mMediaScanner.scanFile(new File(newPath), null);
+                                                mMediaScanner.delete(mContext, filePath);
+                                            }
                                             return result;
                                         }
                                     })
@@ -773,7 +776,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         @Override
                                         public void onNext(Boolean result) {
                                             if (result) {
-                                                mMediaScanner.delete(mContext, filePath);
                                                 mView.showMessage(mView.getResString(R.string.tips_rename_successfully));
                                             } else {
                                                 mView.showMessage(mView.getResString(R.string.tips_rename_in_error));
@@ -830,14 +832,17 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     @Override
                                     public Boolean call(FileItem file) {
                                         boolean result;
+                                        String newPath;
                                         if (o.getKey()) {
                                             result = mFileModel.hideFile(file.getPath(), file.getName());
-                                            String newPath = new File(file.getPath()).getParent() + File.separator + "." + file.getName();
-                                            mMediaScanner.scanFile(new File(newPath), null);
+                                            newPath = new File(file.getPath()).getParent() + File.separator + "." + file.getName();
                                         } else {
                                             result = mFileModel.showFile(file.getPath(), file.getName());
-                                            String newPath = new File(file.getPath()).getParent() + File.separator + file.getName().replaceFirst("\\.", "");
+                                            newPath = new File(file.getPath()).getParent() + File.separator + file.getName().replaceFirst("\\.", "");
+                                        }
+                                        if (result) {
                                             mMediaScanner.scanFile(new File(newPath), null);
+                                            mMediaScanner.delete(mContext, newPath);
                                         }
                                         return result;
                                     }
