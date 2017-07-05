@@ -6,6 +6,8 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.huangyu.library.app.BaseApplication;
+import com.huangyu.library.util.FileUtils;
+import com.huangyu.library.util.SPUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -16,10 +18,17 @@ import java.util.List;
  */
 public class AppApplication extends BaseApplication {
 
+    private SPUtils spUtils;
+
     @Override
     public void onCreate() {
         super.onCreate();
+        spUtils = new SPUtils(Constants.APP_NAME);
 //        scanAllFile();
+    }
+
+    public SPUtils getSPUtils() {
+        return spUtils;
     }
 
     /**
@@ -49,13 +58,27 @@ public class AppApplication extends BaseApplication {
         File files[] = root.listFiles();
         if (files != null) {
             for (File f : files) {
-                if (f.isDirectory() && !f.getPath().contains("/Android/data")) {
-                    getAllPaths(f, listPaths);
+                if (f.isDirectory()) {
+                    if (needScan(f)) {
+                        getAllPaths(f, listPaths);
+                    }
                 } else {
-                    listPaths.add(f.getAbsolutePath());
+                    if (!f.isHidden() || FileUtils.getFileLength(f) > 30 * 1024) {
+                        listPaths.add(f.getAbsolutePath());
+                    }
                 }
             }
         }
+    }
+
+    private static boolean needScan(File dir) {
+        for (String fileName : dir.list()) {
+            // contains .nomedia file or is hidden file or is cache file
+            if (fileName.equals(".nomedia") || dir.isHidden() || fileName.contains("cache") || fileName.contains("Cache")) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

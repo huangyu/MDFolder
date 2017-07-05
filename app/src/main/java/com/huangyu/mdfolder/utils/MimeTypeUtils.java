@@ -40,7 +40,15 @@ public class MimeTypeUtils {
      * 根据文件后缀获取文件类型
      */
     public static int getTypeBySuffix(String suffix) {
-        if (suffix.equals(".doc")) {
+        if (suffix.endsWith(".zip")) {
+            return Constants.FileType.COMPRESS;
+        } else if (suffix.endsWith(".rar")) {
+            return Constants.FileType.COMPRESS;
+        } else if (suffix.endsWith(".7z")) {
+            return Constants.FileType.COMPRESS;
+        } else if (suffix.endsWith(".apk")) {
+            return Constants.FileType.APK;
+        } else if (suffix.equals(".doc")) {
             return Constants.FileType.SINGLE_DOCUMENT;
         } else if (suffix.equals(".docx")) {
             return Constants.FileType.SINGLE_DOCUMENT;
@@ -100,14 +108,6 @@ public class MimeTypeUtils {
             return Constants.FileType.SINGLE_IMAGE;
         } else if (suffix.equals(".gif")) {
             return Constants.FileType.SINGLE_IMAGE;
-        } else if (suffix.endsWith(".zip")) {
-            return Constants.FileType.COMPRESS;
-        } else if (suffix.endsWith(".rar")) {
-            return Constants.FileType.COMPRESS;
-        } else if (suffix.endsWith(".7z")) {
-            return Constants.FileType.COMPRESS;
-        } else if (suffix.endsWith(".apk")) {
-            return Constants.FileType.APK;
         } else {
             return Constants.FileType.FILE;
         }

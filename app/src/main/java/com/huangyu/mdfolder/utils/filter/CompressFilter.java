@@ -8,20 +8,20 @@ import java.io.FilenameFilter;
 /**
  * Created by huangyu on 2017-6-9.
  */
-public class ApkFilter implements FilenameFilter {
+public class CompressFilter implements FilenameFilter {
 
     private String mSearchStr;
 
-    public ApkFilter(String searchStr) {
+    public CompressFilter(String searchStr) {
         this.mSearchStr = searchStr;
     }
 
     @Override
     public boolean accept(File dir, String name) {
         if (TextUtils.isEmpty(mSearchStr)) {
-            return !name.matches("^\\.+[^\\.].+") && name.endsWith(".apk");
+            return !name.matches("^\\.+[^\\.].+") && (name.endsWith(".rar") || name.endsWith("7z") || name.endsWith(".zip"));
         }
-        return containsIgnoreCase(name, mSearchStr) && !name.matches("^\\.+[^\\.].+") && name.endsWith(".apk");
+        return containsIgnoreCase(name, mSearchStr) && !name.matches("^\\.+[^\\.].+") && (name.endsWith(".rar") || name.endsWith("7z") || name.endsWith(".zip"));
     }
 
     /**

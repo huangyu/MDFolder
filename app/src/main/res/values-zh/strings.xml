@@ -118,6 +118,7 @@
     <string name="tips_not_support">不支持播放</string>
     <string name="tips_input_password">请输入密码</string>
     <string name="tips_cannot_access_sdcard">无法写入SD卡</string>
+    <string name="tips_select_sdcard">请在下一个弹出窗口选择SD卡</string>
 
     <string name="pref_settings">设置</string>
     <string name="pref_appearance">外观</string>

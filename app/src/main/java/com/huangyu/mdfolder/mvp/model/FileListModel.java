@@ -1,12 +1,16 @@
 package com.huangyu.mdfolder.mvp.model;
 
+import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
@@ -21,6 +25,8 @@ import com.huangyu.mdfolder.utils.comparator.AlphabetComparator;
 import com.huangyu.mdfolder.utils.comparator.SizeComparator;
 import com.huangyu.mdfolder.utils.comparator.TimeComparator;
 import com.huangyu.mdfolder.utils.comparator.TypeComparator;
+import com.huangyu.mdfolder.utils.filter.ApkFilter;
+import com.huangyu.mdfolder.utils.filter.CompressFilter;
 import com.huangyu.mdfolder.utils.filter.SearchFilter;
 
 import java.io.File;
@@ -46,10 +52,14 @@ public class FileListModel implements IBaseModel {
         }
     }
 
-//    public ArrayList<File> getAppsFileList(String searchStr) {
-//        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(false), new ApkFilter(searchStr), true);
-//    }
-//
+    public ArrayList<File> getAppsFileList(String path, String searchStr) {
+        return FileUtils.listFilesInDirWithFilter(path, new ApkFilter(searchStr), true);
+    }
+
+    public ArrayList<File> getCompressFileList(String path, String searchStr) {
+        return FileUtils.listFilesInDirWithFilter(path, new CompressFilter(searchStr), true);
+    }
+
 //    public ArrayList<File> getMusicFileList(String searchStr) {
 //        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(false), new MusicFilter(searchStr), true);
 //    }
@@ -486,6 +496,35 @@ public class FileListModel implements IBaseModel {
             }
             cursor.close();
             return apkList;
+        }
+        return null;
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public ArrayList<FileItem> getExternalList(Uri uri, String searchStr, ContentResolver contentResolver) {
+        Cursor cursor = contentResolver.query(uri, null, null, null, null);
+
+        if (cursor != null) {
+            ArrayList<FileItem> externalList = new ArrayList<>();
+            while (cursor.moveToNext()) {
+                String fileName = cursor.getString(cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME));
+                long date = cursor.getLong(cursor.getColumnIndex(DocumentsContract.Document.COLUMN_LAST_MODIFIED));
+                long fileLength = cursor.getLong(cursor.getColumnIndex(DocumentsContract.Document.COLUMN_SIZE));
+                Uri fileUri = DocumentsContract.buildChildDocumentsUriUsingTree(uri, cursor.getString(0));
+
+                FileItem fileItem = new FileItem();
+                fileItem.setName(fileName);
+                fileItem.setPath(fileUri.toString());
+                fileItem.setSize(String.valueOf(fileLength));
+                fileItem.setDate(String.valueOf(date));
+                fileItem.setParent(null);
+                fileItem.setIsDirectory(false);
+                fileItem.setType(Constants.FileType.FILE);
+                fileItem.setIsShow(true);
+                externalList.add(fileItem);
+            }
+            cursor.close();
+            return externalList;
         }
         return null;
     }

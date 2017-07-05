@@ -1,10 +1,13 @@
 package com.huangyu.mdfolder.ui.activity;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.UriPermission;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
@@ -24,6 +27,7 @@ import android.widget.RelativeLayout;
 import com.huangyu.library.app.ActivityManager;
 import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.mdfolder.R;
+import com.huangyu.mdfolder.app.AppApplication;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.ui.fragment.AlbumFolderFragment;
 import com.huangyu.mdfolder.ui.fragment.FileListFragment;
@@ -40,6 +44,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 import static com.huangyu.mdfolder.app.Constants.PERMISSION_ACCESS_FILES;
 import static com.huangyu.mdfolder.app.Constants.STORAGE_REQUEST_CODE;
+import static com.huangyu.mdfolder.utils.SDCardUtils.getStoragePath;
 
 public class FileListActivity extends ThematicActivity implements NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
 
@@ -100,15 +105,15 @@ public class FileListActivity extends ThematicActivity implements NavigationView
 
         mNavigationView.setNavigationItemSelectedListener(this);
 
-        String outerSdcardPath = SDCardUtils.getStoragePath(this, true);
+        String outerSdcardPath = getStoragePath(this, true);
         if (!TextUtils.isEmpty(outerSdcardPath)) {
             MenuItem item = mNavigationView.getMenu().add(R.id.nav_group_folder, R.id.nav_outer_storage, 2, getString(R.string.menu_outer_storage));
             item.setIcon(R.mipmap.ic_sd);
-            item.setTitle(getString(R.string.menu_outer_storage) + " " + SDCardUtils.getSDCardSizeInfo(SDCardUtils.getStoragePath(this, true)));
+            item.setTitle(getString(R.string.menu_outer_storage) + " " + SDCardUtils.getSDCardSizeInfo(getStoragePath(this, true)));
         }
         mNavigationView.getMenu().setGroupCheckable(R.id.nav_group_folder, true, true);
 
-        mNavigationView.getMenu().getItem(0).setTitle(getString(R.string.menu_inner_storage) + " " + SDCardUtils.getSDCardSizeInfo(SDCardUtils.getStoragePath(this, false)));
+        mNavigationView.getMenu().getItem(0).setTitle(getString(R.string.menu_inner_storage) + " " + SDCardUtils.getSDCardSizeInfo(getStoragePath(this, false)));
 
         requirePermissions();
     }
@@ -339,6 +344,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                     case R.id.nav_outer_storage:
                         selectedPosition = 1;
                         mRxManager.post("toStorage", true);
+//                        checkSdCardPermission();
                         break;
                     case R.id.nav_music:
                         selectedPosition = 5;
@@ -432,7 +438,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
 
     private void checkSdCardPermission() {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-            File sdcard = new File(SDCardUtils.getStoragePath(this, true));
+            File sdcard = new File(getStoragePath(this, true));
             List<UriPermission> permissions = getContentResolver().getPersistedUriPermissions();
             DocumentFile documentFile;
             boolean needPermissions = true;
@@ -449,13 +455,27 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             }
 
             if (needPermissions) {
-                startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), STORAGE_REQUEST_CODE);
+                AlertUtils.showNormalAlert(this, getString(R.string.tips_select_sdcard), getString(R.string.act_confirm), getString(R.string.act_cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), STORAGE_REQUEST_CODE);
+                    }
+                }, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // 无法使用此功能
+                        AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_cannot_access_sdcard));
+                        mRxManager.post("toStorage", true);
+                    }
+                });
             } else {
-
+                Uri rootUri = Uri.parse(((AppApplication) AppApplication.getInstance()).getSPUtils().getString("uri"));
+                // TODO
             }
         } else {
             // 无法使用此功能
             AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_cannot_access_sdcard));
+            mRxManager.post("toStorage", true);
         }
     }
 
@@ -463,8 +483,15 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == STORAGE_REQUEST_CODE && resultCode == RESULT_OK) {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-                File sdcard = new File(SDCardUtils.getStoragePath(this, true));
+                String externalPath = SDCardUtils.getStoragePath(this, true);
+                if (externalPath == null) {
+                    // 无法使用此功能
+                    AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_cannot_access_sdcard));
+                    mRxManager.post("toStorage", true);
+                    return;
+                }
 
+                File sdcard = new File(externalPath);
                 boolean needPermissions = true;
                 DocumentFile documentFile = DocumentFile.fromTreeUri(this, data.getData());
                 if (documentFile != null) {
@@ -476,13 +503,18 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                 if (needPermissions) {
                     startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), STORAGE_REQUEST_CODE);
                 } else {
-//                    getContentResolver().takePersistableUriPermission(data.getData(),
-//                            Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-//                    DocumentFile doc = DocumentFile.fromTreeUri(this, data.getData());
+                    Uri uri = data.getData();
+                    getContentResolver().takePersistableUriPermission(data.getData(),
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//                    DocumentFile doc = DocumentFile.fromTreeUri(this, uri);
+                    Uri rootUri = DocumentsContract.buildChildDocumentsUriUsingTree(uri, DocumentsContract.getTreeDocumentId(uri));
+                    ((AppApplication) AppApplication.getInstance()).getSPUtils().put("uri", rootUri.toString());
+                    // TODO
                 }
             } else {
                 // 无法使用此功能
                 AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_cannot_access_sdcard));
+                mRxManager.post("toStorage", true);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
