@@ -16,8 +16,7 @@ import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
 import com.huangyu.mdfolder.mvp.view.IAlbumFolderView;
-import com.huangyu.mdfolder.utils.MediaScanner;
-import com.huangyu.mdfolder.utils.MimeTypeUtils;
+import com.huangyu.mdfolder.utils.MediaScanUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,7 +43,6 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
 
     private FileListModel mFileListModel;
     private FileModel mFileModel;
-    private MediaScanner mMediaScanner;
 
     public int mEditType;   // 当前编辑状态
     public int mSortType;   // 当前排序类型
@@ -55,7 +53,6 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
 
     @Override
     public void create() {
-        mMediaScanner = new MediaScanner(mContext);
         mFileListModel = new FileListModel();
         mFileModel = new FileModel();
         mEditType = Constants.EditType.NONE;
@@ -229,8 +226,10 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
                                 @Override
                                 public void call(Subscriber<? super Boolean> subscriber) {
                                     boolean result = mFileModel.renameFile(filePath, editText.getText().toString());
-                                    File parentFile = new File(filePath).getParentFile();
-                                    mMediaScanner.scanFile(parentFile, MimeTypeUtils.getMIMEType(parentFile.getPath()));
+                                    String newPath = new File(filePath).getParent() + File.separator + editText.getText().toString();
+                                    if (result) {
+                                        MediaScanUtils.renameMediaFile(mContext, filePath, newPath);
+                                    }
                                     subscriber.onNext(result);
                                     subscriber.onCompleted();
                                 }
@@ -301,13 +300,17 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
                                     @Override
                                     public Boolean call(FileItem file) {
                                         boolean result;
+                                        String newPath;
                                         if (o.getKey()) {
                                             result = mFileModel.hideFile(file.getPath(), file.getName());
+                                            newPath = new File(file.getPath()).getParent() + File.separator + "." + file.getName();
                                         } else {
                                             result = mFileModel.showFile(file.getPath(), file.getName());
+                                            newPath = new File(file.getPath()).getParent() + File.separator + file.getName().replaceFirst("\\.", "");
                                         }
-                                        File parentFile = new File(file.getPath()).getParentFile();
-                                        mMediaScanner.scanFile(parentFile, MimeTypeUtils.getMIMEType(parentFile.getPath()));
+                                        if (result) {
+                                            MediaScanUtils.renameMediaFile(mContext, file.getPath(), newPath);
+                                        }
                                         return result;
                                     }
                                 })
@@ -387,7 +390,9 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
                                         } else {
                                             result = mFileModel.deleteFile(file.getPath());
                                         }
-                                        mMediaScanner.delete(mContext, file.getPath());
+                                        if (result) {
+                                            MediaScanUtils.deleteMediaFile(mContext, file.getPath());
+                                        }
                                         return result;
                                     }
                                 })

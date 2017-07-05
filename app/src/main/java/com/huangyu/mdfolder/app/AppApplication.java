@@ -1,7 +1,9 @@
 package com.huangyu.mdfolder.app;
 
 import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
 
 import com.huangyu.library.app.BaseApplication;
 
@@ -17,7 +19,7 @@ public class AppApplication extends BaseApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-        scanAllFile();
+//        scanAllFile();
     }
 
     /**
@@ -30,7 +32,12 @@ public class AppApplication extends BaseApplication {
                 try {
                     List<String> listPaths = new ArrayList<>();
                     getAllPaths(Environment.getExternalStorageDirectory(), listPaths);
-                    MediaScannerConnection.scanFile(getInstance(), listPaths.toArray(new String[]{}), null, null);
+                    MediaScannerConnection.scanFile(getInstance(), listPaths.toArray(new String[]{}), null, new MediaScannerConnection.OnScanCompletedListener() {
+                        @Override
+                        public void onScanCompleted(String path, Uri uri) {
+                            Log.e("tag", "scan: " + path);
+                        }
+                    });
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }
@@ -42,7 +49,7 @@ public class AppApplication extends BaseApplication {
         File files[] = root.listFiles();
         if (files != null) {
             for (File f : files) {
-                if (f.isDirectory()) {
+                if (f.isDirectory() && !f.getPath().contains("/Android/data")) {
                     getAllPaths(f, listPaths);
                 } else {
                     listPaths.add(f.getAbsolutePath());
