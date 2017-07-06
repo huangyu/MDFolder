@@ -1,20 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#2196F3</color>
-    <color name="colorPrimaryDark">#1976D2</color>
-    <color name="colorPrimaryDarker">#0D47A1</color>
+    <color name="colorPrimaryBlue">#2196F3</color>
+    <color name="colorPrimaryBlueDark">#1976D2</color>
+
+    <color name="colorPrimaryDark">#434343</color>
+    <color name="colorPrimaryDarker">#323232</color>
+
+    <color name="colorPrimaryIndigo">#3F51B5</color>
+    <color name="colorPrimaryIndigoDark">#303F9F</color>
+
+    <color name="colorPrimaryCyan">#00BCD4</color>
+    <color name="colorPrimaryCyanDark">#0097A7</color>
+
+    <color name="colorPrimaryTeal">#009688</color>
+    <color name="colorPrimaryTealDark">#00796B</color>
+
+    <color name="colorPrimaryGreen">#4CAF50</color>
+    <color name="colorPrimaryGreenDark">#388E3C</color>
+
+    <color name="colorPrimaryRed">#F44336</color>
+    <color name="colorPrimaryRedDark">#D32F2F</color>
+
+    <color name="colorPrimaryPurple">#9C27B0</color>
+    <color name="colorPrimaryPurpleDark">#7B1FA2</color>
+
+    <color name="colorPrimaryOrange">#FF5722</color>
+    <color name="colorPrimaryOrangeDark">#E64A19</color>
+
+    <color name="colorPrimaryYellow">#FFC107</color>
+    <color name="colorPrimaryYellowDark">#FFA000</color>
+
+    <color name="colorPrimaryBrown">#795548</color>
+    <color name="colorPrimaryBrownDark">#5D4037</color>
+
+    <color name="colorPrimaryGrey">#9E9E9E</color>
+    <color name="colorPrimaryGreyDark">#616161</color>
+
     <color name="colorAccentLight">#FF80AB</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorAccentDark">#F50057</color>
     <color name="colorAccentDarker">#C51162</color>
+
     <color name="colorShadow">#66000000</color>
-    <color name="colorGray">#757575</color>
-    <color name="colorDarkGray">#444444</color>
+    <color name="colorGrey">#757575</color>
+    <color name="colorDarkGrey">#444444</color>
     <color name="colorDeepDark">#323232</color>
-    <color name="colorDarkGray2">#666666</color>
+    <color name="colorDarkGrey2">#666666</color>
     <color name="colorDeepDark2">#434343</color>
     <color name="colorBlack">#000000</color>
-    <color name="colorLightGray">#999999</color>
+    <color name="colorLightGrey">#999999</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorDivider">#BDBDBD</color>
     <color name="colorPrimaryText">#212121</color>

@@ -51,4 +51,8 @@ public abstract class ThematicActivity extends BaseActivity {
         return mThemeUtils.isLightMode();
     }
 
+    public String getThemeMode() {
+        return mThemeUtils.getThemeMode();
+    }
+
 }

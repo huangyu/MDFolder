@@ -96,7 +96,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
 
     @Override
     protected void initView(Bundle savedInstanceState) {
-        mIvCenter.setColorFilter(getResources().getColor(R.color.colorDarkGray));
+        mIvCenter.setColorFilter(getResources().getColor(R.color.colorDarkGrey));
 
         mImageAdapter = new AlbumImageAdapter(getContext());
         mImageAdapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
@@ -162,12 +162,56 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
         mRecyclerView.addItemDecoration(new AlbumVerticalGirdDecoration(drawable));
         ((SimpleItemAnimator) mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
-        if (((FileListActivity) getActivity()).isLightMode()) {
-            mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-            mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
-        } else {
-            mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
-            mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryDark));
+        String themeMode = ((FileListActivity) getActivity()).getThemeMode();
+        switch (themeMode) {
+            case "1":
+                mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryDark));
+                break;
+            case "2":
+                mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryIndigo));
+                mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryIndigo));
+                break;
+            case "3":
+                mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryCyan));
+                mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryCyan));
+                break;
+            case "4":
+                mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryTeal));
+                mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryTeal));
+                break;
+            case "5":
+                mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryGreen));
+                mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryGreen));
+                break;
+            case "6":
+                mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryRed));
+                mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryRed));
+                break;
+            case "7":
+                mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryPurple));
+                mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryPurple));
+                break;
+            case "8":
+                mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryOrange));
+                mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryOrange));
+                break;
+            case "9":
+                mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryYellow));
+                mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryYellow));
+                break;
+            case "10":
+                mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryBrown));
+                mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryBrown));
+                break;
+            case "11":
+                mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryGrey));
+                mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryGrey));
+                break;
+            default:
+                mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryBlue));
+                mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryBlue));
+                break;
         }
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

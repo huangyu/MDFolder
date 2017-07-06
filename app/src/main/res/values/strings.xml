@@ -149,4 +149,34 @@
         <item>1</item>
     </string-array>
 
+    <string-array name="array_themes">
+        <item>Blue</item>
+        <item>Dark</item>
+        <item>Indigo</item>
+        <item>Cyan</item>
+        <item>Teal</item>
+        <item>Green</item>
+        <item>Red</item>
+        <item>Purple</item>
+        <item>Orange</item>
+        <item>Yellow</item>
+        <item>Brown</item>
+        <item>Grey</item>
+    </string-array>
+
+    <string-array name="array_themes_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+    </string-array>
+
 </resources>

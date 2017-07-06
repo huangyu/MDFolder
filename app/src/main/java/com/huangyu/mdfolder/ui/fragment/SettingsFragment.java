@@ -22,26 +22,21 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.pref_general);
-        final Preference prefTheme = findPreference("pref_theme");
-        prefTheme.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        final ListPreference prefThemes = (ListPreference) findPreference("pref_themes");
+        prefThemes.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                boolean isLight = (Boolean) newValue;
-                if (isLight) {
-                    prefTheme.setSummary(getString(R.string.pref_light));
-                } else {
-                    prefTheme.setSummary(getString(R.string.pref_dark));
-                }
+                String[] themesArray = getResources().getStringArray(R.array.array_themes);
+                String themeMode = (String) newValue;
+                prefThemes.setSummary(themesArray[Integer.valueOf(themeMode)]);
                 ((SettingsActivity) getActivity()).recreateActivity();
                 return true;
             }
         });
 
-        if (((SettingsActivity) getActivity()).isLightMode()) {
-            prefTheme.setSummary(getString(R.string.pref_light));
-        } else {
-            prefTheme.setSummary(getString(R.string.pref_dark));
-        }
+        String[] themesArray = getResources().getStringArray(R.array.array_themes);
+        String themeMode = ((SettingsActivity) getActivity()).getThemeMode();
+        prefThemes.setSummary(themesArray[Integer.valueOf(themeMode)]);
 
         final Preference prefShowHide = findPreference("pref_show_hidden");
         prefShowHide.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {

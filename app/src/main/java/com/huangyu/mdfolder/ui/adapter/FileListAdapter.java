@@ -207,9 +207,9 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
             mIvIcon.setColorFilter(null);
         } else {
             if (activity.isLightMode()) {
-                mIvIcon.setColorFilter(mContext.getResources().getColor(R.color.colorDarkGray));
+                mIvIcon.setColorFilter(mContext.getResources().getColor(R.color.colorDarkGrey));
             } else {
-                mIvIcon.setColorFilter(mContext.getResources().getColor(R.color.colorLightGray));
+                mIvIcon.setColorFilter(mContext.getResources().getColor(R.color.colorLightGrey));
             }
         }
 

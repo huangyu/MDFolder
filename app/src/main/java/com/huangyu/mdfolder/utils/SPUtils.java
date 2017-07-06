@@ -15,13 +15,27 @@ public class SPUtils {
     }
 
     /**
-     * 是否是白天模式
+     * 是否是白天主题
+     */
+    public static boolean isLightMode() {
+        String themeMode = getThemeMode();
+        String[] themesArray = BaseApplication.getInstance().getApplicationContext().getResources().getStringArray(R.array.array_themes_value);
+        if (themeMode.equals(themesArray[1])) {
+            return false;
+        }
+        return true;
+    }
+
+
+    /**
+     * 设置主题
      *
      * @return true/false
      */
-    public static boolean isLightMode() {
+    public static String getThemeMode() {
+        String[] themesArray = BaseApplication.getInstance().getApplicationContext().getResources().getStringArray(R.array.array_themes_value);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(BaseApplication.getInstance().getApplicationContext());
-        return prefs.getBoolean("pref_theme", true);
+        return prefs.getString("pref_themes", themesArray[0]);
     }
 
     /**

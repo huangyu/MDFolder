@@ -2,9 +2,10 @@
 
     <PreferenceCategory android:title="@string/pref_appearance">
 
-        <SwitchPreferenceCompat
-            android:defaultValue="true"
-            android:key="pref_theme"
+        <ListPreference
+            android:entries="@array/array_themes"
+            android:entryValues="@array/array_themes_value"
+            android:key="pref_themes"
             android:title="@string/pref_theme" />
 
     </PreferenceCategory>

@@ -22,6 +22,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.huangyu.library.app.ActivityManager;
@@ -64,7 +65,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     RelativeLayout mRlFile;
 
     @Bind(R.id.rl_album)
-    RelativeLayout mRLAlbum;
+    RelativeLayout mRlAlbum;
 
     private SearchView mSearchView;
     private FileListFragment mFileListFragment;
@@ -115,6 +116,48 @@ public class FileListActivity extends ThematicActivity implements NavigationView
 
         mNavigationView.getMenu().getItem(0).setTitle(getString(R.string.menu_inner_storage) + " " + SDCardUtils.getSDCardSizeInfo(getStoragePath(this, false)));
 
+        View header = mNavigationView.getHeaderView(0);
+        LinearLayout mLlHeader = ButterKnife.findById(header, R.id.ll_header);
+        String themeMode = getThemeMode();
+        switch (themeMode) {
+            case "1":
+                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                break;
+            case "2":
+                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryIndigo));
+                break;
+            case "3":
+                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryCyan));
+                break;
+            case "4":
+                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryTeal));
+                break;
+            case "5":
+                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryGreen));
+                break;
+            case "6":
+                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryRed));
+                break;
+            case "7":
+                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryPurple));
+                break;
+            case "8":
+                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryOrange));
+                break;
+            case "9":
+                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryYellow));
+                break;
+            case "10":
+                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryBrown));
+                break;
+            case "11":
+                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryGrey));
+                break;
+            default:
+                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryBlue));
+                break;
+        }
+
         requirePermissions();
     }
 
@@ -125,7 +168,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             replaceFragment();
 //            if (selectedPosition != 4) {
 //                mRlFile.setVisibility(View.VISIBLE);
-//                mRLAlbum.setVisibility(View.GONE);
+//                mRlAlbum.setVisibility(View.GONE);
 //            }
 //            getWindow().getDecorView().postDelayed(new Runnable() {
 //                @Override
@@ -146,7 +189,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
 //                        case 4:
 ////                        mRxManager.post("toPhoto", "");
 //                            mRlFile.setVisibility(View.GONE);
-//                            mRLAlbum.setVisibility(View.VISIBLE);
+//                            mRlAlbum.setVisibility(View.VISIBLE);
 //                            mNavigationView.setCheckedItem(R.id.nav_photo);
 //                            break;
 //                        case 6:
@@ -218,10 +261,10 @@ public class FileListActivity extends ThematicActivity implements NavigationView
         if (selectedPosition != 0) {
             if (selectedPosition != 4) {
                 mRlFile.setVisibility(View.VISIBLE);
-                mRLAlbum.setVisibility(View.GONE);
+                mRlAlbum.setVisibility(View.GONE);
             } else {
                 mRlFile.setVisibility(View.GONE);
-                mRLAlbum.setVisibility(View.VISIBLE);
+                mRlAlbum.setVisibility(View.VISIBLE);
             }
             mRxManager.post("toStorage", false);
             selectedPosition = 0;
@@ -327,7 +370,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
 
         if (item.getItemId() != R.id.nav_photo) {
             mRlFile.setVisibility(View.VISIBLE);
-            mRLAlbum.setVisibility(View.GONE);
+            mRlAlbum.setVisibility(View.GONE);
         }
         getWindow().getDecorView().postDelayed(new Runnable() {
             @Override
@@ -354,7 +397,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                         selectedPosition = 4;
 //                        mRxManager.post("toPhoto", "");
                         mRlFile.setVisibility(View.GONE);
-                        mRLAlbum.setVisibility(View.VISIBLE);
+                        mRlAlbum.setVisibility(View.VISIBLE);
                         break;
                     case R.id.nav_video:
                         selectedPosition = 6;
