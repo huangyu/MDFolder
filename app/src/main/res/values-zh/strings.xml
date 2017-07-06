@@ -151,18 +151,19 @@
     </string-array>
 
     <string-array name="array_themes">
-        <item>Blue</item>
-        <item>Dark</item>
-        <item>Indigo</item>
-        <item>Cyan</item>
-        <item>Teal</item>
-        <item>Green</item>
-        <item>Red</item>
-        <item>Purple</item>
-        <item>Orange</item>
-        <item>Yellow</item>
-        <item>Brown</item>
-        <item>Grey</item>
+        <item>卡片蓝</item>
+        <item>高端黑</item>
+        <item>颐堤蓝</item>
+        <item>天蓝青</item>
+        <item>水鸭青</item>
+        <item>酷安绿</item>
+        <item>姨妈红</item>
+        <item>基佬紫</item>
+        <item>伊藤橙</item>
+        <item>亮瞎黄</item>
+        <item>哔哩粉</item>
+        <item>古铜棕</item>
+        <item>低调灰</item>
     </string-array>
 
     <string-array name="array_themes_value">

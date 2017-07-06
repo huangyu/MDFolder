@@ -30,6 +30,9 @@
     <color name="colorPrimaryYellow">#FFC107</color>
     <color name="colorPrimaryYellowDark">#FFA000</color>
 
+    <color name="colorPrimaryPink">#F06292</color>
+    <color name="colorPrimaryPinkDark">#EC407A</color>
+
     <color name="colorPrimaryBrown">#795548</color>
     <color name="colorPrimaryBrownDark">#5D4037</color>
 

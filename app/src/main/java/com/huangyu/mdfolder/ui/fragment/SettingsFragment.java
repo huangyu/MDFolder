@@ -35,8 +35,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
 
         String[] themesArray = getResources().getStringArray(R.array.array_themes);
+        String[] themesValueArray = getResources().getStringArray(R.array.array_themes_value);
         String themeMode = ((SettingsActivity) getActivity()).getThemeMode();
         prefThemes.setSummary(themesArray[Integer.valueOf(themeMode)]);
+        prefThemes.setValue(themesValueArray[Integer.valueOf(themeMode)]);
 
         final Preference prefShowHide = findPreference("pref_show_hidden");
         prefShowHide.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {

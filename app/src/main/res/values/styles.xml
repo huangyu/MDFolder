@@ -110,6 +110,17 @@
         <item name="actionModeBackground">@color/colorPrimaryYellow</item>
     </style>
 
+    <style name="AppThemePink" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/colorPrimaryPink</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryPinkDark</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeBackground">@color/colorPrimaryPink</item>
+    </style>
+
     <style name="AppThemeBrown" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/colorPrimaryBrown</item>
         <item name="windowActionBar">false</item>

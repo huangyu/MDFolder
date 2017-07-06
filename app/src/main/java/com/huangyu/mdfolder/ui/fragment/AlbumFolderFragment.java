@@ -201,10 +201,14 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                 mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryYellow));
                 break;
             case "10":
+                mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryPink));
+                mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryPink));
+                break;
+            case "11":
                 mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryBrown));
                 mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryBrown));
                 break;
-            case "11":
+            case "12":
                 mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryGrey));
                 mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryGrey));
                 break;

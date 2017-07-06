@@ -148,9 +148,12 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                 mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryYellow));
                 break;
             case "10":
-                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryBrown));
+                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryPink));
                 break;
             case "11":
+                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryBrown));
+                break;
+            case "12":
                 mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryGrey));
                 break;
             default:
