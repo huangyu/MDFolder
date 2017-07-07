@@ -111,7 +111,8 @@
     <string name="tips_not_complete">此功能尚未实现</string>
     <string name="tips_error">操作失败</string>
     <string name="tips_choose_one_file">请只选择一个文件</string>
-    <string name="tips_selected">个</string>
+    <string name="tips_selected1">选择</string>
+    <string name="tips_selected2">项</string>
     <string name="tips_input_file_name">请输入文件名</string>
     <string name="tips_file_name_empty">文件名不能为空</string>
     <string name="tips_copy_to_clipboard">已复制到剪贴板</string>
@@ -152,17 +153,17 @@
 
     <string-array name="array_themes">
         <item>卡片蓝</item>
-        <item>高端黑</item>
-        <item>颐堤蓝</item>
+        <item>夜间黑</item>
+        <item>靛蓝青</item>
         <item>天蓝青</item>
-        <item>水鸭青</item>
+        <item>鸭绿青</item>
         <item>酷安绿</item>
-        <item>姨妈红</item>
-        <item>基佬紫</item>
-        <item>伊藤橙</item>
-        <item>亮瞎黄</item>
+        <item>中国红</item>
+        <item>高雅紫</item>
+        <item>琥珀橙</item>
+        <item>柠檬黄</item>
         <item>哔哩粉</item>
-        <item>古铜棕</item>
+        <item>古典棕</item>
         <item>低调灰</item>
     </string-array>
 

@@ -123,7 +123,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                 } else {
                     mPresenter.mEditType = Constants.EditType.SELECT;
                     mImageAdapter.switchSelectedState(position);
-                    mActionMode.setTitle(mImageAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
+                    mActionMode.setTitle(getString(R.string.tips_selected1) + mImageAdapter.getSelectedItemCount() + getString(R.string.tips_selected2));
                     if (mImageAdapter.getSelectedItemCount() == 0) {
                         finishAction();
                     }
@@ -142,7 +142,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                 if (mActionMode == null) {
                     mActionMode = getControlActionMode();
                 }
-                mActionMode.setTitle(mImageAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
+                mActionMode.setTitle(getString(R.string.tips_selected1) + mImageAdapter.getSelectedItemCount() + getString(R.string.tips_selected2));
             }
         });
 
@@ -397,7 +397,9 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
             mLlEmpty.setVisibility(View.GONE);
             mImageAdapter.setData(imageList);
         }
-        mRecyclerView.setAdapter(mImageAdapter);
+        if (!(mRecyclerView.getAdapter() instanceof AlbumImageAdapter)) {
+            mRecyclerView.setAdapter(mImageAdapter);
+        }
     }
 
     public void refreshAlbum(ArrayList<FileItem> albumFolderList) {
@@ -500,7 +502,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                     case R.id.action_select_all:
                         mPresenter.mEditType = Constants.EditType.SELECT;
                         mImageAdapter.selectAll();
-                        mActionMode.setTitle(mImageAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
+                        mActionMode.setTitle(getString(R.string.tips_selected1) + mImageAdapter.getSelectedItemCount() + getString(R.string.tips_selected2));
                         if (mImageAdapter.getSelectedItemCount() == 0) {
                             finishAction();
                         }
@@ -508,7 +510,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                     case R.id.action_inverse_all:
                         mPresenter.mEditType = Constants.EditType.SELECT;
                         mImageAdapter.inverseAll();
-                        mActionMode.setTitle(mImageAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
+                        mActionMode.setTitle(getString(R.string.tips_selected1) + mImageAdapter.getSelectedItemCount() + getString(R.string.tips_selected2));
                         if (mImageAdapter.getSelectedItemCount() == 0) {
                             finishAction();
                         }

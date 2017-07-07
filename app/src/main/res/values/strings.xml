@@ -110,7 +110,8 @@
     <string name="tips_not_complete">This function is not complete.</string>
     <string name="tips_error">Error.</string>
     <string name="tips_choose_one_file">Please choose one file.</string>
-    <string name="tips_selected">&#160;Selected.</string>
+    <string name="tips_selected1"></string>
+    <string name="tips_selected2">&#160;Selected.</string>
     <string name="tips_input_file_name">Please input filename.</string>
     <string name="tips_file_name_empty">Filename cannot be empty.</string>
     <string name="tips_copy_to_clipboard">&#160;is copied to clipboard.</string>

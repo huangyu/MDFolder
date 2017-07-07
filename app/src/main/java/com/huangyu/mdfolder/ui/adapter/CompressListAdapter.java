@@ -36,7 +36,7 @@ public class CompressListAdapter extends CommonRecyclerViewAdapter<FileItem> {
             tvTime.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryText));
             vDivider.setBackgroundResource(R.color.colorDivider);
         } else {
-            holder.itemView.setBackgroundResource(R.drawable.select_item_grey);
+            holder.itemView.setBackgroundResource(R.drawable.select_item_dark);
             tvName.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryTextWhite));
             tvSize.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryTextWhite));
             tvTime.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryTextWhite));

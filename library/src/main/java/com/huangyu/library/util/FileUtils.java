@@ -64,7 +64,7 @@ public final class FileUtils {
     public static String getSuffix(String filename) {
         if ((filename != null) && (filename.length() > 0)) {
             int dot = filename.lastIndexOf('.');
-            if ((dot >-1) && (dot < (filename.length() - 1))) {
+            if ((dot > -1) && (dot < (filename.length() - 1))) {
                 return filename.substring(dot);
             }
         }
@@ -537,6 +537,25 @@ public final class FileUtils {
             }
         }
         return true;
+    }
+
+    /**
+     * 递归求取目录文件个数
+     *
+     * @param file 文件
+     * @return
+     */
+    public static int getFilesCount(File file) {
+        int size;
+        File[] fileList = file.listFiles();
+        size = fileList.length;
+        for (File f : fileList) {
+            if (f.isDirectory()) {
+                size = size + getFilesCount(f);
+                size--;
+            }
+        }
+        return size;
     }
 
     /**
