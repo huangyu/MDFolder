@@ -8,6 +8,7 @@ import android.support.v4.content.FileProvider;
 
 import com.huangyu.library.mvp.IBaseModel;
 import com.huangyu.library.util.FileUtils;
+import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.utils.MimeTypeUtils;
 
 import java.io.File;
@@ -78,20 +79,33 @@ public class FileModel implements IBaseModel {
     private void shareSingleFile(Context context, Intent intent, File file) {
         String mimeType = MimeTypeUtils.getMIMEType(file.getPath());
         intent.setType(mimeType);
-        Uri uri = FileProvider.getUriForFile(context, "com.huangyu.mdfolder.fileprovider", file);
+        Uri uri;
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            uri = FileProvider.getUriForFile(context, "com.huangyu.mdfolder.fileprovider", file);
+//            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//        } else {
+        uri = Uri.fromFile(file);
+//        }
         intent.putExtra(Intent.EXTRA_STREAM, uri);
-        context.startActivity(Intent.createChooser(intent, "Share"));
+
+        context.startActivity(Intent.createChooser(intent, context.getString(R.string.menu_share)));
     }
 
     private void shareMultiFiles(Context context, Intent intent, List<File> fileList) {
         ArrayList<Uri> uriArrayList = new ArrayList<>();
         for (File file : fileList) {
-            Uri uri = FileProvider.getUriForFile(context, "com.huangyu.mdfolder.fileprovider", file);
+            Uri uri;
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                uri = FileProvider.getUriForFile(context, "com.huangyu.mdfolder.fileprovider", file);
+//                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//            } else {
+            uri = Uri.fromFile(file);
+//            }
             uriArrayList.add(uri);
         }
         intent.setType("*/*");
         intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriArrayList);
-        context.startActivity(Intent.createChooser(intent, "Share"));
+        context.startActivity(Intent.createChooser(intent, context.getString(R.string.menu_share)));
     }
 
     public void inputStreamToFile(InputStream is, File file) throws IOException {

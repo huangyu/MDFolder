@@ -114,12 +114,17 @@
     <string name="tips_selected1">选择</string>
     <string name="tips_selected2">项</string>
     <string name="tips_input_file_name">请输入文件名</string>
+    <string name="tips_input_size">请输入文件大小（大于多少kb）</string>
     <string name="tips_file_name_empty">文件名不能为空</string>
     <string name="tips_copy_to_clipboard">已复制到剪贴板</string>
     <string name="tips_not_support">不支持播放</string>
     <string name="tips_input_password">请输入密码</string>
     <string name="tips_cannot_access_sdcard">无法写入SD卡</string>
     <string name="tips_select_sdcard">请在下一个弹出窗口选择SD卡</string>
+    <string name="tips_share_by_MDFolder">分享自MDFolder</string>
+    <string name="tips_cannot_share">无法分享此种类型文件</string>
+    <string name="tips_scanning">扫描中&#8230;</string>
+    <string name="tips_scan_complete">扫描完毕</string>
 
     <string name="pref_settings">设置</string>
     <string name="pref_appearance">外观</string>
@@ -140,6 +145,8 @@
     <string name="pref_search_global">内置存储全局搜索</string>
     <string name="pref_search_single">单个文件迭代搜索</string>
     <string name="pref_search_mode">文件搜索方式</string>
+    <string name="pref_scan">全局扫描</string>
+    <string name="pref_scan_summary">扫描第三方应用新增未入媒体库的文件</string>
 
     <string-array name="array_languages">
         <item>简体中文</item>

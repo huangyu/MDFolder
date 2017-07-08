@@ -682,6 +682,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                             files.add(file);
                         }
                         mPresenter.shareFile(getContext(), files);
+//                        mPresenter.shareFile(fileList);
                         break;
                     case R.id.action_delete:
                         mPresenter.onDelete(fileList);

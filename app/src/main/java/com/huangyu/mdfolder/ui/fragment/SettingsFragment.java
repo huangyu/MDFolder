@@ -1,23 +1,45 @@
 package com.huangyu.mdfolder.ui.fragment;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.widget.AppCompatEditText;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 
+import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.ui.activity.SettingsActivity;
+import com.huangyu.mdfolder.utils.AlertUtils;
+import com.huangyu.mdfolder.utils.KeyboardUtils;
 import com.huangyu.mdfolder.utils.LanguageUtils;
 import com.huangyu.mdfolder.utils.SPUtils;
+import com.huangyu.mdfolder.utils.ScanTask;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+
+import butterknife.ButterKnife;
 
 /**
  * Created by huangyu on 2017-6-19.
  */
-public class SettingsFragment extends PreferenceFragmentCompat {
+public class SettingsFragment extends PreferenceFragmentCompat implements ScanTask.ScanCallBack {
+
+    private ProgressDialog mProgressDialog;
+    private ScanTask mScanTask;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -140,6 +162,45 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             prefLanguage.setValue(englishValue);
         }
 
+        final Preference prefScan = findPreference("pref_scan");
+        prefScan.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View view = inflater.inflate(R.layout.dialog_scan, new LinearLayout(getContext()), false);
+                final AppCompatEditText aetSize = ButterKnife.findById(view, R.id.et_size);
+                aetSize.setText("100");
+                aetSize.setSelection(0, aetSize.getText().length());
+                getActivity().getWindow().getDecorView().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        KeyboardUtils.showSoftInput(aetSize);
+                    }
+                }, 200);
+                AlertUtils.showCustomAlert(getContext(), "", view, new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(final DialogInterface dialog) {
+                        Button positionButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                        positionButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                                scanAllFile(Integer.valueOf(aetSize.getText().toString()));
+                            }
+                        });
+                        Button negativeButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
+                        negativeButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
+                    }
+                });
+                return false;
+            }
+        });
+
         final Preference prefAbout = findPreference("pref_about");
         prefAbout.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -151,6 +212,82 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 return false;
             }
         });
+    }
+
+    @Override
+    public void onPreExecute(int total) {
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mProgressDialog.setTitle(getString(R.string.tips_scanning));
+        mProgressDialog.setMax(total);
+        mProgressDialog.setCanceledOnTouchOutside(false);
+        mProgressDialog.setCancelable(true);
+        mProgressDialog.setIndeterminate(false);
+        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                if (mScanTask != null) {
+                    mScanTask.cancel(true);
+                }
+            }
+        });
+        mProgressDialog.show();
+    }
+
+    @Override
+    public void onProgressUpdate(Integer progress, int total) {
+        if (mProgressDialog != null) {
+            mProgressDialog.setProgress(progress);
+        }
+    }
+
+    @Override
+    public void onPostExecute() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
+        if (isAdded() && isVisible()) {
+            AlertUtils.showToast(getContext(), getString(R.string.tips_scan_complete));
+        }
+    }
+
+    /**
+     * 每次全盘扫描一次sd卡文件，防止部分第三方发送的文件信息件没能更快被写入媒体数据库
+     */
+    private void scanAllFile(int fileSize) {
+        List<String> listPaths = new ArrayList<>();
+        getAllPaths(Environment.getExternalStorageDirectory(), listPaths, fileSize);
+        mScanTask = new ScanTask(listPaths, this);
+        mScanTask.execute();
+    }
+
+    private void getAllPaths(File root, List<String> listPaths, int fileSize) {
+        File files[] = root.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    getAllPaths(f, listPaths, fileSize);
+                } else {
+                    if (FileUtils.getFileLength(f) > fileSize * 1024) {
+                        listPaths.add(f.getAbsolutePath());
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        onPostExecute();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mScanTask != null) {
+            mScanTask.cancel(true);
+        }
+        super.onDestroy();
     }
 
 }

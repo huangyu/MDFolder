@@ -27,6 +27,15 @@
             android:key="pref_search_mode"
             android:title="@string/pref_search_mode" />
 
+        <Preference
+            android:capitalize="words"
+            android:inputType="none"
+            android:key="pref_scan"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="@string/pref_scan_summary"
+            android:title="@string/pref_scan" />
+
         <ListPreference
             android:entries="@array/array_languages"
             android:entryValues="@array/array_languages_value"
