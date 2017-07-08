@@ -284,7 +284,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             mCurrentTime = System.currentTimeMillis();
             View view = ButterKnife.findById(this, R.id.cl_main);
             if (view != null) {
-                AlertUtils.showSnack(view, getString(R.string.tips_leave));
+                AlertUtils.showToast(this, getString(R.string.tips_leave));
             }
         }
     }
