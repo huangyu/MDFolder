@@ -279,7 +279,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements ScanTa
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        onPostExecute();
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
     }
 
     @Override
