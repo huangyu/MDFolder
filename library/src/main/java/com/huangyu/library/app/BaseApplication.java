@@ -1,11 +1,11 @@
 package com.huangyu.library.app;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 
 import com.huangyu.library.BuildConfig;
 import com.huangyu.library.util.LogUtils;
+import com.mob.MobApplication;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
@@ -13,7 +13,7 @@ import com.squareup.leakcanary.RefWatcher;
  * 应用基类
  * Created by huangyu on 2017-4-10.
  */
-public class BaseApplication extends Application {
+public class BaseApplication extends MobApplication {
 
     private static BaseApplication INSTANCE;
     private RefWatcher mRefWatcher;

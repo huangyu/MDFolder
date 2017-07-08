@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 
+import onekeyshare.OnekeyShare;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -395,51 +396,12 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     @Override
                     public void onStart() {
                         mView.showTabs();
-                    }
-
-                    @Override
-                    public void onNext(ArrayList<FileItem> fileList) {
-                        mView.refreshData(fileList, ifClearSelected, scrollY);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mView.showError(e.getMessage());
-                        onCompleted();
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        if (mEditType == Constants.EditType.NONE) {
-                            mView.finishAction();
-                        }
-                    }
-                });
-        mRxManager.add(subscription);
-    }
-
-    /**
-     * 刷新界面
-     */
-    public void onRefresh(final String searchStr, final boolean ifClearSelected) {
-        Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
-            @Override
-            public Observable<ArrayList<FileItem>> call() {
-                return Observable.just(getCurrentFileList(searchStr));
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<ArrayList<FileItem>>() {
-                    @Override
-                    public void onStart() {
-                        mView.showTabs();
                         mView.startRefresh();
                     }
 
                     @Override
                     public void onNext(ArrayList<FileItem> fileList) {
-                        mView.refreshData(fileList, ifClearSelected, 0);
+                        mView.refreshData(fileList, ifClearSelected, scrollY);
                     }
 
                     @Override
@@ -920,7 +882,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                             result = mFileModel.deleteFile(file.getPath());
                                         }
                                         if (result) {
-                                            MediaScanUtils.deleteMediaFile(mContext, file.getPath());
+                                            MediaScanUtils.removeMediaFromLib(mContext, file.getPath());
                                         }
                                         return result;
                                     }
@@ -1564,6 +1526,31 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      */
     public boolean shareFile(Context context, List<File> fileList) {
         return mFileModel.shareFile(context, fileList);
+    }
+
+    /**
+     * 分享文件 （单个）
+     *
+     * @param fileList 文件列表
+     * @return 是否分享成功
+     */
+    public void shareFile(List<File> fileList) {
+        if (fileList.size() != 1) {
+            mView.showMessage(mView.getResString(R.string.tips_choose_one_file));
+        } else {
+            File file = fileList.get(0);
+            OnekeyShare oks = new OnekeyShare();
+            //关闭sso授权
+            oks.disableSSOWhenAuthorize();
+            // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
+            oks.setTitle(mContext.getString(R.string.ssdk_oks_share));
+            oks.setText(mContext.getString(R.string.ssdk_oks_share) + file.getName());
+            oks.setImagePath(file.getPath());//确保SDcard下面存在此张图片
+            // url仅在微信（包括好友和朋友圈）中使用
+//            oks.setUrl("http://sharesdk.cn");
+            // 启动分享GUI
+            oks.show(mContext);
+        }
     }
 
 }

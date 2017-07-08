@@ -161,8 +161,10 @@
         <item>Purple</item>
         <item>Orange</item>
         <item>Yellow</item>
+        <item>Pink</item>
         <item>Brown</item>
         <item>Grey</item>
+        <item>Black</item>
     </string-array>
 
     <string-array name="array_themes_value">
@@ -178,6 +180,8 @@
         <item>9</item>
         <item>10</item>
         <item>11</item>
+        <item>12</item>
+        <item>13</item>
     </string-array>
 
 </resources>

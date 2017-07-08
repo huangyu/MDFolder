@@ -68,6 +68,8 @@ public class ThemeUtils {
                 return R.style.AppThemeBrown;
             case "12":
                 return R.style.AppThemeGrey;
+            case "13":
+                return R.style.AppThemeBlack;
             default:
                 return R.style.AppThemeBlue;
         }

@@ -11,3 +11,4 @@ keystore.properties
 android.jks
 app/MDFolder.apk
 library/build/
+library/assets/ShareSDK.xml

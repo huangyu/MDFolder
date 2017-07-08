@@ -316,6 +316,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryGrey));
                 mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryGrey));
                 break;
+            case "13":
+                mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryBlack));
+                mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryBlack));
+                break;
             default:
                 mTabView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryBlue));
                 mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryBlue));
@@ -515,7 +519,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     private void refreshData(boolean ifClearSelected) {
-        mPresenter.onRefresh(mSearchStr, ifClearSelected);
+        mPresenter.onRefreshInSwipe(mSearchStr, ifClearSelected);
     }
 
     @Override

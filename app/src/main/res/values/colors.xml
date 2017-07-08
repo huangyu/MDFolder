@@ -3,8 +3,8 @@
     <color name="colorPrimaryBlue">#2196F3</color>
     <color name="colorPrimaryBlueDark">#1976D2</color>
 
-    <color name="colorPrimaryDark">#343434</color>
-    <color name="colorPrimaryDarker">#212121</color>
+    <color name="colorPrimaryDark">#454545</color>
+    <color name="colorPrimaryDarker">#343434</color>
 
     <color name="colorPrimaryIndigo">#3F51B5</color>
     <color name="colorPrimaryIndigoDark">#303F9F</color>
@@ -38,6 +38,9 @@
 
     <color name="colorPrimaryGrey">#9E9E9E</color>
     <color name="colorPrimaryGreyDark">#616161</color>
+
+    <color name="colorPrimaryBlack">#343434</color>
+    <color name="colorPrimaryBlackDark">#232323</color>
 
     <color name="colorAccentLight">#FF80AB</color>
     <color name="colorAccent">#FF4081</color>

@@ -161,6 +161,16 @@
   public *;
 }
 
-#unrar
+#Unrar
 -dontwarn de.innosystec.unrar.**
 -keep class de.innosystec.unrar.** {*;}
+
+#ShareSDK
+-keep class cn.sharesdk.**{*;}
+-keep class com.sina.**{*;}
+-keep class **.R$* {*;}
+-keep class **.R{*;}
+-keep class com.mob.**{*;}
+-dontwarn com.mob.**
+-dontwarn cn.sharesdk.**
+-dontwarn **.R$*

@@ -22,6 +22,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import onekeyshare.OnekeyShare;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -391,7 +392,7 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
                                             result = mFileModel.deleteFile(file.getPath());
                                         }
                                         if (result) {
-                                            MediaScanUtils.deleteMediaFile(mContext, file.getPath());
+                                            MediaScanUtils.removeMediaFromLib(mContext, file.getPath());
                                         }
                                         return result;
                                     }
@@ -862,6 +863,30 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
      */
     public boolean shareFile(Context context, List<File> fileList) {
         return mFileModel.shareFile(context, fileList);
+    }
+
+    /**
+     * 分享文件 （单个）
+     *
+     * @param fileList 文件列表
+     * @return 是否分享成功
+     */
+    public void shareFile(List<File> fileList) {
+        if (fileList.size() != 1) {
+            mView.showMessage(mView.getResString(R.string.tips_choose_one_file));
+        } else {
+            OnekeyShare oks = new OnekeyShare();
+            //关闭sso授权
+            oks.disableSSOWhenAuthorize();
+            // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
+            oks.setTitle(mContext.getString(R.string.ssdk_oks_share));
+            oks.setText("我是分享文本");
+            oks.setImagePath(fileList.get(0).getPath());//确保SDcard下面存在此张图片
+            // url仅在微信（包括好友和朋友圈）中使用
+            oks.setUrl("http://sharesdk.cn");
+            // 启动分享GUI
+            oks.show(mContext);
+        }
     }
 
 }
