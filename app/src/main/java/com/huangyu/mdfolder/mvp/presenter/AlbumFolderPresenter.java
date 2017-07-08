@@ -441,7 +441,7 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
 //                mView.showKeyboard(mView.findAlertDialogEditText(view));
 //                mView.showInputFileNameAlert(view, new DialogInterface.OnShowListener() {
 //                    @Override
-//                    public void onShow(final DialogInterface dialog) {
+//                    public void onProgressStart(final DialogInterface dialog) {
 //                        Button positionButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
 //                        positionButton.setOnClickListener(new View.OnClickListener() {
 //                            @Override
@@ -621,7 +621,7 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
 //                            mView.showKeyboard(mView.findAlertDialogEditText(view));
 //                            mView.showInputFileNameAlert(view, new DialogInterface.OnShowListener() {
 //                                @Override
-//                                public void onShow(final DialogInterface dialog) {
+//                                public void onProgressStart(final DialogInterface dialog) {
 //                                    Button positionButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
 //                                    positionButton.setOnClickListener(new View.OnClickListener() {
 //                                        @Override

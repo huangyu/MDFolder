@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
@@ -17,7 +16,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.ui.activity.SettingsActivity;
 import com.huangyu.mdfolder.utils.AlertUtils;
@@ -26,9 +24,6 @@ import com.huangyu.mdfolder.utils.LanguageUtils;
 import com.huangyu.mdfolder.utils.SPUtils;
 import com.huangyu.mdfolder.utils.ScanTask;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import butterknife.ButterKnife;
@@ -215,14 +210,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements ScanTa
     }
 
     @Override
-    public void onPreExecute(int total) {
+    public void onDialogShow() {
         mProgressDialog = new ProgressDialog(getActivity());
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mProgressDialog.setTitle(getString(R.string.tips_scanning));
-        mProgressDialog.setMax(total);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        mProgressDialog.setTitle(getString(R.string.tips_calculating));
         mProgressDialog.setCanceledOnTouchOutside(false);
-        mProgressDialog.setCancelable(true);
-        mProgressDialog.setIndeterminate(false);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setIndeterminate(true);
         mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
@@ -235,14 +229,40 @@ public class SettingsFragment extends PreferenceFragmentCompat implements ScanTa
     }
 
     @Override
-    public void onProgressUpdate(Integer progress, int total) {
-        if (mProgressDialog != null) {
-            mProgressDialog.setProgress(progress);
-        }
+    public void onProgressStart(final int total) {
+        getActivity().getWindow().getDecorView().post(new Runnable() {
+            @Override
+            public void run() {
+                if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                }
+                mProgressDialog = new ProgressDialog(getActivity());
+                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                mProgressDialog.setTitle(getString(R.string.tips_scanning));
+                mProgressDialog.setCanceledOnTouchOutside(false);
+                mProgressDialog.setCancelable(true);
+                mProgressDialog.setIndeterminate(false);
+                mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        if (mScanTask != null) {
+                            mScanTask.cancel(true);
+                        }
+                    }
+                });
+                mProgressDialog.setMax(total);
+                mProgressDialog.show();
+            }
+        });
     }
 
     @Override
-    public void onPostExecute() {
+    public void onProgressUpdate(Integer progress, int total) {
+        mProgressDialog.setProgress(progress);
+    }
+
+    @Override
+    public void onDialogDismiss() {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
@@ -255,25 +275,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements ScanTa
      * 每次全盘扫描一次sd卡文件，防止部分第三方发送的文件信息件没能更快被写入媒体数据库
      */
     private void scanAllFile(int fileSize) {
-        List<String> listPaths = new ArrayList<>();
-        getAllPaths(Environment.getExternalStorageDirectory(), listPaths, fileSize);
-        mScanTask = new ScanTask(listPaths, this);
+        mScanTask = new ScanTask(this, fileSize);
         mScanTask.execute();
-    }
-
-    private void getAllPaths(File root, List<String> listPaths, int fileSize) {
-        File files[] = root.listFiles();
-        if (files != null) {
-            for (File f : files) {
-                if (f.isDirectory()) {
-                    getAllPaths(f, listPaths, fileSize);
-                } else {
-                    if (FileUtils.getFileLength(f) > fileSize * 1024) {
-                        listPaths.add(f.getAbsolutePath());
-                    }
-                }
-            }
-        }
     }
 
     @Override

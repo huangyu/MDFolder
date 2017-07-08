@@ -123,6 +123,7 @@
     <string name="tips_select_sdcard">请在下一个弹出窗口选择SD卡</string>
     <string name="tips_share_by_MDFolder">分享自MDFolder</string>
     <string name="tips_cannot_share">无法分享此种类型文件</string>
+    <string name="tips_calculating">计算文件数量中&#8230;</string>
     <string name="tips_scanning">扫描中&#8230;</string>
     <string name="tips_scan_complete">扫描完毕</string>
 

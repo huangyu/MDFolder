@@ -122,6 +122,7 @@
     <string name="tips_select_sdcard">Please select sdcard in the next windows.</string>
     <string name="tips_share_by_MDFolder">Share by MDFolder.</string>
     <string name="tips_cannot_share">Can not share this file.</string>
+    <string name="tips_calculating">Calculating file count&#8230;</string>
     <string name="tips_scanning">Scanning&#8230;</string>
     <string name="tips_scan_complete">Scan complete.</string>
 

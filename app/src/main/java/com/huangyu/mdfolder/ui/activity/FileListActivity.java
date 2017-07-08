@@ -72,7 +72,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     private AlbumFolderFragment mAlbumFolderFragment;
     private boolean isSearchViewShow;
     private long mCurrentTime;
-    private int selectedPosition = -1;
+    private int selectedPosition = 0;
 
     @Override
     protected int getLayoutId() {
@@ -265,15 +265,9 @@ public class FileListActivity extends ThematicActivity implements NavigationView
         }
 
         if (selectedPosition != 0) {
-            if (selectedPosition != 4) {
-                mRlFile.setVisibility(View.VISIBLE);
-                mRlAlbum.setVisibility(View.GONE);
-            } else {
-                mRlFile.setVisibility(View.GONE);
-                mRlAlbum.setVisibility(View.VISIBLE);
-            }
+            mRlFile.setVisibility(View.VISIBLE);
+            mRlAlbum.setVisibility(View.GONE);
             mRxManager.post("toStorage", false);
-            selectedPosition = 0;
             mNavigationView.setCheckedItem(R.id.nav_inner_storage);
             return;
         }
@@ -284,7 +278,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             mCurrentTime = System.currentTimeMillis();
             View view = ButterKnife.findById(this, R.id.cl_main);
             if (view != null) {
-                AlertUtils.showToast(this, getString(R.string.tips_leave));
+                AlertUtils.showSnack(view, getString(R.string.tips_leave));
             }
         }
     }
