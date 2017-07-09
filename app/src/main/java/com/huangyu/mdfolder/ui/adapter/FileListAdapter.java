@@ -1,6 +1,7 @@
 package com.huangyu.mdfolder.ui.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -199,7 +200,12 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
                     // 部分机器查询出来的文件大小为空，用文件路径来处理
                     mTvSize.setText(FileUtils.getFileSize(fileItem.getPath()));
                 }
-                mIvIcon.setImageDrawable(fileItem.getApkIcon());
+                Drawable apkIcon = fileItem.getApkIcon();
+                if (apkIcon != null) {
+                    mIvIcon.setImageDrawable(apkIcon);
+                } else {
+                    mIvIcon.setImageDrawable(null);
+                }
                 break;
         }
 

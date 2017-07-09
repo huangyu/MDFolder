@@ -432,10 +432,6 @@ public class FileListModel implements IBaseModel {
                 String date = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATE_MODIFIED));
 
                 if (FileUtils.isFileExists(filePath)) {
-                    PackageInfo packageInfo = pm.getPackageArchiveInfo(filePath, PackageManager.GET_ACTIVITIES);
-                    ApplicationInfo appInfo = packageInfo.applicationInfo;
-                    appInfo.sourceDir = filePath;
-                    appInfo.publicSourceDir = filePath;
                     FileItem fileItem = new FileItem();
                     String fileRealName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
                     fileItem.setName(fileRealName);
@@ -446,8 +442,16 @@ public class FileListModel implements IBaseModel {
                     fileItem.setIsDirectory(false);
                     fileItem.setType(Constants.FileType.APK);
                     fileItem.setIsShow(true);
-                    Drawable icon = appInfo.loadIcon(pm);
-                    fileItem.setApkIcon(icon);
+
+                    PackageInfo packageInfo = pm.getPackageArchiveInfo(filePath, PackageManager.GET_ACTIVITIES);
+                    if (packageInfo != null) {
+                        ApplicationInfo appInfo = packageInfo.applicationInfo;
+                        appInfo.sourceDir = filePath;
+                        appInfo.publicSourceDir = filePath;
+                        Drawable icon = appInfo.loadIcon(pm);
+                        fileItem.setApkIcon(icon);
+                    }
+
                     if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
                         apkList.add(fileItem);
                     }
