@@ -265,6 +265,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
         }
 
         if (selectedPosition != 0) {
+            selectedPosition = 0;
             mRlFile.setVisibility(View.VISIBLE);
             mRlAlbum.setVisibility(View.GONE);
             mRxManager.post("toStorage", false);
