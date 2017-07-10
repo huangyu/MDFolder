@@ -49,7 +49,7 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
     public int mOrderType;  // 当前升降序类型
     public FileItem mCurrentAlbum;
     public boolean isInAlbum = true;
-//    private String mCurrentPath;
+    private int mScrollY;
 
     @Override
     public void create() {
@@ -58,6 +58,50 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
         mEditType = Constants.EditType.NONE;
         mSortType = Constants.SortType.TYPE;
         mOrderType = DESC;
+        mScrollY = 0;
+    }
+
+    public void loadAlbum(final String searchStr, final int scrollY) {
+        Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
+            @Override
+            public Observable<ArrayList<FileItem>> call() {
+                return Observable.just(mFileListModel.getPhotoAlbumList(searchStr, mContext.getContentResolver()));
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        mScrollY = scrollY;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<ArrayList<FileItem>>() {
+                    @Override
+                    public void onStart() {
+                        mView.startRefresh();
+                    }
+
+                    @Override
+                    public void onNext(ArrayList<FileItem> albumFolderList) {
+                        mView.addTab(mView.getResString(R.string.str_image) + "  " + albumFolderList.size());
+                        mView.refreshAlbum(albumFolderList, mScrollY);
+                        isInAlbum = true;
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showError(e.getMessage());
+                        onCompleted();
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        mView.stopRefresh();
+                    }
+                });
+        mRxManager.add(subscription);
     }
 
     public void loadAlbum(final String searchStr) {
@@ -85,8 +129,51 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
                     @Override
                     public void onNext(ArrayList<FileItem> albumFolderList) {
                         mView.addTab(mView.getResString(R.string.str_image) + "  " + albumFolderList.size());
-                        mView.refreshAlbum(albumFolderList);
+                        mView.refreshAlbum(albumFolderList, mScrollY);
                         isInAlbum = true;
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showError(e.getMessage());
+                        onCompleted();
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        mView.stopRefresh();
+                    }
+                });
+        mRxManager.add(subscription);
+    }
+
+    public void loadImage(final String searchStr, final boolean ifClearSelected, final int scrollY) {
+        Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
+            @Override
+            public Observable<ArrayList<FileItem>> call() {
+                return Observable.just(getCurrentImageList(searchStr, mCurrentAlbum));
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        mScrollY = scrollY;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<ArrayList<FileItem>>() {
+                    @Override
+                    public void onStart() {
+                        mView.startRefresh();
+                    }
+
+                    @Override
+                    public void onNext(ArrayList<FileItem> imageList) {
+                        mView.addTab(mView.getResString(R.string.str_image) + "  " + imageList.size());
+                        mView.refreshData(imageList, ifClearSelected);
+                        isInAlbum = false;
                     }
 
                     @Override
@@ -115,7 +202,6 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
                 .doOnSubscribe(new Action0() {
                     @Override
                     public void call() {
-
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())

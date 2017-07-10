@@ -82,7 +82,9 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
     private String mSearchStr;
     private ActionMode mActionMode;
 
-    private ProgressDialog progressDialog;
+    private ProgressDialog mProgressDialog;
+
+    private final int mDefaultGridCount = 2;
 
     @Override
     protected int getLayoutId() {
@@ -120,6 +122,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                     }
                 } else if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT
                         || mPresenter.mEditType == Constants.EditType.ZIP || mPresenter.mEditType == Constants.EditType.UNZIP) {
+                    // do nothing
                 } else {
                     mPresenter.mEditType = Constants.EditType.SELECT;
                     mImageAdapter.switchSelectedState(position);
@@ -151,12 +154,12 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
             @Override
             public void onItemClick(View view, int position) {
                 mPresenter.mCurrentAlbum = mAdapter.getItem(position);
-                mPresenter.loadImage(mSearchStr, true);
+                mPresenter.loadImage(mSearchStr, true, getScrollYDistance());
             }
         });
 
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), mDefaultGridCount));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.grid_decoration, null);
         mRecyclerView.addItemDecoration(new AlbumVerticalGirdDecoration(drawable));
@@ -226,7 +229,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
             @Override
             public void onRefresh() {
                 if (mPresenter.isInAlbum) {
-                    mPresenter.loadAlbum(mSearchStr);
+                    mPresenter.loadAlbum(mSearchStr, 0);
                 } else {
                     mPresenter.loadImage(mSearchStr, true);
                 }
@@ -238,7 +241,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
             public void call(Integer sortType) {
                 mPresenter.mSortType = sortType;
                 if (mPresenter.isInAlbum) {
-                    mPresenter.loadAlbum(mSearchStr);
+                    mPresenter.loadAlbum(mSearchStr, 0);
                 } else {
                     mPresenter.loadImage(mSearchStr, true);
                 }
@@ -250,7 +253,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
             public void call(Integer orderType) {
                 mPresenter.mOrderType = orderType;
                 if (mPresenter.isInAlbum) {
-                    mPresenter.loadAlbum(mSearchStr);
+                    mPresenter.loadAlbum(mSearchStr, 0);
                 } else {
                     mPresenter.loadImage(mSearchStr, true);
                 }
@@ -262,7 +265,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
             public void call(String text) {
                 mSearchStr = text;
                 if (mPresenter.isInAlbum) {
-                    mPresenter.loadAlbum(mSearchStr);
+                    mPresenter.loadAlbum(mSearchStr, 0);
                 } else {
                     mPresenter.loadImage(mSearchStr, true);
                 }
@@ -370,17 +373,17 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
 
     @Override
     public void showProgressDialog(String message) {
-        progressDialog = new ProgressDialog(getContext());
-        progressDialog.setTitle(getString(R.string.tips_alert));
-        progressDialog.setMessage(message);
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        mProgressDialog = new ProgressDialog(getContext());
+        mProgressDialog.setTitle(getString(R.string.tips_alert));
+        mProgressDialog.setMessage(message);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.show();
     }
 
     @Override
     public void hideProgressDialog() {
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
         }
     }
 
@@ -406,7 +409,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
         }
     }
 
-    public void refreshAlbum(ArrayList<FileItem> albumFolderList) {
+    public void refreshAlbum(ArrayList<FileItem> albumFolderList, final int scrollY) {
         mAdapter.clearData(true);
 
         if (albumFolderList == null || albumFolderList.isEmpty()) {
@@ -414,6 +417,16 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
         } else {
             mLlEmpty.setVisibility(View.GONE);
             mAdapter.setData(albumFolderList);
+        }
+
+        if (scrollY != 0) {
+            mRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    mRecyclerView.scrollBy(0, scrollY);
+                    mRecyclerView.removeOnLayoutChangeListener(this);
+                }
+            });
         }
         mRecyclerView.setAdapter(mAdapter);
     }
@@ -582,5 +595,13 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
 //            }
 //        });
 //    }
+
+    public int getScrollYDistance() {
+        GridLayoutManager layoutManager = (GridLayoutManager) mRecyclerView.getLayoutManager();
+        int position = layoutManager.findFirstVisibleItemPosition();
+        View firstVisibleChildView = layoutManager.findViewByPosition(position);
+        int itemHeight = firstVisibleChildView.getHeight();
+        return (position / mDefaultGridCount) * itemHeight - firstVisibleChildView.getTop();
+    }
 
 }
