@@ -25,6 +25,7 @@ import com.huangyu.mdfolder.mvp.view.IFileListView;
 import com.huangyu.mdfolder.utils.CompressUtils;
 import com.huangyu.mdfolder.utils.MediaScanUtils;
 import com.huangyu.mdfolder.utils.MimeTypeUtils;
+import com.huangyu.mdfolder.utils.SPUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -1419,7 +1420,13 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 //                    fileItem.setSize(FileUtils.getDirLength(file));
                     fileItem.setSize("0");
                     if (file.list() != null && file.list().length > 0) {
-                        fileItem.setCount(file.list().length);
+                        int hiddenCount = 0;
+                        for (File f : fileList) {
+                            if (f.isHidden() && !SPUtils.isShowHiddenFiles()) {
+                                hiddenCount++;
+                            }
+                        }
+                        fileItem.setCount(file.list().length - hiddenCount);
                     } else {
                         fileItem.setCount(0);
                     }

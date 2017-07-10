@@ -543,6 +543,9 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         if (scrollY != 0) {
             mRecyclerView.scrollToPosition(0);
             mRecyclerView.scrollBy(0, scrollY);
+        } else {
+            mRecyclerView.scrollToPosition(0);
+            mRecyclerView.scrollTo(0, scrollY);
         }
     }
 

@@ -87,6 +87,7 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
             case Constants.FileType.SINGLE_IMAGE:
             case Constants.FileType.VIDEO:
             case Constants.FileType.SINGLE_VIDEO:
+                mTvCount.setText("");
                 try {
                     mTvSize.setText(FileUtils.getFileOrDirSize(Long.valueOf(fileItem.getSize())));
                 } catch (Exception e) {
@@ -101,6 +102,7 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
                 break;
             case Constants.FileType.AUDIO:
             case Constants.FileType.SINGLE_AUDIO:
+                mTvCount.setText("");
                 try {
                     mTvSize.setText(FileUtils.getFileOrDirSize(Long.valueOf(fileItem.getSize())));
                 } catch (Exception e) {

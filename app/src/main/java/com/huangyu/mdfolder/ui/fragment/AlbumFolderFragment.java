@@ -38,8 +38,8 @@ import com.huangyu.mdfolder.mvp.presenter.AlbumFolderPresenter;
 import com.huangyu.mdfolder.mvp.view.IAlbumFolderView;
 import com.huangyu.mdfolder.ui.activity.FileListActivity;
 import com.huangyu.mdfolder.ui.activity.ImageBrowserActivity;
-import com.huangyu.mdfolder.ui.adapter.AlbumFolderAdapter;
 import com.huangyu.mdfolder.ui.adapter.AlbumFileAdapter;
+import com.huangyu.mdfolder.ui.adapter.AlbumFolderAdapter;
 import com.huangyu.mdfolder.ui.widget.AlbumVerticalGirdDecoration;
 import com.huangyu.mdfolder.ui.widget.TabView;
 import com.huangyu.mdfolder.utils.AlertUtils;
@@ -419,15 +419,18 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
             mFolderAdapter.setData(albumFolderList);
         }
 
-        if (scrollY != 0) {
-            mRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                @Override
-                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+
+        mRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if (scrollY != 0) {
                     mRecyclerView.scrollBy(0, scrollY);
-                    mRecyclerView.removeOnLayoutChangeListener(this);
+                } else {
+                    mRecyclerView.scrollTo(0, scrollY);
                 }
-            });
-        }
+                mRecyclerView.removeOnLayoutChangeListener(this);
+            }
+        });
         mRecyclerView.setAdapter(mFolderAdapter);
     }
 
