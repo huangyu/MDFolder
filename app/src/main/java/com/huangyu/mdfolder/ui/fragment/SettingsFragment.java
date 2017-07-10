@@ -22,7 +22,7 @@ import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.KeyboardUtils;
 import com.huangyu.mdfolder.utils.LanguageUtils;
 import com.huangyu.mdfolder.utils.SPUtils;
-import com.huangyu.mdfolder.utils.ScanTask;
+import com.huangyu.mdfolder.utils.scan.ScanTask;
 
 import java.util.Locale;
 

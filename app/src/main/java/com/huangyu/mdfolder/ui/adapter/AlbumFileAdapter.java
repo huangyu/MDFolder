@@ -32,11 +32,11 @@ import java.util.ArrayList;
 /**
  * Created by huangyu on 2017/6/30.
  */
-public class AlbumImageAdapter extends CommonRecyclerViewAdapter<FileItem> {
+public class AlbumFileAdapter extends CommonRecyclerViewAdapter<FileItem> {
 
     public ArrayList<FileItem> mSelectedFileList;
 
-    public AlbumImageAdapter(Context context) {
+    public AlbumFileAdapter(Context context) {
         super(context);
     }
 

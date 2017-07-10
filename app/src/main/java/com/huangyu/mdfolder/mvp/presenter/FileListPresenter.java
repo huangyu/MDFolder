@@ -1439,7 +1439,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     appInfo.sourceDir = file.getPath();
                     appInfo.publicSourceDir = file.getPath();
                     Drawable icon = appInfo.loadIcon(pm);
-                    fileItem.setApkIcon(icon);
+                    fileItem.setIcon(icon);
                 }
                 fileItemList.add(fileItem);
             }

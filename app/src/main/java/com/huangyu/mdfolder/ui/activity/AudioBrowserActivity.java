@@ -56,7 +56,7 @@ public class AudioBrowserActivity extends ThematicActivity implements EasyVideoC
     private ProgressDialog mProgressDialog;
     private AudioPagerAdapter mAdapter;
 
-    private ArrayList<FileItem> mFileList;
+    public static ArrayList<FileItem> mFileList;
     private FileListModel mFileListModel;
     private FileModel mFileModel;
     private int mCurrentPosition;
@@ -76,7 +76,7 @@ public class AudioBrowserActivity extends ThematicActivity implements EasyVideoC
     protected void initView(Bundle savedInstanceState) {
         mFileListModel = new FileListModel();
         mFileModel = new FileModel();
-        mFileList = (ArrayList<FileItem>) getIntent().getSerializableExtra(getString(R.string.intent_audio_list));
+//        mFileList = (ArrayList<FileItem>) getIntent().getSerializableExtra(getString(R.string.intent_audio_list));
         mCurrentPosition = getIntent().getIntExtra(getString(R.string.intent_audio_position), 0);
         mAdapter = new AudioPagerAdapter(this, mFileList, this);
         mViewPager.setAdapter(mAdapter);
@@ -244,6 +244,7 @@ public class AudioBrowserActivity extends ThematicActivity implements EasyVideoC
     @Override
     protected void onDestroy() {
         hideProgressDialog();
+        mFileList = null;
         super.onDestroy();
     }
 

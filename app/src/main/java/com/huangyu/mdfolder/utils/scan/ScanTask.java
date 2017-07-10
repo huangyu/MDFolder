@@ -1,4 +1,4 @@
-package com.huangyu.mdfolder.utils;
+package com.huangyu.mdfolder.utils.scan;
 
 import android.media.MediaScannerConnection;
 import android.net.Uri;

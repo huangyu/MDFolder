@@ -208,8 +208,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                             }
                             // 进入音频浏览
                             else if (file.getType() == Constants.FileType.AUDIO) {
+                                AudioBrowserActivity.mFileList = mAdapter.getDataList();
                                 Intent intent = new Intent(getActivity(), AudioBrowserActivity.class);
-                                intent.putExtra(getString(R.string.intent_audio_list), mAdapter.getDataList());
+                                // bytes[] make TransactionTooLargeException
+//                                intent.putExtra(getString(R.string.intent_audio_list), mAdapter.getDataList());
                                 intent.putExtra(getString(R.string.intent_audio_position), position);
                                 getActivity().startActivity(intent);
                             }

@@ -18,7 +18,8 @@ public class FileItem implements Serializable {
     private String parent;
     private int type;
     private boolean isShow;
-    private Drawable apkIcon;
+    private Drawable icon;
+    private byte[] bytes;
     private ArrayList<FileItem> images = new ArrayList<>();
     private int count;
 
@@ -90,12 +91,12 @@ public class FileItem implements Serializable {
         isShow = show;
     }
 
-    public Drawable getApkIcon() {
-        return apkIcon;
+    public Drawable getIcon() {
+        return icon;
     }
 
-    public void setApkIcon(Drawable apkIcon) {
-        this.apkIcon = apkIcon;
+    public void setIcon(Drawable apkIcon) {
+        this.icon = apkIcon;
     }
 
     public ArrayList<FileItem> getImages() {
@@ -113,4 +114,13 @@ public class FileItem implements Serializable {
     public void setCount(int count) {
         this.count = count;
     }
+
+    public byte[] getBytes() {
+        return bytes;
+    }
+
+    public void setBytes(byte[] bytes) {
+        this.bytes = bytes;
+    }
+
 }
