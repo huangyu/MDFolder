@@ -377,10 +377,6 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             @Override
             public void run() {
                 switch (item.getItemId()) {
-                    case R.id.nav_root:
-                        selectedPosition = 2;
-                        mRxManager.post("toRoot", "");
-                        break;
                     case R.id.nav_inner_storage:
                         selectedPosition = 0;
                         mRxManager.post("toStorage", false);
@@ -390,9 +386,13 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                         mRxManager.post("toStorage", true);
 //                        checkSdCardPermission();
                         break;
-                    case R.id.nav_music:
-                        selectedPosition = 5;
-                        mRxManager.post("toMusic", "");
+                    case R.id.nav_root:
+                        selectedPosition = 2;
+                        mRxManager.post("toRoot", "");
+                        break;
+                    case R.id.nav_download:
+                        selectedPosition = 3;
+                        mRxManager.post("toDownload", "");
                         break;
                     case R.id.nav_photo:
                         selectedPosition = 4;
@@ -400,6 +400,11 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                         mRlFile.setVisibility(View.GONE);
                         mRlAlbum.setVisibility(View.VISIBLE);
                         break;
+                    case R.id.nav_music:
+                        selectedPosition = 5;
+                        mRxManager.post("toMusic", "");
+                        break;
+
                     case R.id.nav_video:
                         selectedPosition = 6;
                         mRxManager.post("toVideo", "");
@@ -408,10 +413,6 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                         selectedPosition = 7;
                         mRxManager.post("toDocument", "");
                         break;
-                    case R.id.nav_download:
-                        selectedPosition = 3;
-                        mRxManager.post("toDownload", "");
-                        break;
                     case R.id.nav_apk:
                         selectedPosition = 8;
                         mRxManager.post("toApk", "");
@@ -419,6 +420,10 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                     case R.id.nav_zip:
                         selectedPosition = 9;
                         mRxManager.post("toZip", "");
+                        break;
+                    case R.id.nav_apps:
+                        selectedPosition = 10;
+                        mRxManager.post("toApps", "");
                         break;
                     case R.id.nav_settings:
                         startActivity(SettingsActivity.class);
@@ -477,7 +482,6 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                 ActivityManager.getInstance().finishAllActivity();
             }
         });
-
     }
 
     private void checkSdCardPermission() {

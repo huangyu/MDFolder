@@ -97,6 +97,26 @@ public class SettingsFragment extends PreferenceFragmentCompat implements ScanTa
             prefOpenMode.setSummary(getString(R.string.pref_external_mode));
         }
 
+        final Preference prefShowAppMode = findPreference("pref_show_apps_mode");
+        prefShowAppMode.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                boolean isShowSystem = (Boolean) newValue;
+                if (isShowSystem) {
+                    prefShowAppMode.setSummary(getString(R.string.pref_show_all));
+                } else {
+                    prefShowAppMode.setSummary(getString(R.string.pref_not_show_system));
+                }
+                return true;
+            }
+        });
+
+        if (SPUtils.isShowAllApps()) {
+            prefShowAppMode.setSummary(getString(R.string.pref_show_all));
+        } else {
+            prefShowAppMode.setSummary(getString(R.string.pref_not_show_system));
+        }
+
         final Preference prefSearchMode = findPreference("pref_search_mode");
         prefSearchMode.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override

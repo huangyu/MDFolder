@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
@@ -214,6 +215,16 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 //                                intent.putExtra(getString(R.string.intent_audio_list), mAdapter.getDataList());
                                 intent.putExtra(getString(R.string.intent_audio_position), position);
                                 getActivity().startActivity(intent);
+                            }
+                            // 安装包直接打开应用
+                            else if (file.getType() == Constants.FileType.INSTALLED) {
+                                PackageManager pack = getContext().getPackageManager();
+                                Intent app = pack.getLaunchIntentForPackage(file.getPackageName());
+                                if (app == null) {
+                                    AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_can_not_access_file));
+                                    return;
+                                }
+                                startActivity(app);
                             }
                             // 打开文件
                             else if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
@@ -442,6 +453,14 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public void call(String s) {
                 mPresenter.mSelectType = Constants.SelectType.MENU_ZIP;
+                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
+            }
+        });
+
+        mRxManager.on("toApps", new Action1<String>() {
+            @Override
+            public void call(String s) {
+                mPresenter.mSelectType = Constants.SelectType.MENU_APPS;
                 mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
             }
         });

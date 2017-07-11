@@ -63,6 +63,7 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
             case Constants.FileType.SINGLE_DOCUMENT:
             case Constants.FileType.COMPRESS:
             case Constants.FileType.APK:
+            case Constants.FileType.INSTALLED:
                 if (fileItem.isDirectory()) {
 //                    String size = mContext.getString(R.string.str_folder) + FileUtils.getFileOrDirSize(fileItem.getSize());
                     mTvCount.setText(String.valueOf(fileItem.getCount()));
@@ -117,7 +118,9 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
                 break;
         }
 
-        if (fileType == Constants.FileType.IMAGE || fileType == Constants.FileType.SINGLE_IMAGE || fileType == Constants.FileType.AUDIO || fileType == Constants.FileType.SINGLE_AUDIO || fileType == Constants.FileType.VIDEO || fileType == Constants.FileType.SINGLE_VIDEO || fileType == Constants.FileType.APK) {
+        if (fileType == Constants.FileType.IMAGE || fileType == Constants.FileType.SINGLE_IMAGE || fileType == Constants.FileType.AUDIO
+                || fileType == Constants.FileType.SINGLE_AUDIO || fileType == Constants.FileType.VIDEO
+                || fileType == Constants.FileType.SINGLE_VIDEO || fileType == Constants.FileType.APK || fileType == Constants.FileType.INSTALLED) {
             mIvIcon.setColorFilter(null);
         } else {
             if (activity.isLightMode()) {

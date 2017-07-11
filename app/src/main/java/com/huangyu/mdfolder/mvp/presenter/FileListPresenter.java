@@ -321,6 +321,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             case Constants.SelectType.MENU_ZIP:
                                 mView.addTab(mView.getResString(R.string.menu_compress_package) + "  " + fileList.size());
                                 break;
+                            case Constants.SelectType.MENU_APPS:
+                                mView.addTab(mView.getResString(R.string.menu_apps) + "  " + fileList.size());
+                                break;
                         }
                         mView.refreshData(fileList, false, 0);
                     }
@@ -360,6 +363,30 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                     @Override
                     public void onNext(ArrayList<FileItem> fileList) {
+                        mView.removeAllTabs();
+                        switch (mSelectType) {
+                            case Constants.SelectType.MENU_DOCUMENT:
+                                mView.addTab(mView.getResString(R.string.menu_document) + "  " + fileList.size());
+                                break;
+                            case Constants.SelectType.MENU_PHOTO:
+                                mView.addTab(mView.getResString(R.string.menu_image) + "  " + fileList.size());
+                                break;
+                            case Constants.SelectType.MENU_MUSIC:
+                                mView.addTab(mView.getResString(R.string.menu_audio) + "  " + fileList.size());
+                                break;
+                            case Constants.SelectType.MENU_VIDEO:
+                                mView.addTab(mView.getResString(R.string.menu_video) + "  " + fileList.size());
+                                break;
+                            case Constants.SelectType.MENU_APK:
+                                mView.addTab(mView.getResString(R.string.menu_apk) + "  " + fileList.size());
+                                break;
+                            case Constants.SelectType.MENU_ZIP:
+                                mView.addTab(mView.getResString(R.string.menu_compress_package) + "  " + fileList.size());
+                                break;
+                            case Constants.SelectType.MENU_APPS:
+                                mView.addTab(mView.getResString(R.string.menu_apps) + "  " + fileList.size());
+                                break;
+                        }
                         mView.refreshData(fileList, ifClearSelected, 0);
                     }
 
@@ -1368,6 +1395,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 break;
             case Constants.SelectType.MENU_ZIP:
                 fileItemList = mFileListModel.getCompressList(searchStr, mContext.getContentResolver());
+                break;
+            case Constants.SelectType.MENU_APPS:
+                fileItemList = mFileListModel.getInstalledList();
                 break;
         }
 

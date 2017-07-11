@@ -27,6 +27,20 @@
             android:key="pref_search_mode"
             android:title="@string/pref_search_mode" />
 
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="pref_show_apps_mode"
+            android:title="@string/pref_search_mode" />
+
+        <ListPreference
+            android:entries="@array/array_languages"
+            android:entryValues="@array/array_languages_value"
+            android:key="pref_language"
+            android:title="@string/pref_language" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_function">
         <Preference
             android:capitalize="words"
             android:inputType="none"
@@ -35,13 +49,6 @@
             android:singleLine="true"
             android:summary="@string/pref_scan_summary"
             android:title="@string/pref_scan" />
-
-        <ListPreference
-            android:entries="@array/array_languages"
-            android:entryValues="@array/array_languages_value"
-            android:key="pref_language"
-            android:title="@string/pref_language" />
-
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_about">

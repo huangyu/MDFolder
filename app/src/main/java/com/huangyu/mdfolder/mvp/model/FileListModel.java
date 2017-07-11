@@ -22,6 +22,7 @@ import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.utils.CompressUtils;
 import com.huangyu.mdfolder.utils.SDCardUtils;
+import com.huangyu.mdfolder.utils.SPUtils;
 import com.huangyu.mdfolder.utils.comparator.AlphabetComparator;
 import com.huangyu.mdfolder.utils.comparator.SizeComparator;
 import com.huangyu.mdfolder.utils.comparator.TimeComparator;
@@ -34,6 +35,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -539,7 +541,52 @@ public class FileListModel implements IBaseModel {
         return null;
     }
 
-    public ArrayList<FileItem> getCompressList(String searchStr, ContentResolver contentResolver) {
+    public ArrayList<FileItem> getInstalledList() {
+        ArrayList<FileItem> appsList = new ArrayList<>();
+        ArrayList<FileItem> systemList = new ArrayList<>();
+        ArrayList<FileItem> nSystemList = new ArrayList<>();
+        PackageManager packageManager = BaseApplication.getInstance().getPackageManager();
+        List<PackageInfo> packages = packageManager.getInstalledPackages(0);
+        FileItem fileItem;
+        try {
+            for (PackageInfo packageInfo : packages) {
+                fileItem = new FileItem();
+                String packageName = packageInfo.packageName;
+                ApplicationInfo applicationInfo = packageInfo.applicationInfo;
+                if (applicationInfo != null) {
+                    fileItem.setName(packageInfo.applicationInfo.loadLabel(packageManager).toString());
+                    fileItem.setPath(packageInfo.applicationInfo.publicSourceDir);
+                } else {
+                    fileItem.setName(packageInfo.packageName);
+                    fileItem.setPath("");
+                }
+                fileItem.setDate(String.valueOf(packageInfo.lastUpdateTime / 1000));
+                fileItem.setIcon(packageManager.getApplicationIcon(packageName));
+                fileItem.setType(Constants.FileType.INSTALLED);
+                fileItem.setParent(null);
+                fileItem.setIsDirectory(false);
+                fileItem.setPackageName(packageName);
+                fileItem.setIsShow(true);
+
+                if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+                    nSystemList.add(fileItem);
+                } else {
+                    systemList.add(fileItem);
+                }
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            return null;
+        }
+
+        appsList.addAll(nSystemList);
+        if (SPUtils.isShowAllApps()) {
+            appsList.addAll(systemList);
+        }
+        return appsList;
+    }
+
+    public ArrayList<FileItem> getCompressList(String searchStr, ContentResolver
+            contentResolver) {
         String[] projection = new String[]{
                 MediaStore.Files.FileColumns.DATA,
                 MediaStore.Files.FileColumns.SIZE,
@@ -581,7 +628,8 @@ public class FileListModel implements IBaseModel {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public ArrayList<FileItem> getExternalList(Uri uri, String searchStr, ContentResolver contentResolver) {
+    public ArrayList<FileItem> getExternalList(Uri uri, String searchStr, ContentResolver
+            contentResolver) {
         Cursor cursor = contentResolver.query(uri, null, null, null, null);
 
         if (cursor != null) {
@@ -614,6 +662,7 @@ public class FileListModel implements IBaseModel {
      *
      * @return
      */
+
     public String getRootPath() {
         return Environment.getRootDirectory().getPath();
 //        return "/";

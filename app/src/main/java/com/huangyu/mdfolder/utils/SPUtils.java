@@ -68,6 +68,14 @@ public class SPUtils {
     }
 
     /**
+     * 是否是显示全部应用
+     */
+    public static boolean isShowAllApps() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(BaseApplication.getInstance().getApplicationContext());
+        return prefs.getBoolean("pref_show_apps_mode", false);
+    }
+
+    /**
      * 是否是全局搜索
      */
     public static boolean isSearchGlobally() {

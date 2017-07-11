@@ -44,6 +44,7 @@
     <string name="menu_info">Info</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_apk">Apk</string>
+    <string name="menu_apps">Apps</string>
     <string name="menu_compress_package">Compress</string>
     <string name="menu_compress">Compress</string>
     <string name="menu_extract">Extract</string>
@@ -129,6 +130,7 @@
     <string name="pref_settings">Settings</string>
     <string name="pref_appearance">Appearance</string>
     <string name="pref_configuration">Configuration</string>
+    <string name="pref_function">Function</string>
     <string name="pref_theme">Theme</string>
     <string name="pref_dark">Dark Theme</string>
     <string name="pref_light">Light Theme</string>
@@ -142,6 +144,9 @@
     <string name="pref_build_in_mode">Use build-in mode</string>
     <string name="pref_external_mode">Use external apps</string>
     <string name="pref_open_mode">Image/Audio/Video open mode</string>
+    <string name="pref_not_show_system">Not show system apps</string>
+    <string name="pref_show_all">Show all apps</string>
+    <string name="pref_show_apps_mode">Show apps mode</string>
     <string name="pref_search_global">Search Globally</string>
     <string name="pref_search_single">Search in single file</string>
     <string name="pref_search_mode">File Search mode</string>

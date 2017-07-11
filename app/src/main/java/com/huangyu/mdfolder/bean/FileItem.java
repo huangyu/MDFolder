@@ -22,6 +22,7 @@ public class FileItem implements Serializable {
     private byte[] bytes;
     private ArrayList<FileItem> images = new ArrayList<>();
     private int count;
+    private String packageName;
 
     public FileItem() {
 
@@ -121,6 +122,14 @@ public class FileItem implements Serializable {
 
     public void setBytes(byte[] bytes) {
         this.bytes = bytes;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
     }
 
 }

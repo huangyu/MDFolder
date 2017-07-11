@@ -45,6 +45,7 @@
     <string name="menu_info">详情</string>
     <string name="menu_settings">设置</string>
     <string name="menu_apk">安装包</string>
+    <string name="menu_apps">应用</string>
     <string name="menu_compress_package">压缩包</string>
     <string name="menu_compress">压缩</string>
     <string name="menu_extract">解压</string>
@@ -130,6 +131,7 @@
     <string name="pref_settings">设置</string>
     <string name="pref_appearance">外观</string>
     <string name="pref_configuration">配置</string>
+    <string name="pref_function">功能</string>
     <string name="pref_theme">主题</string>
     <string name="pref_dark">当前使用深色主题</string>
     <string name="pref_light">当前使用浅色主题</string>
@@ -142,7 +144,10 @@
     <string name="pref_language">语言</string>
     <string name="pref_build_in_mode">内置方式</string>
     <string name="pref_external_mode">外部应用</string>
+    <string name="pref_show_apps_mode">应用显示</string>
     <string name="pref_open_mode">图片、音视频打开方式</string>
+    <string name="pref_not_show_system">不显示系统应用</string>
+    <string name="pref_show_all">显示全部应用</string>
     <string name="pref_search_global">内置存储全局搜索</string>
     <string name="pref_search_single">单个文件迭代搜索</string>
     <string name="pref_search_mode">文件搜索方式</string>

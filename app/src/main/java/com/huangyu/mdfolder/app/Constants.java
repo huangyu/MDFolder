@@ -42,6 +42,8 @@ public class Constants extends BaseConstants {
         public static final int MENU_APK = 0x00000016;
 
         public static final int MENU_ZIP = 0x00000017;
+
+        public static final int MENU_APPS = 0x00000018;
     }
 
     public static class FileType {
@@ -66,6 +68,8 @@ public class Constants extends BaseConstants {
         public static final int APK = 0x00000029;
 
         public static final int COMPRESS = 0x00000030;
+
+        public static final int INSTALLED = 0x00000031;
     }
 
     public static class SortType {

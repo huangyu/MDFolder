@@ -45,11 +45,19 @@
             android:icon="@mipmap/ic_apk"
             android:orderInCategory="9"
             android:title="@string/menu_apk" />
+
+
         <item
             android:id="@+id/nav_zip"
             android:icon="@mipmap/ic_zip"
             android:orderInCategory="10"
             android:title="@string/menu_compress_package" />
+
+        <item
+            android:id="@+id/nav_apps"
+            android:icon="@mipmap/ic_apps"
+            android:orderInCategory="11"
+            android:title="@string/menu_apps" />
     </group>
 
     <group
