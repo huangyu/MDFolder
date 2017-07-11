@@ -120,10 +120,8 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                             AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_can_not_access_file));
                         }
                     }
-                } else if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT
-                        || mPresenter.mEditType == Constants.EditType.ZIP || mPresenter.mEditType == Constants.EditType.UNZIP) {
-                    // do nothing
-                } else {
+                } else if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT
+                        && mPresenter.mEditType != Constants.EditType.ZIP && mPresenter.mEditType != Constants.EditType.UNZIP) {
                     mPresenter.mEditType = Constants.EditType.SELECT;
                     mFileAdapter.switchSelectedState(position);
                     mActionMode.setTitle(String.format(getString(R.string.tips_selected), mFileAdapter.getSelectedItemCount()));
@@ -488,37 +486,9 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                     case R.id.action_delete:
                         mPresenter.onDelete(fileList);
                         break;
-//                    case R.id.action_copy:
-//                        mPresenter.mEditType = Constants.EditType.COPY;
-//                        mActionMode = getPasteActonMode();
-//                        mFileAdapter.mSelectedFileList = fileList;
-//                        mActionMode.setTitle(mFolderAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
-//                        break;
-//                    case R.id.action_move:
-//                        mPresenter.mEditType = Constants.EditType.CUT;
-//                        mActionMode = getPasteActonMode();
-//                        mFileAdapter.mSelectedFileList = fileList;
-//                        mActionMode.setTitle(mFolderAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
-//                        break;
                     case R.id.action_show_hide:
                         mPresenter.onShowHideFile(fileList);
                         break;
-//                    case R.id.action_compress:
-//                        mPresenter.mEditType = Constants.EditType.ZIP;
-//                        mActionMode = getPasteActonMode();
-//                        mFileAdapter.mSelectedFileList = fileList;
-//                        mActionMode.setTitle(mFolderAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
-//                        break;
-//                    case R.id.action_extract:
-//                        if (fileList.size() != 1) {
-//                            showMessage(getResString(R.string.tips_choose_one_file));
-//                        } else {
-//                            mPresenter.mEditType = Constants.EditType.UNZIP;
-//                            mActionMode = getPasteActonMode();
-//                            mFileAdapter.mSelectedFileList = fileList;
-//                            mActionMode.setTitle(mFolderAdapter.getSelectedItemCount() + getString(R.string.tips_selected));
-//                        }
-//                        break;
                     case R.id.action_select_all:
                         mPresenter.mEditType = Constants.EditType.SELECT;
                         mFileAdapter.selectAll();
@@ -553,51 +523,6 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
             }
         });
     }
-
-//    private ActionMode getPasteActonMode() {
-//        return getActivity().startActionMode(new ActionMode.Callback() {
-//            @Override
-//            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-//                mode.getMenuInflater().inflate(R.menu.menu_paste, menu);
-//                return true;
-//            }
-//
-//            @Override
-//            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-//                menu.clear();
-//                mode.getMenuInflater().inflate(R.menu.menu_paste, menu);
-//                return true;
-//            }
-//
-//            @Override
-//            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-//                final ArrayList<FileItem> fileList = mFileAdapter.mSelectedFileList;
-//                switch (item.getItemId()) {
-//                    case R.id.action_paste:
-//                        if (mPresenter.mEditType == Constants.EditType.COPY) {
-//                            mPresenter.onCopy(fileList);
-//                        } else if (mPresenter.mEditType == Constants.EditType.CUT) {
-//                            mPresenter.onMove(fileList);
-//                        } else if (mPresenter.mEditType == Constants.EditType.ZIP) {
-//                            mPresenter.onZip(fileList);
-//                        } else if (mPresenter.mEditType == Constants.EditType.UNZIP) {
-//                            mPresenter.onUnzip(fileList);
-//                        }
-//                        break;
-//                }
-//                return false;
-//            }
-//
-//            @Override
-//            public void onDestroyActionMode(ActionMode mode) {
-//                refreshData(true);
-//                getActivity().supportInvalidateOptionsMenu();
-//                mActionMode = null;
-//                mPresenter.mEditType = Constants.EditType.NONE;
-//                mFileAdapter.mSelectedFileList = null;
-//            }
-//        });
-//    }
 
     public int getScrollYDistance() {
         GridLayoutManager layoutManager = (GridLayoutManager) mRecyclerView.getLayoutManager();
