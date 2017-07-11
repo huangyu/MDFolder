@@ -27,8 +27,6 @@ import com.huangyu.mdfolder.utils.comparator.AlphabetComparator;
 import com.huangyu.mdfolder.utils.comparator.SizeComparator;
 import com.huangyu.mdfolder.utils.comparator.TimeComparator;
 import com.huangyu.mdfolder.utils.comparator.TypeComparator;
-import com.huangyu.mdfolder.utils.filter.ApkFilter;
-import com.huangyu.mdfolder.utils.filter.CompressFilter;
 import com.huangyu.mdfolder.utils.filter.SearchFilter;
 
 import java.io.File;
@@ -55,24 +53,12 @@ public class FileListModel implements IBaseModel {
         }
     }
 
-    public ArrayList<File> getAppsFileList(String path, String searchStr) {
-        return FileUtils.listFilesInDirWithFilter(path, new ApkFilter(searchStr), true);
-    }
-
-    public ArrayList<File> getCompressFileList(String path, String searchStr) {
-        return FileUtils.listFilesInDirWithFilter(path, new CompressFilter(searchStr), true);
-    }
-
-//    public ArrayList<File> getMusicFileList(String searchStr) {
-//        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(false), new MusicFilter(searchStr), true);
+//    public ArrayList<File> getAppsFileList(String path, String searchStr) {
+//        return FileUtils.listFilesInDirWithFilter(path, new ApkFilter(searchStr), true);
 //    }
 //
-//    public ArrayList<File> getPhotoFileList(String searchStr) {
-//        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(false), new PhotoFilter(searchStr), true);
-//    }
-//
-//    public ArrayList<File> getVideoFileList(String searchStr) {
-//        return FileUtils.listFilesInDirWithFilter(getStorageCardPath(false), new VideoFilter(searchStr), true);
+//    public ArrayList<File> getCompressFileList(String path, String searchStr) {
+//        return FileUtils.listFilesInDirWithFilter(path, new CompressFilter(searchStr), true);
 //    }
 
     public ArrayList<FileItem> getGlobalFileListBySearch(String searchStr, ContentResolver contentResolver) {
@@ -541,7 +527,7 @@ public class FileListModel implements IBaseModel {
         return null;
     }
 
-    public ArrayList<FileItem> getInstalledList() {
+    public ArrayList<FileItem> getInstalledList(String searchStr) {
         ArrayList<FileItem> appsList = new ArrayList<>();
         ArrayList<FileItem> systemList = new ArrayList<>();
         ArrayList<FileItem> nSystemList = new ArrayList<>();
@@ -553,11 +539,14 @@ public class FileListModel implements IBaseModel {
                 fileItem = new FileItem();
                 String packageName = packageInfo.packageName;
                 ApplicationInfo applicationInfo = packageInfo.applicationInfo;
+                String fileRealName;
                 if (applicationInfo != null) {
-                    fileItem.setName(packageInfo.applicationInfo.loadLabel(packageManager).toString());
+                    fileRealName = packageInfo.applicationInfo.loadLabel(packageManager).toString();
+                    fileItem.setName(fileRealName);
                     fileItem.setPath(packageInfo.applicationInfo.publicSourceDir);
                 } else {
-                    fileItem.setName(packageInfo.packageName);
+                    fileRealName = packageInfo.packageName;
+                    fileItem.setName(fileRealName);
                     fileItem.setPath("");
                 }
                 fileItem.setDate(String.valueOf(packageInfo.lastUpdateTime / 1000));
@@ -568,10 +557,12 @@ public class FileListModel implements IBaseModel {
                 fileItem.setPackageName(packageName);
                 fileItem.setIsShow(true);
 
-                if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-                    nSystemList.add(fileItem);
-                } else {
-                    systemList.add(fileItem);
+                if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
+                    if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+                        nSystemList.add(fileItem);
+                    } else {
+                        systemList.add(fileItem);
+                    }
                 }
             }
         } catch (PackageManager.NameNotFoundException e) {

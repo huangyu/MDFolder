@@ -2,10 +2,12 @@ package com.huangyu.mdfolder.mvp.presenter;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -22,6 +24,7 @@ import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
 import com.huangyu.mdfolder.mvp.view.IFileListView;
+import com.huangyu.mdfolder.ui.activity.FileListActivity;
 import com.huangyu.mdfolder.utils.CompressUtils;
 import com.huangyu.mdfolder.utils.MediaScanUtils;
 import com.huangyu.mdfolder.utils.MimeTypeUtils;
@@ -46,6 +49,7 @@ import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
 
 import static com.huangyu.mdfolder.app.Constants.OrderType.DESC;
+import static com.huangyu.mdfolder.app.Constants.UNINSTALL_REQUEST_CODE;
 
 /**
  * Created by huangyu on 2017/5/22.
@@ -363,27 +367,33 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                     @Override
                     public void onNext(ArrayList<FileItem> fileList) {
-                        mView.removeAllTabs();
                         switch (mSelectType) {
                             case Constants.SelectType.MENU_DOCUMENT:
+                                mView.removeAllTabs();
                                 mView.addTab(mView.getResString(R.string.menu_document) + "  " + fileList.size());
                                 break;
                             case Constants.SelectType.MENU_PHOTO:
+                                mView.removeAllTabs();
                                 mView.addTab(mView.getResString(R.string.menu_image) + "  " + fileList.size());
                                 break;
                             case Constants.SelectType.MENU_MUSIC:
+                                mView.removeAllTabs();
                                 mView.addTab(mView.getResString(R.string.menu_audio) + "  " + fileList.size());
                                 break;
                             case Constants.SelectType.MENU_VIDEO:
+                                mView.removeAllTabs();
                                 mView.addTab(mView.getResString(R.string.menu_video) + "  " + fileList.size());
                                 break;
                             case Constants.SelectType.MENU_APK:
+                                mView.removeAllTabs();
                                 mView.addTab(mView.getResString(R.string.menu_apk) + "  " + fileList.size());
                                 break;
                             case Constants.SelectType.MENU_ZIP:
+                                mView.removeAllTabs();
                                 mView.addTab(mView.getResString(R.string.menu_compress_package) + "  " + fileList.size());
                                 break;
                             case Constants.SelectType.MENU_APPS:
+                                mView.removeAllTabs();
                                 mView.addTab(mView.getResString(R.string.menu_apps) + "  " + fileList.size());
                                 break;
                         }
@@ -877,6 +887,25 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     mView.finishAction();
                 }
             });
+        }
+    }
+
+    /**
+     * 卸载文件
+     *
+     * @param fileList 文件列表
+     */
+    public void onUninstall(final ArrayList<FileItem> fileList) {
+        if (fileList.size() != 1) {
+            mView.showMessage(mView.getResString(R.string.tips_choose_one_file));
+        } else {
+            try {
+                FileItem fileItem = fileList.get(0);
+                Intent intent = new Intent(Intent.ACTION_DELETE, Uri.fromParts("package", fileItem.getPackageName(), null));
+                ((FileListActivity) mContext).startActivityForResult(intent, UNINSTALL_REQUEST_CODE);
+            } catch (Exception e) {
+                mView.showMessage(mView.getResString(R.string.tips_can_not_access_file));
+            }
         }
     }
 
@@ -1397,7 +1426,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 fileItemList = mFileListModel.getCompressList(searchStr, mContext.getContentResolver());
                 break;
             case Constants.SelectType.MENU_APPS:
-                fileItemList = mFileListModel.getInstalledList();
+                fileItemList = mFileListModel.getInstalledList(searchStr);
                 break;
         }
 
@@ -1451,7 +1480,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     fileItem.setSize("0");
                     if (file.list() != null && file.list().length > 0) {
                         int hiddenCount = 0;
-                        for (File f : fileList) {
+                        for (File f : file.listFiles()) {
                             if (f.isHidden() && !SPUtils.isShowHiddenFiles()) {
                                 hiddenCount++;
                             }

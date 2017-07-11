@@ -13,17 +13,19 @@ import java.io.FilenameFilter;
 public class SearchFilter implements FilenameFilter {
 
     private String mSearchStr;
+    private boolean isShowHidden;
 
     public SearchFilter(String searchStr) {
         this.mSearchStr = searchStr;
+        this.isShowHidden = SPUtils.isShowHiddenFiles();
     }
 
     @Override
     public boolean accept(File dir, String name) {
         if (TextUtils.isEmpty(mSearchStr)) {
-            return SPUtils.isShowHiddenFiles() || !name.matches("^\\.+[^\\.].+");
+            return isShowHidden || !name.matches("^\\.+[^\\.].+");
         } else {
-            if (SPUtils.isShowHiddenFiles()) {
+            if (isShowHidden) {
                 return containsIgnoreCase(name, mSearchStr);
             } else {
                 return containsIgnoreCase(name, mSearchStr) && !name.matches("^\\.+[^\\.].+");

@@ -41,6 +41,7 @@
     <string name="menu_move">移动</string>
     <string name="menu_paste">粘贴</string>
     <string name="menu_delete">删除</string>
+    <string name="menu_uninstall">卸载</string>
     <string name="menu_rename">重命名</string>
     <string name="menu_info">详情</string>
     <string name="menu_settings">设置</string>

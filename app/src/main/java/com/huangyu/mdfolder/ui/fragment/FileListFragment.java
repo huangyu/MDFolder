@@ -134,7 +134,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                                     AlertUtils.showCompressListBottomSheet(getContext(), CompressUtils.listRarFiles(file.getPath()), ".rar");
                                 } else {
                                     if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
-                                        AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_can_not_access_file));
+                                        showMessage(getString(R.string.tips_can_not_access_file));
                                     }
                                 }
                                 return;
@@ -221,18 +221,18 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                                 PackageManager pack = getContext().getPackageManager();
                                 Intent app = pack.getLaunchIntentForPackage(file.getPackageName());
                                 if (app == null) {
-                                    AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_can_not_access_file));
+                                    showMessage(getString(R.string.tips_can_not_access_file));
                                     return;
                                 }
                                 startActivity(app);
                             }
                             // 打开文件
                             else if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
-                                AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_can_not_access_file));
+                                showMessage(getString(R.string.tips_can_not_access_file));
                             }
                         } else {
                             if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
-                                AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_can_not_access_file));
+                                showMessage(getString(R.string.tips_can_not_access_file));
                             }
                         }
                     }
@@ -487,6 +487,14 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 mPresenter.onLoadStorageFileList(false, mSearchStr);
             }
         });
+
+        mRxManager.on("onFinishAction", new Action1<String>() {
+
+            @Override
+            public void call(String s) {
+                finishAction();
+            }
+        });
     }
 
     @Override
@@ -677,14 +685,22 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         return getActivity().startActionMode(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                mode.getMenuInflater().inflate(R.menu.menu_control, menu);
+                if (mPresenter.mSelectType == Constants.SelectType.MENU_APPS) {
+                    mode.getMenuInflater().inflate(R.menu.menu_control_apps, menu);
+                } else {
+                    mode.getMenuInflater().inflate(R.menu.menu_control, menu);
+                }
                 return true;
             }
 
             @Override
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
                 menu.clear();
-                mode.getMenuInflater().inflate(R.menu.menu_control, menu);
+                if (mPresenter.mSelectType == Constants.SelectType.MENU_APPS) {
+                    mode.getMenuInflater().inflate(R.menu.menu_control_apps, menu);
+                } else {
+                    mode.getMenuInflater().inflate(R.menu.menu_control, menu);
+                }
                 return true;
             }
 
@@ -706,7 +722,6 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                             files.add(file);
                         }
                         mPresenter.shareFile(getContext(), files);
-//                        mPresenter.shareFile(fileList);
                         break;
                     case R.id.action_delete:
                         mPresenter.onDelete(fileList);
@@ -757,6 +772,9 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         if (mAdapter.getSelectedItemCount() == 0) {
                             finishAction();
                         }
+                        break;
+                    case R.id.action_uninstall:
+                        mPresenter.onUninstall(fileList);
                         break;
                 }
                 return false;

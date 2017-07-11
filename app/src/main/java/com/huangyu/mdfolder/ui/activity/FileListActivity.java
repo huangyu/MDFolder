@@ -45,6 +45,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 import static com.huangyu.mdfolder.app.Constants.PERMISSION_ACCESS_FILES;
 import static com.huangyu.mdfolder.app.Constants.STORAGE_REQUEST_CODE;
+import static com.huangyu.mdfolder.app.Constants.UNINSTALL_REQUEST_CODE;
 import static com.huangyu.mdfolder.utils.SDCardUtils.getStoragePath;
 
 public class FileListActivity extends ThematicActivity implements NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
@@ -564,6 +565,9 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                 AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_cannot_access_sdcard));
                 mRxManager.post("toStorage", true);
             }
+        }
+        else if (requestCode == UNINSTALL_REQUEST_CODE) {
+            mRxManager.post("onFinishAction", "");
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
