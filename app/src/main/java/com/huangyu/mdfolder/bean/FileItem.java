@@ -23,6 +23,7 @@ public class FileItem implements Serializable {
     private ArrayList<FileItem> images = new ArrayList<>();
     private int count;
     private String packageName;
+    private String remark;
 
     public FileItem() {
 
@@ -130,6 +131,14 @@ public class FileItem implements Serializable {
 
     public void setPackageName(String packageName) {
         this.packageName = packageName;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
 }

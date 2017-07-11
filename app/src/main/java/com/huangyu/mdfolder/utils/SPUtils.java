@@ -5,6 +5,7 @@ import android.preference.PreferenceManager;
 
 import com.huangyu.library.app.BaseApplication;
 import com.huangyu.mdfolder.R;
+import com.huangyu.mdfolder.app.AppApplication;
 
 /**
  * Created by huangyu on 2017-6-21.
@@ -12,6 +13,7 @@ import com.huangyu.mdfolder.R;
 public class SPUtils {
 
     private SPUtils() {
+        throw new UnsupportedOperationException("u can't instantiate me...");
     }
 
     /**
@@ -25,7 +27,6 @@ public class SPUtils {
         }
         return true;
     }
-
 
     /**
      * 设置主题
@@ -61,6 +62,8 @@ public class SPUtils {
 
     /**
      * 是否是内置模式
+     *
+     * @return true/false
      */
     public static boolean isBuildInMode() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(BaseApplication.getInstance().getApplicationContext());
@@ -69,6 +72,8 @@ public class SPUtils {
 
     /**
      * 是否是显示全部应用
+     *
+     * @return true/false
      */
     public static boolean isShowAllApps() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(BaseApplication.getInstance().getApplicationContext());
@@ -77,10 +82,38 @@ public class SPUtils {
 
     /**
      * 是否是全局搜索
+     *
+     * @return true/false
      */
     public static boolean isSearchGlobally() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(BaseApplication.getInstance().getApplicationContext());
         return prefs.getBoolean("pref_search_mode", true);
+    }
+
+    /**
+     * 设置文件备注
+     */
+    public static void setFileRemark(String filePath, String remark) {
+        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        sp.put(filePath, remark);
+    }
+
+    /**
+     * 获取文件备注
+     *
+     * @return 备注名
+     */
+    public static String getFileRemark(String filePath) {
+        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        return sp.getString(filePath);
+    }
+
+    /**
+     * 移除备注
+     */
+    public static void removeFileRemark(String filePath) {
+        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        sp.remove(filePath);
     }
 
 }

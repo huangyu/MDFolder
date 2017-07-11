@@ -756,6 +756,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                             boolean result = mFileModel.renameFile(filePath, editText.getText().toString());
                                             String newPath = new File(filePath).getParent() + File.separator + editText.getText().toString();
                                             if (result) {
+                                                SPUtils.removeFileRemark(filePath);
                                                 MediaScanUtils.renameMediaFile(mContext, filePath, newPath);
                                             }
                                             return result;
@@ -776,6 +777,78 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                             } else {
                                                 mView.showMessage(mView.getResString(R.string.tips_rename_in_error));
                                             }
+                                        }
+
+                                        @Override
+                                        public void onError(Throwable e) {
+                                            mView.showError(e.getMessage());
+                                            onCompleted();
+                                        }
+
+                                        @Override
+                                        public void onCompleted() {
+                                            mView.stopRefresh();
+                                            mView.finishAction();
+                                        }
+                                    });
+                            mRxManager.add(subscription);
+                        }
+                    });
+                    Button negativeButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
+                    negativeButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    /**
+     * 备注文件（暂时只支持单个文件）
+     *
+     * @param fileList 文件列表
+     */
+    public void onRemark(final ArrayList<FileItem> fileList) {
+        if (fileList.size() != 1) {
+            mView.showMessage(mView.getResString(R.string.tips_choose_one_file));
+        } else {
+            final View view = mView.inflateFilenameInputDialogLayout();
+            final TextInputLayout textInputLayout = mView.findTextInputLayout(view);
+            final EditText editText = mView.findAlertDialogEditText(view);
+            final String fileRemark = fileList.get(0).getRemark();
+            final String filePath = fileList.get(0).getPath();
+            textInputLayout.setHint(mView.getResString(R.string.tips_input_file_remark));
+            if (!TextUtils.isEmpty(fileRemark)) {
+                editText.setText(fileRemark);
+                editText.setSelection(0, fileRemark.length());
+            }
+            mView.showKeyboard(mView.findAlertDialogEditText(view));
+            mView.showInputFileNameAlert(view, new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(final DialogInterface dialog) {
+                    Button positionButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                    positionButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            final String remark = editText.getText().toString();
+                            Subscription subscription = Observable.just(null)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(new Subscriber<Object>() {
+                                        @Override
+                                        public void onStart() {
+                                            dialog.dismiss();
+                                            mView.startRefresh();
+                                        }
+
+                                        @Override
+                                        public void onNext(Object result) {
+                                            SPUtils.setFileRemark(filePath, remark);
+                                            mView.showMessage(mView.getResString(R.string.tips_rename_successfully));
                                         }
 
                                         @Override
@@ -938,6 +1011,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                             result = mFileModel.deleteFile(file.getPath());
                                         }
                                         if (result) {
+                                            SPUtils.removeFileRemark(file.getPath());
                                             MediaScanUtils.removeMediaFromLib(mContext, file.getPath());
                                         }
                                         return result;
@@ -1030,6 +1104,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                                 String newPath = mCurrentPath + File.separator + filename + ".zip";
                                                 boolean result = mFileListModel.zipFileList(fileArrayList, newPath);
                                                 if (result) {
+                                                    for (File f : fileArrayList) {
+                                                        SPUtils.removeFileRemark(f.getPath());
+                                                    }
                                                     MediaScanUtils.scanFiles(mContext, new String[]{newPath}, new String[]{MimeTypeUtils.getMIMEType(newPath)});
                                                     mView.showMessage(mView.getResString(R.string.tips_compress_successfully));
                                                 } else {
@@ -1360,6 +1437,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     result = mFileModel.moveFile(file.getPath(), newPath);
                                 }
                                 if (result) {
+                                    SPUtils.removeFileRemark(file.getPath());
                                     MediaScanUtils.scanFiles(mContext, new String[]{newPath}, new String[]{MimeTypeUtils.getMIMEType(newPath)});
                                 }
                                 return result;
@@ -1498,6 +1576,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 fileItem.setParent(file.getParent());
                 fileItem.setType(MimeTypeUtils.getTypeBySuffix(FileUtils.getSuffix(file.getName())));
                 fileItem.setIsShow(!file.isHidden());
+                fileItem.setRemark(SPUtils.getFileRemark(file.getPath()));
 
                 if (file.getName().endsWith(".apk")) {
                     PackageInfo packageInfo = pm.getPackageArchiveInfo(file.getPath(), PackageManager.GET_ACTIVITIES);

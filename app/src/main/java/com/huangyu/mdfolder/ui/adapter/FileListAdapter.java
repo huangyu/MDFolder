@@ -1,6 +1,7 @@
 package com.huangyu.mdfolder.ui.adapter;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -38,6 +39,10 @@ public class FileListAdapter extends CommonRecyclerViewAdapter<FileItem> {
         View mVDivider = holder.getView(R.id.v_divider);
 
         mTvName.setText(fileItem.getName());
+        String fileRemark = fileItem.getRemark();
+        if (!TextUtils.isEmpty(fileRemark)) {
+            mTvName.append(" (" + fileRemark + ")");
+        }
 
         FileListActivity activity = (FileListActivity) mContext;
         if (activity.isLightMode()) {

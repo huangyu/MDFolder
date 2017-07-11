@@ -11,6 +11,7 @@ import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.widget.AppCompatEditText;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -199,8 +200,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements ScanTa
                         positionButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                String size = aetSize.getText().toString();
+                                if (TextUtils.isEmpty(size)) {
+                                    AlertUtils.showToast(getContext(), getString(R.string.tips_file_name_empty));
+                                    return;
+                                }
+                                scanAllFile(Integer.valueOf(size));
                                 dialog.dismiss();
-                                scanAllFile(Integer.valueOf(aetSize.getText().toString()));
                             }
                         });
                         Button negativeButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);

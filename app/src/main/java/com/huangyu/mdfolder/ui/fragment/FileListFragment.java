@@ -776,6 +776,9 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     case R.id.action_uninstall:
                         mPresenter.onUninstall(fileList);
                         break;
+                    case R.id.action_remark:
+                        mPresenter.onRemark(fileList);
+                        break;
                 }
                 return false;
             }

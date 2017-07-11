@@ -42,6 +42,7 @@
     <string name="menu_delete">Delete</string>
     <string name="menu_uninstall">Uninstall</string>
     <string name="menu_rename">Rename</string>
+    <string name="menu_remark">Remark</string>
     <string name="menu_info">Info</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_apk">Apk</string>
@@ -114,6 +115,7 @@
     <string name="tips_choose_one_file">Please choose one file.</string>
     <string name="tips_selected">%d&#160;Selected.</string>
     <string name="tips_input_file_name">Please input filename.</string>
+    <string name="tips_input_file_remark">Please input file remark.</string>
     <string name="tips_input_size">Please input size.(Larger than xxx kb)</string>
     <string name="tips_file_name_empty">Filename cannot be empty.</string>
     <string name="tips_copy_to_clipboard">&#160;is copied to clipboard.</string>

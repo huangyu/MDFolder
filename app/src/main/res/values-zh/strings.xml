@@ -43,6 +43,7 @@
     <string name="menu_delete">删除</string>
     <string name="menu_uninstall">卸载</string>
     <string name="menu_rename">重命名</string>
+    <string name="menu_remark">备注</string>
     <string name="menu_info">详情</string>
     <string name="menu_settings">设置</string>
     <string name="menu_apk">安装包</string>
@@ -115,6 +116,7 @@
     <string name="tips_choose_one_file">请只选择一个文件</string>
     <string name="tips_selected">选择%d项</string>
     <string name="tips_input_file_name">请输入文件名</string>
+    <string name="tips_input_file_remark">请输入文件备注</string>
     <string name="tips_input_size">请输入文件大小（大于多少kb）</string>
     <string name="tips_file_name_empty">文件名不能为空</string>
     <string name="tips_copy_to_clipboard">已复制到剪贴板</string>

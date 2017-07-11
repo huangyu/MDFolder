@@ -486,8 +486,9 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     }
 
     private void checkSdCardPermission() {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-            File sdcard = new File(getStoragePath(this, true));
+        String sdcardPath = getStoragePath(this, true);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP && sdcardPath != null) {
+            File sdcard = new File(sdcardPath);
             List<UriPermission> permissions = getContentResolver().getPersistedUriPermissions();
             DocumentFile documentFile;
             boolean needPermissions = true;
@@ -565,8 +566,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                 AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_cannot_access_sdcard));
                 mRxManager.post("toStorage", true);
             }
-        }
-        else if (requestCode == UNINSTALL_REQUEST_CODE) {
+        } else if (requestCode == UNINSTALL_REQUEST_CODE) {
             mRxManager.post("onFinishAction", "");
         }
         super.onActivityResult(requestCode, resultCode, data);
