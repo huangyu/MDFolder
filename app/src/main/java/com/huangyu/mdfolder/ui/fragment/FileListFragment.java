@@ -251,7 +251,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 } else {
                     mPresenter.mEditType = Constants.EditType.SELECT;
                     mAdapter.switchSelectedState(position);
-                    mActionMode.setTitle(getString(R.string.tips_selected1) + mAdapter.getSelectedItemCount() + getString(R.string.tips_selected2));
+                    mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAdapter.getSelectedItemCount()));
                     if (mAdapter.getSelectedItemCount() == 0) {
                         finishAction();
                     }
@@ -271,7 +271,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 if (mActionMode == null) {
                     mActionMode = getControlActionMode();
                 }
-                mActionMode.setTitle(getString(R.string.tips_selected1) + mAdapter.getSelectedItemCount() + getString(R.string.tips_selected2));
+                mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAdapter.getSelectedItemCount()));
             }
         });
         mRecyclerView.setAdapter(mAdapter);
@@ -730,13 +730,13 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         mPresenter.mEditType = Constants.EditType.COPY;
                         mActionMode = getPasteActonMode();
                         mAdapter.mSelectedFileList = fileList;
-                        mActionMode.setTitle(getString(R.string.tips_selected1) + mAdapter.getSelectedItemCount() + getString(R.string.tips_selected2));
+                        mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAdapter.getSelectedItemCount()));
                         break;
                     case R.id.action_move:
                         mPresenter.mEditType = Constants.EditType.CUT;
                         mActionMode = getPasteActonMode();
                         mAdapter.mSelectedFileList = fileList;
-                        mActionMode.setTitle(getString(R.string.tips_selected1) + mAdapter.getSelectedItemCount() + getString(R.string.tips_selected2));
+                        mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAdapter.getSelectedItemCount()));
                         break;
                     case R.id.action_show_hide:
                         mPresenter.onShowHideFile(fileList);
@@ -745,7 +745,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         mPresenter.mEditType = Constants.EditType.ZIP;
                         mActionMode = getPasteActonMode();
                         mAdapter.mSelectedFileList = fileList;
-                        mActionMode.setTitle(getString(R.string.tips_selected1) + mAdapter.getSelectedItemCount() + getString(R.string.tips_selected2));
+                        mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAdapter.getSelectedItemCount()));
                         break;
                     case R.id.action_extract:
                         if (fileList.size() != 1) {
@@ -754,13 +754,13 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                             mPresenter.mEditType = Constants.EditType.UNZIP;
                             mActionMode = getPasteActonMode();
                             mAdapter.mSelectedFileList = fileList;
-                            mActionMode.setTitle(getString(R.string.tips_selected1) + mAdapter.getSelectedItemCount() + getString(R.string.tips_selected2));
+                            mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAdapter.getSelectedItemCount()));
                         }
                         break;
                     case R.id.action_select_all:
                         mPresenter.mEditType = Constants.EditType.SELECT;
                         mAdapter.selectAll();
-                        mActionMode.setTitle(getString(R.string.tips_selected1) + mAdapter.getSelectedItemCount() + getString(R.string.tips_selected2));
+                        mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAdapter.getSelectedItemCount()));
                         if (mAdapter.getSelectedItemCount() == 0) {
                             finishAction();
                         }
@@ -768,7 +768,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     case R.id.action_inverse_all:
                         mPresenter.mEditType = Constants.EditType.SELECT;
                         mAdapter.inverseAll();
-                        mActionMode.setTitle(getString(R.string.tips_selected1) + mAdapter.getSelectedItemCount() + getString(R.string.tips_selected2));
+                        mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAdapter.getSelectedItemCount()));
                         if (mAdapter.getSelectedItemCount() == 0) {
                             finishAction();
                         }

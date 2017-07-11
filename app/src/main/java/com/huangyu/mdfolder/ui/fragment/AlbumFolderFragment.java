@@ -126,7 +126,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                 } else {
                     mPresenter.mEditType = Constants.EditType.SELECT;
                     mFileAdapter.switchSelectedState(position);
-                    mActionMode.setTitle(getString(R.string.tips_selected1) + mFileAdapter.getSelectedItemCount() + getString(R.string.tips_selected2));
+                    mActionMode.setTitle(String.format(getString(R.string.tips_selected), mFileAdapter.getSelectedItemCount()));
                     if (mFileAdapter.getSelectedItemCount() == 0) {
                         finishAction();
                     }
@@ -145,7 +145,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                 if (mActionMode == null) {
                     mActionMode = getControlActionMode();
                 }
-                mActionMode.setTitle(getString(R.string.tips_selected1) + mFileAdapter.getSelectedItemCount() + getString(R.string.tips_selected2));
+                mActionMode.setTitle(String.format(getString(R.string.tips_selected), mFileAdapter.getSelectedItemCount()));
             }
         });
 
@@ -522,7 +522,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                     case R.id.action_select_all:
                         mPresenter.mEditType = Constants.EditType.SELECT;
                         mFileAdapter.selectAll();
-                        mActionMode.setTitle(getString(R.string.tips_selected1) + mFileAdapter.getSelectedItemCount() + getString(R.string.tips_selected2));
+                        mActionMode.setTitle(String.format(getString(R.string.tips_selected), mFileAdapter.getSelectedItemCount()));
                         if (mFileAdapter.getSelectedItemCount() == 0) {
                             finishAction();
                         }
@@ -530,7 +530,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                     case R.id.action_inverse_all:
                         mPresenter.mEditType = Constants.EditType.SELECT;
                         mFileAdapter.inverseAll();
-                        mActionMode.setTitle(getString(R.string.tips_selected1) + mFileAdapter.getSelectedItemCount() + getString(R.string.tips_selected2));
+                        mActionMode.setTitle(String.format(getString(R.string.tips_selected), mFileAdapter.getSelectedItemCount()));
                         if (mFileAdapter.getSelectedItemCount() == 0) {
                             finishAction();
                         }
