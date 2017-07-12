@@ -27,8 +27,8 @@
 
     <string name="menu_other">Other</string>
     <string name="menu_root">System</string>
-    <string name="menu_inner_storage">Inner Storage</string>
-    <string name="menu_outer_storage">Outer Storage</string>
+    <string name="menu_inner_storage">Storage</string>
+    <string name="menu_outer_storage">SDCard</string>
     <string name="menu_image">Image</string>
     <string name="menu_audio">Audio</string>
     <string name="menu_video">Video</string>
@@ -153,7 +153,7 @@
     <string name="pref_search_single">Search in single file</string>
     <string name="pref_search_mode">File Search mode</string>
     <string name="pref_scan">Scan Globally</string>
-    <string name="pref_scan_summary">Scan added file from other apps.（>50kb）</string>
+    <string name="pref_scan_summary">Scan added file from other apps.</string>
 
     <string-array name="array_languages">
         <item>Simplified chinese</item>
