@@ -22,12 +22,12 @@ public class SearchFilter implements FilenameFilter {
     }
 
     @Override
-    public boolean accept(File dir, String name) {
+    public boolean accept(File file, String name) {
         boolean hiddenResult = !name.matches("^\\.+[^\\.].+");
         if (TextUtils.isEmpty(mSearchStr)) {
             return isShowHidden || hiddenResult;
         } else {
-            String remark = SPUtils.getFileRemark(dir.getPath());
+            String remark = SPUtils.getFileRemark(file.getPath() + File.separator + name);
             boolean nameResult = StringUtils.containsIgnoreCase(name, mSearchStr);
             boolean remarkResult = StringUtils.containsIgnoreCase(remark, mSearchStr);
             if (isShowHidden) {
@@ -38,9 +38,9 @@ public class SearchFilter implements FilenameFilter {
                 }
             } else {
                 if (TextUtils.isEmpty(remark)) {
-                    return nameResult || hiddenResult;
+                    return nameResult && hiddenResult;
                 } else {
-                    return nameResult || remarkResult || hiddenResult;
+                    return (nameResult || remarkResult) && hiddenResult;
                 }
             }
         }
