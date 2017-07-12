@@ -23,6 +23,7 @@ import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.utils.CompressUtils;
 import com.huangyu.mdfolder.utils.SDCardUtils;
 import com.huangyu.mdfolder.utils.SPUtils;
+import com.huangyu.mdfolder.utils.StringUtils;
 import com.huangyu.mdfolder.utils.comparator.AlphabetComparator;
 import com.huangyu.mdfolder.utils.comparator.SizeComparator;
 import com.huangyu.mdfolder.utils.comparator.TimeComparator;
@@ -81,25 +82,31 @@ public class FileListModel implements IBaseModel {
 
                 String fileRealName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
                 if (FileUtils.isFileExists(filePath) && !isFolder(fileRealName)) {
-                    FileItem fileItem = new FileItem();
-                    fileItem.setName(fileRealName);
-                    fileItem.setPath(filePath);
-                    fileItem.setSize(fileLength);
-                    fileItem.setDate(date);
-                    fileItem.setParent(null);
-                    fileItem.setIsDirectory(false);
-                    fileItem.setType(Constants.FileType.APK);
-                    fileItem.setIsShow(true);
-
                     if (fileRealName.endsWith(".apk")) {
                         PackageInfo packageInfo = pm.getPackageArchiveInfo(filePath, PackageManager.GET_ACTIVITIES);
                         ApplicationInfo appInfo = packageInfo.applicationInfo;
                         appInfo.sourceDir = filePath;
                         appInfo.publicSourceDir = filePath;
                         Drawable icon = appInfo.loadIcon(pm);
+
+                        FileItem fileItem = new FileItem();
+                        fileItem.setName(fileRealName);
+                        fileItem.setPath(filePath);
+                        fileItem.setSize(fileLength);
+                        fileItem.setDate(date);
+                        fileItem.setParent(null);
+                        fileItem.setIsDirectory(false);
+                        fileItem.setType(Constants.FileType.APK);
+                        fileItem.setIsShow(true);
                         fileItem.setIcon(icon);
 
-                        if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
+                        String remark = SPUtils.getFileRemark(filePath);
+                        boolean searchResult = TextUtils.isEmpty(searchStr);
+                        boolean nameResult = StringUtils.containsIgnoreCase(fileRealName, searchStr);
+                        boolean remarkResult = TextUtils.isEmpty(remark) || StringUtils.containsIgnoreCase(remark, searchStr);
+                        fileItem.setRemark(remark);
+
+                        if (searchResult || nameResult || remarkResult) {
                             documentList.add(fileItem);
                         }
                     }
@@ -161,7 +168,14 @@ public class FileListModel implements IBaseModel {
                     fileItem.setIsDirectory(false);
                     fileItem.setType(Constants.FileType.DOCUMENT);
                     fileItem.setIsShow(true);
-                    if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
+
+                    String remark = SPUtils.getFileRemark(filePath);
+                    boolean searchResult = TextUtils.isEmpty(searchStr);
+                    boolean nameResult = StringUtils.containsIgnoreCase(fileRealName, searchStr);
+                    boolean remarkResult = TextUtils.isEmpty(remark) || StringUtils.containsIgnoreCase(remark, searchStr);
+                    fileItem.setRemark(remark);
+
+                    if (searchResult || nameResult || remarkResult) {
                         documentList.add(fileItem);
                     }
                 }
@@ -199,7 +213,14 @@ public class FileListModel implements IBaseModel {
                     fileItem.setIsDirectory(false);
                     fileItem.setType(Constants.FileType.VIDEO);
                     fileItem.setIsShow(true);
-                    if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
+
+                    String remark = SPUtils.getFileRemark(filePath);
+                    boolean searchResult = TextUtils.isEmpty(searchStr);
+                    boolean nameResult = StringUtils.containsIgnoreCase(fileRealName, searchStr);
+                    boolean remarkResult = TextUtils.isEmpty(remark) || StringUtils.containsIgnoreCase(remark, searchStr);
+                    fileItem.setRemark(remark);
+
+                    if (searchResult || nameResult || remarkResult) {
                         videoList.add(fileItem);
                     }
                 }
@@ -234,7 +255,14 @@ public class FileListModel implements IBaseModel {
                     fileItem.setIsDirectory(false);
                     fileItem.setType(Constants.FileType.IMAGE);
                     fileItem.setIsShow(true);
-                    if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
+
+                    String remark = SPUtils.getFileRemark(filePath);
+                    boolean searchResult = TextUtils.isEmpty(searchStr);
+                    boolean nameResult = StringUtils.containsIgnoreCase(fileRealName, searchStr);
+                    boolean remarkResult = TextUtils.isEmpty(remark) || StringUtils.containsIgnoreCase(remark, searchStr);
+                    fileItem.setRemark(remark);
+
+                    if (searchResult || nameResult || remarkResult) {
                         imageList.add(fileItem);
                     }
                 }
@@ -277,10 +305,17 @@ public class FileListModel implements IBaseModel {
                 if (FileUtils.isFileExists(filePath)) {
                     FileItem fileItem = new FileItem();
                     fileItem.setPath(filePath);
+                    fileItem.setType(Constants.FileType.IMAGE);
 
                     FileItem albumFolder = albumFolderMap.get(bucketName);
                     if (albumFolder != null) {
-                        if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
+                        String remark = SPUtils.getFileRemark(filePath);
+                        boolean searchResult = TextUtils.isEmpty(searchStr);
+                        boolean nameResult = StringUtils.containsIgnoreCase(fileRealName, searchStr);
+                        boolean remarkResult = TextUtils.isEmpty(remark) || StringUtils.containsIgnoreCase(remark, searchStr);
+                        fileItem.setRemark(remark);
+
+                        if (searchResult || nameResult || remarkResult) {
                             albumFolder.addPhoto(fileItem);
                         }
                     } else {
@@ -290,7 +325,13 @@ public class FileListModel implements IBaseModel {
                         if (TextUtils.isEmpty(albumFolder.getPath())) {
                             albumFolder.setPath(filePath);
                         }
-                        if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
+                        String remark = SPUtils.getFileRemark(filePath);
+                        boolean searchResult = TextUtils.isEmpty(searchStr);
+                        boolean nameResult = StringUtils.containsIgnoreCase(fileRealName, searchStr);
+                        boolean remarkResult = TextUtils.isEmpty(remark) || StringUtils.containsIgnoreCase(remark, searchStr);
+                        fileItem.setRemark(remark);
+
+                        if (searchResult || nameResult || remarkResult) {
                             albumFolder.addPhoto(fileItem);
                             albumFolderMap.put(bucketName, albumFolder);
                         }
@@ -323,7 +364,7 @@ public class FileListModel implements IBaseModel {
                 contentResolver,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, STORE_IMAGES, MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " = ? "
                 , new String[]{albumFolder.getName()}, null);
-        ArrayList<FileItem> fileItemList = new ArrayList<>();
+        ArrayList<FileItem> photoList = new ArrayList<>();
 
         if (cursor != null) {
             while (cursor.moveToNext()) {
@@ -347,14 +388,20 @@ public class FileListModel implements IBaseModel {
                     fileItem.setIsDirectory(false);
                     fileItem.setType(Constants.FileType.IMAGE);
                     fileItem.setIsShow(true);
-                    if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
-                        fileItemList.add(fileItem);
+                    String remark = SPUtils.getFileRemark(filePath);
+                    boolean searchResult = TextUtils.isEmpty(searchStr);
+                    boolean nameResult = StringUtils.containsIgnoreCase(fileRealName, searchStr);
+                    boolean remarkResult = TextUtils.isEmpty(remark) || StringUtils.containsIgnoreCase(remark, searchStr);
+                    fileItem.setRemark(remark);
+
+                    if (searchResult || nameResult || remarkResult) {
+                        photoList.add(fileItem);
                     }
                 }
             }
             cursor.close();
         }
-        return fileItemList;
+        return photoList;
     }
 
 //    public ArrayList<FileItem> getAudioAlbumList(String searchStr, ContentResolver contentResolver) {
@@ -465,7 +512,14 @@ public class FileListModel implements IBaseModel {
                         fileItem.setBytes(null);
                     }
                     mmr.release();
-                    if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
+
+                    String remark = SPUtils.getFileRemark(filePath);
+                    boolean searchResult = TextUtils.isEmpty(searchStr);
+                    boolean nameResult = StringUtils.containsIgnoreCase(fileRealName, searchStr);
+                    boolean remarkResult = TextUtils.isEmpty(remark) || StringUtils.containsIgnoreCase(remark, searchStr);
+                    fileItem.setRemark(remark);
+
+                    if (searchResult || nameResult || remarkResult) {
                         audioList.add(fileItem);
                     }
                 }
@@ -516,7 +570,13 @@ public class FileListModel implements IBaseModel {
                         fileItem.setIcon(icon);
                     }
 
-                    if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
+                    String remark = SPUtils.getFileRemark(filePath);
+                    boolean searchResult = TextUtils.isEmpty(searchStr);
+                    boolean nameResult = StringUtils.containsIgnoreCase(fileRealName, searchStr);
+                    boolean remarkResult = TextUtils.isEmpty(remark) || StringUtils.containsIgnoreCase(remark, searchStr);
+                    fileItem.setRemark(remark);
+
+                    if (searchResult || nameResult || remarkResult) {
                         apkList.add(fileItem);
                     }
                 }
@@ -590,7 +650,7 @@ public class FileListModel implements IBaseModel {
                 new String[]{"%" + ".zip", "%" + ".rar", "%" + ".7z"}, null);
 
         if (cursor != null) {
-            ArrayList<FileItem> apkList = new ArrayList<>();
+            ArrayList<FileItem> compressList = new ArrayList<>();
             while (cursor.moveToNext()) {
                 String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA));
                 String fileLength = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.SIZE));
@@ -607,13 +667,20 @@ public class FileListModel implements IBaseModel {
                     fileItem.setIsDirectory(false);
                     fileItem.setType(Constants.FileType.COMPRESS);
                     fileItem.setIsShow(true);
-                    if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
-                        apkList.add(fileItem);
+
+                    String remark = SPUtils.getFileRemark(filePath);
+                    boolean searchResult = TextUtils.isEmpty(searchStr);
+                    boolean nameResult = StringUtils.containsIgnoreCase(fileRealName, searchStr);
+                    boolean remarkResult = TextUtils.isEmpty(remark) || StringUtils.containsIgnoreCase(remark, searchStr);
+                    fileItem.setRemark(remark);
+
+                    if (searchResult || nameResult || remarkResult) {
+                        compressList.add(fileItem);
                     }
                 }
             }
             cursor.close();
-            return apkList;
+            return compressList;
         }
         return null;
     }
@@ -640,7 +707,16 @@ public class FileListModel implements IBaseModel {
                 fileItem.setIsDirectory(false);
                 fileItem.setType(Constants.FileType.FILE);
                 fileItem.setIsShow(true);
-                externalList.add(fileItem);
+
+                String remark = SPUtils.getFileRemark(fileUri.toString());
+                boolean searchResult = TextUtils.isEmpty(searchStr);
+                boolean nameResult = StringUtils.containsIgnoreCase(fileName, searchStr);
+                boolean remarkResult = TextUtils.isEmpty(remark) || StringUtils.containsIgnoreCase(remark, searchStr);
+                fileItem.setRemark(remark);
+
+                if (searchResult || nameResult || remarkResult) {
+                    externalList.add(fileItem);
+                }
             }
             cursor.close();
             return externalList;

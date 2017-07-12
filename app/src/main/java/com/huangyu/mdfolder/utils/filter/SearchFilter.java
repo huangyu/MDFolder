@@ -3,6 +3,7 @@ package com.huangyu.mdfolder.utils.filter;
 import android.text.TextUtils;
 
 import com.huangyu.mdfolder.utils.SPUtils;
+import com.huangyu.mdfolder.utils.StringUtils;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -22,40 +23,21 @@ public class SearchFilter implements FilenameFilter {
 
     @Override
     public boolean accept(File dir, String name) {
+        boolean hiddenResult = !name.matches("^\\.+[^\\.].+");
         if (TextUtils.isEmpty(mSearchStr)) {
-            return isShowHidden || !name.matches("^\\.+[^\\.].+");
+            return isShowHidden || hiddenResult;
         } else {
+            String remark = SPUtils.getFileRemark(dir.getPath());
+            boolean nameResult = StringUtils.containsIgnoreCase(name, mSearchStr);
+            boolean remarkResult = TextUtils.isEmpty(remark) || StringUtils.containsIgnoreCase(remark, mSearchStr);
             if (isShowHidden) {
-                return containsIgnoreCase(name, mSearchStr);
+                return nameResult || remarkResult;
             } else {
-                return containsIgnoreCase(name, mSearchStr) && !name.matches("^\\.+[^\\.].+");
+                return nameResult || remarkResult || hiddenResult;
             }
         }
     }
 
-    /**
-     * 忽略大小写匹配
-     *
-     * @param str
-     * @param searchStr
-     * @return
-     */
-    private static boolean containsIgnoreCase(String str, String searchStr) {
-        if (str == null || searchStr == null) {
-            return false;
-        }
 
-        final int length = searchStr.length();
-        if (length == 0) {
-            return true;
-        }
-
-        for (int i = str.length() - length; i >= 0; i--) {
-            if (str.regionMatches(true, i, searchStr, 0, length)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
 }
