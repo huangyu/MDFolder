@@ -848,7 +848,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         @Override
                                         public void onNext(Object result) {
                                             SPUtils.setFileRemark(filePath, remark);
-                                            mView.showMessage(mView.getResString(R.string.tips_rename_successfully));
+                                            mView.showMessage(mView.getResString(R.string.tips_remark_successfully));
                                         }
 
                                         @Override

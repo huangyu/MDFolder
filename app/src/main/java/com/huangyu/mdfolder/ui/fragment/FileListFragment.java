@@ -155,6 +155,8 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                                 Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
                                 intent.putExtra(getString(R.string.intent_image_list), arrayList);
                                 intent.putExtra(getString(R.string.intent_image_position), currentPosition);
+                                intent.putExtra(getString(R.string.intent_image_sort_type), mPresenter.mSortType);
+                                intent.putExtra(getString(R.string.intent_image_order_type), mPresenter.mOrderType);
                                 getActivity().startActivity(intent);
                             }
                             // 同目录视频浏览
@@ -198,6 +200,8 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                                 Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
                                 intent.putExtra(getString(R.string.intent_image_list), mAdapter.getDataList());
                                 intent.putExtra(getString(R.string.intent_image_position), position);
+                                intent.putExtra(getString(R.string.intent_image_sort_type), mPresenter.mSortType);
+                                intent.putExtra(getString(R.string.intent_image_order_type), mPresenter.mOrderType);
                                 getActivity().startActivity(intent);
                             }
                             // 进入视频浏览

@@ -16,6 +16,7 @@
 package com.huangyu.mdfolder.ui.adapter;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,10 +27,14 @@ import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.ui.activity.FileListActivity;
 
+import java.util.ArrayList;
+
 /**
  * Created by huangyu on 2017/6/30.
  */
 public class AlbumFolderAdapter extends CommonRecyclerViewAdapter<FileItem> {
+
+    public ArrayList<FileItem> mSelectedFileList;
 
     public AlbumFolderAdapter(Context context) {
         super(context);
@@ -46,21 +51,61 @@ public class AlbumFolderAdapter extends CommonRecyclerViewAdapter<FileItem> {
             holder.itemView.setBackgroundResource(R.drawable.select_item);
             tvName.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryText));
             tvSize.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryText));
-            Glide.with(mContext).load(fileItem.getPath()).into(ivImage);
+            if (fileItem.getImages() != null && fileItem.getImages().size() > 0) {
+                FileItem f = fileItem.getImages().get(0);
+                if (f != null) {
+                    Glide.with(mContext).load(f.getPath()).into(ivImage);
+                }
+            }
         } else {
             holder.itemView.setBackgroundResource(R.drawable.select_item_dark);
             tvName.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryTextWhite));
             tvSize.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryTextWhite));
-            Glide.with(mContext).load(fileItem.getPath()).into(ivImage);
+            if (fileItem.getImages() != null && fileItem.getImages().size() > 0) {
+                FileItem f = fileItem.getImages().get(0);
+                if (f != null) {
+                    Glide.with(mContext).load(f.getPath()).into(ivImage);
+                }
+            }
         }
 
         tvName.setText(fileItem.getName());
+        String fileRemark = fileItem.getRemark();
+        if (!TextUtils.isEmpty(fileRemark)) {
+            tvName.append(" (" + fileRemark + ")");
+        }
         tvSize.setText(String.valueOf(fileItem.getImages().size()));
+
+        if (getSelectedItemCount() > 0 && isSelected(position) && isSelected(fileItem)) {
+            holder.itemView.setSelected(true);
+        } else {
+            holder.itemView.setSelected(false);
+        }
     }
 
     @Override
     public int getLayoutResource() {
         return R.layout.item_album_folder;
+    }
+
+    private boolean isSelected(FileItem fileItem) {
+        // 考虑正在选择的情况
+        if (mSelectedFileList == null) {
+            if (mSelectArray == null || mSelectArray.size() == 0) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        // 判断路径是否一致
+        else {
+            for (FileItem selectFile : mSelectedFileList) {
+                if (fileItem.getPath().equals(selectFile.getPath())) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
 }

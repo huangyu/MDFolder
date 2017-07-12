@@ -16,6 +16,8 @@
     <string name="str_file_date">最后修改</string>
     <string name="str_file_type">文件类型</string>
     <string name="str_file_md5">文件MD5</string>
+    <string name="intent_image_sort_type">SortType</string>
+    <string name="intent_image_order_type">OrderType</string>
     <string name="intent_image_list">ImageList</string>
     <string name="intent_image_position">ImagePosition</string>
     <string name="intent_video_list">VideoList</string>
@@ -93,6 +95,7 @@
     <string name="tips_delete_in_error">删除失败</string>
     <string name="tips_show_hide_successfully">显示/隐藏成功</string>
     <string name="tips_show_hide_in_error">显示/隐藏失败</string>
+    <string name="tips_remark_successfully">备注成功</string>
     <string name="tips_rename_successfully">重命名成功</string>
     <string name="tips_rename_in_error">重命名失败</string>
     <string name="tips_compress_successfully">压缩成功</string>

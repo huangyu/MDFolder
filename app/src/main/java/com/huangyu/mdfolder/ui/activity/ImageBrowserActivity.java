@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.R;
+import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
@@ -55,6 +56,8 @@ public class ImageBrowserActivity extends ThematicActivity {
     private FileListModel mFileListModel;
     private FileModel mFileModel;
     private int mCurrentPosition;
+    private int mSortType;
+    private int mOrderType;
 
     @Override
     protected int getLayoutId() {
@@ -73,6 +76,8 @@ public class ImageBrowserActivity extends ThematicActivity {
         mFileModel = new FileModel();
         mFileList = (ArrayList<FileItem>) getIntent().getSerializableExtra(getString(R.string.intent_image_list));
         mCurrentPosition = getIntent().getIntExtra(getString(R.string.intent_image_position), 0);
+        mSortType = getIntent().getIntExtra(getString(R.string.intent_image_sort_type), 0);
+        mOrderType = getIntent().getIntExtra(getString(R.string.intent_image_order_type), 0);
         mAdapter = new ImagePagerAdapter(this, mFileList);
         mViewPager.setAdapter(mAdapter);
         mViewPager.setCurrentItem(mCurrentPosition);
@@ -177,6 +182,42 @@ public class ImageBrowserActivity extends ThematicActivity {
                                 }
 
                                 @Override
+                                public void onError(Throwable e) {
+                                    AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_error));
+                                    onCompleted();
+                                }
+
+                                @Override
+                                public void onNext(ArrayList<FileItem> fileItemList) {
+                                    switch (mSortType) {
+                                        case Constants.SortType.TYPE:
+                                            fileItemList = mFileListModel.orderByType(fileItemList);
+                                            break;
+                                        case Constants.SortType.TIME:
+                                            fileItemList = mFileListModel.orderByTime(fileItemList);
+                                            break;
+                                        case Constants.SortType.ALPHABET:
+                                            fileItemList = mFileListModel.orderByAlphabet(fileItemList);
+                                            break;
+                                        case Constants.SortType.SIZE:
+                                            fileItemList = mFileListModel.orderBySize(fileItemList);
+                                            break;
+                                    }
+
+                                    switch (mOrderType) {
+                                        case Constants.OrderType.DESC:
+                                            break;
+                                        case Constants.OrderType.ASC:
+                                            mFileListModel.orderByOrder(fileItemList);
+                                            break;
+                                    }
+
+                                    mFileList = fileItemList;
+                                    mAdapter = new ImagePagerAdapter(ImageBrowserActivity.this, mFileList);
+                                    mViewPager.setAdapter(mAdapter);
+                                }
+
+                                @Override
                                 public void onCompleted() {
                                     if (mCurrentPosition >= mFileList.size() - 1) {
                                         mCurrentPosition = mFileList.size() - 1;
@@ -187,19 +228,6 @@ public class ImageBrowserActivity extends ThematicActivity {
                                     mViewPager.setCurrentItem(mCurrentPosition);
                                     mRxManager.post("onDeleteAndRefresh", "");
                                     hideProgressDialog();
-                                }
-
-                                @Override
-                                public void onError(Throwable e) {
-                                    AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_error));
-                                    onCompleted();
-                                }
-
-                                @Override
-                                public void onNext(ArrayList<FileItem> fileItemList) {
-                                    mFileList = fileItemList;
-                                    mAdapter = new ImagePagerAdapter(ImageBrowserActivity.this, fileItemList);
-                                    mViewPager.setAdapter(mAdapter);
                                 }
                             });
                     mRxManager.add(subscription);

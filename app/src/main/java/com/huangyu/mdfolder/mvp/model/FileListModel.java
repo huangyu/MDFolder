@@ -21,6 +21,7 @@ import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.utils.CompressUtils;
+import com.huangyu.mdfolder.utils.MimeTypeUtils;
 import com.huangyu.mdfolder.utils.SDCardUtils;
 import com.huangyu.mdfolder.utils.SPUtils;
 import com.huangyu.mdfolder.utils.StringUtils;
@@ -315,67 +316,63 @@ public class FileListModel implements IBaseModel {
                 String filePath = cursor.getString(1);
                 String fileName = cursor.getString(2);
                 long addTime = cursor.getLong(3);
-
                 int bucketId = cursor.getInt(4);
                 String bucketName = cursor.getString(5);
                 String fileLength = cursor.getString(6);
                 String date = cursor.getString(7);
-
                 String fileRealName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
                 if (FileUtils.isFileExists(filePath)) {
                     FileItem fileItem = new FileItem();
+                    fileItem.setId(String.valueOf(imageId));
+                    fileItem.setName(fileRealName);
                     fileItem.setPath(filePath);
-                    fileItem.setType(Constants.FileType.IMAGE);
+                    fileItem.setType(MimeTypeUtils.getTypeBySuffix(FileUtils.getSuffix(fileName)));
+                    fileItem.setDate(date);
+                    fileItem.setIsDirectory(false);
+                    fileItem.setIsShow(true);
+                    String remark = SPUtils.getFileRemark(filePath);
+                    fileItem.setRemark(remark);
 
                     FileItem albumFolder = albumFolderMap.get(bucketName);
                     if (albumFolder != null) {
-                        String remark = SPUtils.getFileRemark(filePath);
-                        boolean searchResult = TextUtils.isEmpty(searchStr);
-                        boolean nameResult = StringUtils.containsIgnoreCase(fileRealName, searchStr);
-                        boolean remarkResult = StringUtils.containsIgnoreCase(remark, searchStr);
-                        fileItem.setRemark(remark);
-                        if (TextUtils.isEmpty(remark)) {
-                            if (searchResult || nameResult) {
-                                albumFolder.addPhoto(fileItem);
-                            }
-                        } else {
-                            if (searchResult || nameResult || remarkResult) {
-                                albumFolder.addPhoto(fileItem);
-                            }
-                        }
+                        albumFolder.addPhoto(fileItem);
                     } else {
                         albumFolder = new FileItem();
+                        albumFolder.setId(String.valueOf(bucketId));
                         albumFolder.setName(bucketName);
-                        albumFolder.setType(Constants.FileType.IMAGE);
-                        if (TextUtils.isEmpty(albumFolder.getPath())) {
-                            albumFolder.setPath(filePath);
-                        }
-                        String remark = SPUtils.getFileRemark(filePath);
-                        boolean searchResult = TextUtils.isEmpty(searchStr);
-                        boolean nameResult = StringUtils.containsIgnoreCase(fileRealName, searchStr);
-                        boolean remarkResult = StringUtils.containsIgnoreCase(remark, searchStr);
-                        fileItem.setRemark(remark);
-                        if (TextUtils.isEmpty(remark)) {
-                            if (searchResult || nameResult) {
-                                albumFolder.addPhoto(fileItem);
-                                albumFolderMap.put(bucketName, albumFolder);
-                            }
-                        } else {
-                            if (searchResult || nameResult || remarkResult) {
-                                albumFolder.addPhoto(fileItem);
-                                albumFolderMap.put(bucketName, albumFolder);
-                            }
-                        }
+                        filePath = filePath.substring(0, filePath.lastIndexOf(File.separator));
+                        albumFolder.setPath(filePath);
+                        albumFolder.setType(MimeTypeUtils.getTypeBySuffix(FileUtils.getSuffix(bucketName)));
+                        albumFolder.setDate(date);
+                        albumFolder.setIsDirectory(true);
+                        albumFolder.setIsShow(true);
+
+                        remark = SPUtils.getFileRemark(filePath);
+                        albumFolder.setRemark(remark);
+                        albumFolder.addPhoto(fileItem);
+                        albumFolderMap.put(bucketName, albumFolder);
                     }
                 }
             }
             cursor.close();
         }
         ArrayList<FileItem> albumFolders = new ArrayList<>();
-
         for (Map.Entry<String, FileItem> folderEntry : albumFolderMap.entrySet()) {
             FileItem albumFolder = folderEntry.getValue();
-            albumFolders.add(albumFolder);
+
+            String remark = SPUtils.getFileRemark(albumFolder.getPath());
+            boolean searchResult = TextUtils.isEmpty(searchStr);
+            boolean nameResult = StringUtils.containsIgnoreCase(albumFolder.getName(), searchStr);
+            boolean remarkResult = StringUtils.containsIgnoreCase(remark, searchStr);
+            if (TextUtils.isEmpty(remark)) {
+                if (searchResult || nameResult) {
+                    albumFolders.add(albumFolder);
+                }
+            } else {
+                if (searchResult || nameResult || remarkResult) {
+                    albumFolders.add(albumFolder);
+                }
+            }
         }
         return albumFolders;
     }

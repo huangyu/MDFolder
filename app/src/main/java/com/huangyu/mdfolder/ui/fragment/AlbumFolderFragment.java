@@ -77,8 +77,8 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
     @Bind(R.id.iv_center)
     ImageView mIvCenter;
 
-    private AlbumFolderAdapter mFolderAdapter;
-    private AlbumFileAdapter mFileAdapter;
+    private AlbumFolderAdapter mAlbumAdapter;
+    private AlbumFileAdapter mPhotoAdapter;
     private String mSearchStr;
     private ActionMode mActionMode;
 
@@ -100,20 +100,22 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
     protected void initView(Bundle savedInstanceState) {
         mIvCenter.setColorFilter(getResources().getColor(R.color.colorDarkGrey));
 
-        mFileAdapter = new AlbumFileAdapter(getContext());
-        mFileAdapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
+        mPhotoAdapter = new AlbumFileAdapter(getContext());
+        mPhotoAdapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 if (mPresenter.mEditType == Constants.EditType.NONE) {
-                    FileItem file = mFileAdapter.getItem(position);
+                    FileItem file = mPhotoAdapter.getItem(position);
                     if (file == null) {
                         finishAction();
                         return;
                     }
                     if (SPUtils.isBuildInMode()) {
                         Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
-                        intent.putExtra(getString(R.string.intent_image_list), mFileAdapter.getDataList());
+                        intent.putExtra(getString(R.string.intent_image_list), mPhotoAdapter.getDataList());
                         intent.putExtra(getString(R.string.intent_image_position), position);
+                        intent.putExtra(getString(R.string.intent_image_sort_type), mPresenter.mSortType);
+                        intent.putExtra(getString(R.string.intent_image_order_type), mPresenter.mOrderType);
                         getActivity().startActivity(intent);
                     } else {
                         if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
@@ -123,15 +125,15 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                 } else if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT
                         && mPresenter.mEditType != Constants.EditType.ZIP && mPresenter.mEditType != Constants.EditType.UNZIP) {
                     mPresenter.mEditType = Constants.EditType.SELECT;
-                    mFileAdapter.switchSelectedState(position);
-                    mActionMode.setTitle(String.format(getString(R.string.tips_selected), mFileAdapter.getSelectedItemCount()));
-                    if (mFileAdapter.getSelectedItemCount() == 0) {
+                    mPhotoAdapter.switchSelectedState(position);
+                    mActionMode.setTitle(String.format(getString(R.string.tips_selected), mPhotoAdapter.getSelectedItemCount()));
+                    if (mPhotoAdapter.getSelectedItemCount() == 0) {
                         finishAction();
                     }
                 }
             }
         });
-        mFileAdapter.setOnItemLongClick(new CommonRecyclerViewAdapter.OnItemLongClickListener() {
+        mPhotoAdapter.setOnItemLongClick(new CommonRecyclerViewAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, int position) {
                 if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT
@@ -139,24 +141,49 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                     return;
                 }
                 mPresenter.mEditType = Constants.EditType.SELECT;
-                mFileAdapter.switchSelectedState(position);
+                mPhotoAdapter.switchSelectedState(position);
                 if (mActionMode == null) {
-                    mActionMode = getControlActionMode();
+                    mActionMode = getPhotoControlActionMode();
                 }
-                mActionMode.setTitle(String.format(getString(R.string.tips_selected), mFileAdapter.getSelectedItemCount()));
+                mActionMode.setTitle(String.format(getString(R.string.tips_selected), mPhotoAdapter.getSelectedItemCount()));
             }
         });
 
-        mFolderAdapter = new AlbumFolderAdapter(getContext());
-        mFolderAdapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
+        mAlbumAdapter = new AlbumFolderAdapter(getContext());
+        mAlbumAdapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                mPresenter.mCurrentAlbum = mFolderAdapter.getItem(position);
-                mPresenter.loadImage(mSearchStr, true, getScrollYDistance());
+                if (mPresenter.mEditType == Constants.EditType.NONE) {
+                    mPresenter.mCurrentAlbum = mAlbumAdapter.getItem(position);
+                    mPresenter.loadImage(mSearchStr, true, getScrollYDistance());
+                } else if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT
+                        && mPresenter.mEditType != Constants.EditType.ZIP && mPresenter.mEditType != Constants.EditType.UNZIP) {
+                    mPresenter.mEditType = Constants.EditType.SELECT;
+                    mAlbumAdapter.switchSelectedState(position);
+                    mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAlbumAdapter.getSelectedItemCount()));
+                    if (mAlbumAdapter.getSelectedItemCount() == 0) {
+                        finishAction();
+                    }
+                }
+            }
+        });
+        mAlbumAdapter.setOnItemLongClick(new CommonRecyclerViewAdapter.OnItemLongClickListener() {
+            @Override
+            public void onItemLongClick(View view, int position) {
+                if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT
+                        || mPresenter.mEditType == Constants.EditType.ZIP || mPresenter.mEditType == Constants.EditType.UNZIP) {
+                    return;
+                }
+                mPresenter.mEditType = Constants.EditType.SELECT;
+                mAlbumAdapter.switchSelectedState(position);
+                if (mActionMode == null) {
+                    mActionMode = getAlbumControlActionMode();
+                }
+                mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAlbumAdapter.getSelectedItemCount()));
             }
         });
 
-        mRecyclerView.setAdapter(mFolderAdapter);
+        mRecyclerView.setAdapter(mAlbumAdapter);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), mDefaultGridCount));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.grid_decoration, null);
@@ -394,29 +421,28 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
     }
 
     public void refreshData(ArrayList<FileItem> imageList, boolean ifClearSelected) {
-        mFileAdapter.clearData(ifClearSelected);
+        mPhotoAdapter.clearData(ifClearSelected);
 
         if (imageList == null || imageList.isEmpty()) {
             mLlEmpty.setVisibility(View.VISIBLE);
         } else {
             mLlEmpty.setVisibility(View.GONE);
-            mFileAdapter.setData(imageList);
+            mPhotoAdapter.setData(imageList);
         }
         if (!(mRecyclerView.getAdapter() instanceof AlbumFileAdapter)) {
-            mRecyclerView.setAdapter(mFileAdapter);
+            mRecyclerView.setAdapter(mPhotoAdapter);
         }
     }
 
     public void refreshAlbum(ArrayList<FileItem> albumFolderList, final int scrollY) {
-        mFolderAdapter.clearData(true);
+        mAlbumAdapter.clearData(true);
 
         if (albumFolderList == null || albumFolderList.isEmpty()) {
             mLlEmpty.setVisibility(View.VISIBLE);
         } else {
             mLlEmpty.setVisibility(View.GONE);
-            mFolderAdapter.setData(albumFolderList);
+            mAlbumAdapter.setData(albumFolderList);
         }
-
 
         mRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
@@ -429,7 +455,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                 mRecyclerView.removeOnLayoutChangeListener(this);
             }
         });
-        mRecyclerView.setAdapter(mFolderAdapter);
+        mRecyclerView.setAdapter(mAlbumAdapter);
     }
 
     public void finishAction() {
@@ -449,7 +475,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
         }
     }
 
-    private ActionMode getControlActionMode() {
+    private ActionMode getPhotoControlActionMode() {
         return getActivity().startActionMode(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -466,7 +492,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
 
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                final ArrayList<FileItem> fileList = mFileAdapter.getSelectedDataList();
+                final ArrayList<FileItem> fileList = mPhotoAdapter.getSelectedDataList();
                 switch (item.getItemId()) {
                     case R.id.action_rename:
                         mPresenter.onRenameFile(fileList);
@@ -491,19 +517,22 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                         break;
                     case R.id.action_select_all:
                         mPresenter.mEditType = Constants.EditType.SELECT;
-                        mFileAdapter.selectAll();
-                        mActionMode.setTitle(String.format(getString(R.string.tips_selected), mFileAdapter.getSelectedItemCount()));
-                        if (mFileAdapter.getSelectedItemCount() == 0) {
+                        mPhotoAdapter.selectAll();
+                        mActionMode.setTitle(String.format(getString(R.string.tips_selected), mPhotoAdapter.getSelectedItemCount()));
+                        if (mPhotoAdapter.getSelectedItemCount() == 0) {
                             finishAction();
                         }
                         break;
                     case R.id.action_inverse_all:
                         mPresenter.mEditType = Constants.EditType.SELECT;
-                        mFileAdapter.inverseAll();
-                        mActionMode.setTitle(String.format(getString(R.string.tips_selected), mFileAdapter.getSelectedItemCount()));
-                        if (mFileAdapter.getSelectedItemCount() == 0) {
+                        mPhotoAdapter.inverseAll();
+                        mActionMode.setTitle(String.format(getString(R.string.tips_selected), mPhotoAdapter.getSelectedItemCount()));
+                        if (mPhotoAdapter.getSelectedItemCount() == 0) {
                             finishAction();
                         }
+                        break;
+                    case R.id.action_remark:
+                        mPresenter.onRemark(fileList);
                         break;
                 }
                 return false;
@@ -519,6 +548,69 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                     mPresenter.mEditType = Constants.EditType.NONE;
                 } else {
                     refreshData(false);
+                }
+            }
+        });
+    }
+
+    private ActionMode getAlbumControlActionMode() {
+        return getActivity().startActionMode(new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                mode.getMenuInflater().inflate(R.menu.menu_control_image_file, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                menu.clear();
+                mode.getMenuInflater().inflate(R.menu.menu_control_image_file, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                final ArrayList<FileItem> fileList = mAlbumAdapter.getSelectedDataList();
+                switch (item.getItemId()) {
+                    case R.id.action_info:
+                        mPresenter.onShowFileInfo(fileList);
+                        break;
+                    case R.id.action_delete:
+                        mPresenter.onDeleteAlbum(fileList);
+                        break;
+                    case R.id.action_select_all:
+                        mPresenter.mEditType = Constants.EditType.SELECT;
+                        mAlbumAdapter.selectAll();
+                        mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAlbumAdapter.getSelectedItemCount()));
+                        if (mAlbumAdapter.getSelectedItemCount() == 0) {
+                            finishAction();
+                        }
+                        break;
+                    case R.id.action_inverse_all:
+                        mPresenter.mEditType = Constants.EditType.SELECT;
+                        mAlbumAdapter.inverseAll();
+                        mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAlbumAdapter.getSelectedItemCount()));
+                        if (mAlbumAdapter.getSelectedItemCount() == 0) {
+                            finishAction();
+                        }
+                        break;
+                    case R.id.action_remark:
+                        mPresenter.onRemark(fileList);
+                        break;
+                }
+                return false;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT
+                        && mPresenter.mEditType != Constants.EditType.ZIP && mPresenter.mEditType != Constants.EditType.UNZIP) {
+                    mPresenter.loadAlbum(mSearchStr);
+                    getActivity().supportInvalidateOptionsMenu();
+                    mActionMode = null;
+                    mPresenter.mEditType = Constants.EditType.NONE;
+                } else {
+                    mPresenter.loadAlbum(mSearchStr);
                 }
             }
         });

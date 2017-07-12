@@ -16,6 +16,7 @@
 package com.huangyu.mdfolder.ui.adapter;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -59,6 +60,10 @@ public class AlbumFileAdapter extends CommonRecyclerViewAdapter<FileItem> {
 
         Glide.with(mContext).load(fileItem.getPath()).into(ivImage);
         tvName.setText(fileItem.getName());
+        String fileRemark = fileItem.getRemark();
+        if (!TextUtils.isEmpty(fileRemark)) {
+            tvName.append(" (" + fileRemark + ")");
+        }
         try {
             tvSize.setText(FileUtils.getFileOrDirSize(Long.valueOf(fileItem.getSize())));
         } catch (Exception e) {

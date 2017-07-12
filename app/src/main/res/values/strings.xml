@@ -15,6 +15,8 @@
     <string name="str_file_date">Date</string>
     <string name="str_file_type">Type</string>
     <string name="str_file_md5">MD5</string>
+    <string name="intent_image_sort_type">SortType</string>
+    <string name="intent_image_order_type">OrderType</string>
     <string name="intent_image_list">ImageList</string>
     <string name="intent_image_position">ImagePosition</string>
     <string name="intent_video_list">VideoList</string>
@@ -92,6 +94,7 @@
     <string name="tips_delete_in_error">Delete in error.</string>
     <string name="tips_show_hide_successfully">Show/Hide successfully.</string>
     <string name="tips_show_hide_in_error">Show/Hide in error.</string>
+    <string name="tips_remark_successfully">Remark successfully.</string>
     <string name="tips_rename_successfully">Rename successfully.</string>
     <string name="tips_rename_in_error">Rename in error.</string>
     <string name="tips_compress_successfully">Compress successfully.</string>
