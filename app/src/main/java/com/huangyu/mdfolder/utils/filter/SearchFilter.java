@@ -29,15 +29,22 @@ public class SearchFilter implements FilenameFilter {
         } else {
             String remark = SPUtils.getFileRemark(dir.getPath());
             boolean nameResult = StringUtils.containsIgnoreCase(name, mSearchStr);
-            boolean remarkResult = TextUtils.isEmpty(remark) || StringUtils.containsIgnoreCase(remark, mSearchStr);
+            boolean remarkResult = StringUtils.containsIgnoreCase(remark, mSearchStr);
             if (isShowHidden) {
-                return nameResult || remarkResult;
+                if (TextUtils.isEmpty(remark)) {
+                    return nameResult;
+                } else {
+                    return nameResult || remarkResult;
+                }
             } else {
-                return nameResult || remarkResult || hiddenResult;
+                if (TextUtils.isEmpty(remark)) {
+                    return nameResult || hiddenResult;
+                } else {
+                    return nameResult || remarkResult || hiddenResult;
+                }
             }
         }
     }
-
 
 
 }
