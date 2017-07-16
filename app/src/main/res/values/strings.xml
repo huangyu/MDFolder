@@ -125,7 +125,7 @@
     <string name="tips_not_support">Not Support to play.</string>
     <string name="tips_input_password">Please input password.</string>
     <string name="tips_cannot_access_sdcard">Cannot write sdcard.</string>
-    <string name="tips_select_sdcard">Please select sdcard in the next windows.</string>
+    <string name="tips_select_sdcard">Please select sdcard root path in the next windows.</string>
     <string name="tips_share_by_MDFolder">Share by MDFolder.</string>
     <string name="tips_cannot_share">Can not share this file.</string>
     <string name="tips_calculating">Calculating file count&#8230;</string>

@@ -126,7 +126,7 @@
     <string name="tips_not_support">不支持播放</string>
     <string name="tips_input_password">请输入密码</string>
     <string name="tips_cannot_access_sdcard">无法写入SD卡</string>
-    <string name="tips_select_sdcard">请在下一个弹出窗口选择SD卡</string>
+    <string name="tips_select_sdcard">请在下一个弹出窗口选择SD卡根目录</string>
     <string name="tips_share_by_MDFolder">分享自MDFolder</string>
     <string name="tips_cannot_share">无法分享此种类型文件</string>
     <string name="tips_calculating">计算文件数量中&#8230;</string>
