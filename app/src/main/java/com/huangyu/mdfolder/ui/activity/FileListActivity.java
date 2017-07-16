@@ -338,8 +338,6 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                         mRxManager.post("toStorage", false);
                         break;
                     case R.id.nav_outer_storage:
-//                        selectedPosition = 1;
-//                        mRxManager.post("toStorage", true);
                         checkSdCardPermission();
                         break;
                     case R.id.nav_root:
@@ -461,28 +459,15 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             }
 
             if (needPermissions) {
-                AlertUtils.showNormalAlert(this, getString(R.string.tips_select_sdcard), getString(R.string.act_confirm), getString(R.string.act_cancel), new DialogInterface.OnClickListener() {
+                AlertUtils.showNormalAlert(this, getString(R.string.tips_select_sdcard), getString(R.string.act_confirm), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), STORAGE_REQUEST_CODE);
                     }
-                }, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // 无法使用此功能
-                        AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_cannot_access_sdcard));
-                        selectedPosition = 1;
-                        mRxManager.post("toStorage", true);
-                    }
                 });
             } else {
-//                mRlFile.setVisibility(View.GONE);
-//                mRlSdCard.setVisibility(View.VISIBLE);
-//                mRlAlbum.setVisibility(View.GONE);
                 selectedPosition = 1;
                 mRxManager.post("toStorage", true);
-//                Uri uri = Uri.parse(((AppApplication) AppApplication.getInstance()).getSPUtils().getString("uri"));
-//                mRxManager.post("toSDCard", uri);
             }
         } else {
             // 无法使用此功能
@@ -517,16 +502,12 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                 if (needPermissions) {
                     startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), STORAGE_REQUEST_CODE);
                 } else {
-//                    mRlFile.setVisibility(View.GONE);
-//                    mRlSdCard.setVisibility(View.VISIBLE);
-//                    mRlAlbum.setVisibility(View.GONE);
                     Uri uri = data.getData();
                     getContentResolver().takePersistableUriPermission(data.getData(),
                             Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     ((AppApplication) AppApplication.getInstance()).getSPUtils().put("uri", uri.toString());
                     selectedPosition = 1;
                     mRxManager.post("toStorage", true);
-//                    mRxManager.post("toSDCard", uri);
                 }
             } else {
                 // 无法使用此功能
