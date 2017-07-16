@@ -29,16 +29,19 @@
 
         <activity
             android:name=".ui.activity.ImageBrowserActivity"
+            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
             android:label="@string/str_image_browser"
             android:theme="@style/AppThemeBlue" />
 
         <activity
             android:name=".ui.activity.VideoBrowserActivity"
+            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
             android:label="@string/str_video_browser"
             android:theme="@style/AppThemeBlue" />
 
         <activity
             android:name=".ui.activity.AudioBrowserActivity"
+            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
             android:label="@string/str_audio_browser"
             android:theme="@style/AppThemeBlue" />
 
