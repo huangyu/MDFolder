@@ -1469,9 +1469,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     }
                                 } else {
                                     if (o.getKey()) {
-                                        result = mFileModel.moveFolder(file.getPath(), destPath);
+                                        result = mFileModel.copyFolder(file.getPath(), destPath);
                                     } else {
-                                        result = mFileModel.moveFile(file.getPath(), destPath);
+                                        result = mFileModel.copyFile(file.getPath(), destPath);
                                     }
                                 }
                                 if (result) {
