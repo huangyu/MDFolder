@@ -7,7 +7,6 @@ import android.content.UriPermission;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.DocumentsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
@@ -32,6 +31,7 @@ import com.huangyu.mdfolder.app.AppApplication;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.ui.fragment.AlbumFolderFragment;
 import com.huangyu.mdfolder.ui.fragment.FileListFragment;
+import com.huangyu.mdfolder.ui.fragment.SDCardFragment;
 import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.SDCardUtils;
 
@@ -65,12 +65,16 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     @Bind(R.id.rl_file)
     RelativeLayout mRlFile;
 
+    @Bind(R.id.rl_sdcard)
+    RelativeLayout mRlSdCard;
+
     @Bind(R.id.rl_album)
     RelativeLayout mRlAlbum;
 
     private SearchView mSearchView;
     private FileListFragment mFileListFragment;
     private AlbumFolderFragment mAlbumFolderFragment;
+    private SDCardFragment mSDCardFragment;
     private boolean isSearchViewShow;
     private long mCurrentTime;
     private int selectedPosition = 0;
@@ -173,59 +177,6 @@ public class FileListActivity extends ThematicActivity implements NavigationView
         super.onResume();
         if (isChanged()) {
             replaceFragment();
-//            if (selectedPosition != 4) {
-//                mRlFile.setVisibility(View.VISIBLE);
-//                mRlAlbum.setVisibility(View.GONE);
-//            }
-//            getWindow().getDecorView().postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    switch (selectedPosition) {
-//                        case 2:
-//                            mRxManager.post("toRoot", "");
-//                            mNavigationView.setCheckedItem(R.id.nav_root);
-//                            break;
-//                        case 1:
-//                            mRxManager.post("toStorage", true);
-//                            mNavigationView.setCheckedItem(R.id.nav_outer_storage);
-//                            break;
-//                        case 5:
-//                            mRxManager.post("toMusic", "");
-//                            mNavigationView.setCheckedItem(R.id.nav_music);
-//                            break;
-//                        case 4:
-////                        mRxManager.post("toPhoto", "");
-//                            mRlFile.setVisibility(View.GONE);
-//                            mRlAlbum.setVisibility(View.VISIBLE);
-//                            mNavigationView.setCheckedItem(R.id.nav_photo);
-//                            break;
-//                        case 6:
-//                            mRxManager.post("toVideo", "");
-//                            mNavigationView.setCheckedItem(R.id.nav_video);
-//                            break;
-//                        case 7:
-//                            mRxManager.post("toDocument", "");
-//                            mNavigationView.setCheckedItem(R.id.nav_document);
-//                            break;
-//                        case 3:
-//                            mRxManager.post("toDownload", "");
-//                            mNavigationView.setCheckedItem(R.id.nav_download);
-//                            break;
-//                        case 8:
-//                            mRxManager.post("toApk", "");
-//                            mNavigationView.setCheckedItem(R.id.nav_apk);
-//                            break;
-//                        case 9:
-//                            mRxManager.post("toZip", "");
-//                            mNavigationView.setCheckedItem(R.id.nav_zip);
-//                            break;
-//                        default:
-//                            mRxManager.post("toStorage", false);
-//                            mNavigationView.setCheckedItem(R.id.nav_inner_storage);
-//                            break;
-//                    }
-//                }
-//            }, 200);
         }
     }
 
@@ -238,10 +189,12 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     private void replaceFragment() {
         mFileListFragment = new FileListFragment();
         mAlbumFolderFragment = new AlbumFolderFragment();
+        mSDCardFragment = new SDCardFragment();
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.rl_file, mFileListFragment)
                 .replace(R.id.rl_album, mAlbumFolderFragment)
+                .replace(R.id.rl_sdcard, mSDCardFragment)
                 .commitAllowingStateLoss();
     }
 
@@ -268,6 +221,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
         if (selectedPosition != 0) {
             selectedPosition = 0;
             mRlFile.setVisibility(View.VISIBLE);
+            mRlSdCard.setVisibility(View.GONE);
             mRlAlbum.setVisibility(View.GONE);
             mRxManager.post("toStorage", false);
             mNavigationView.setCheckedItem(R.id.nav_inner_storage);
@@ -286,7 +240,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     }
 
     private boolean isDoubleCheck() {
-        return Math.abs(mCurrentTime - System.currentTimeMillis()) < 1000L;
+        return Math.abs(mCurrentTime - System.currentTimeMillis()) < 1500L;
     }
 
     @Override
@@ -372,6 +326,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
 
         if (item.getItemId() != R.id.nav_photo) {
             mRlFile.setVisibility(View.VISIBLE);
+            mRlSdCard.setVisibility(View.GONE);
             mRlAlbum.setVisibility(View.GONE);
         }
         getWindow().getDecorView().postDelayed(new Runnable() {
@@ -383,9 +338,9 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                         mRxManager.post("toStorage", false);
                         break;
                     case R.id.nav_outer_storage:
-                        selectedPosition = 1;
-                        mRxManager.post("toStorage", true);
-//                        checkSdCardPermission();
+//                        selectedPosition = 1;
+//                        mRxManager.post("toStorage", true);
+                        checkSdCardPermission();
                         break;
                     case R.id.nav_root:
                         selectedPosition = 2;
@@ -397,15 +352,14 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                         break;
                     case R.id.nav_photo:
                         selectedPosition = 4;
-//                        mRxManager.post("toPhoto", "");
                         mRlFile.setVisibility(View.GONE);
+                        mRlSdCard.setVisibility(View.GONE);
                         mRlAlbum.setVisibility(View.VISIBLE);
                         break;
                     case R.id.nav_music:
                         selectedPosition = 5;
                         mRxManager.post("toMusic", "");
                         break;
-
                     case R.id.nav_video:
                         selectedPosition = 6;
                         mRxManager.post("toVideo", "");
@@ -450,6 +404,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             getWindow().getDecorView().postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    selectedPosition = 0;
                     mRxManager.post("toStorage", false);
                 }
             }, 200);
@@ -470,6 +425,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
         getWindow().getDecorView().postDelayed(new Runnable() {
             @Override
             public void run() {
+                selectedPosition = 0;
                 mRxManager.post("toStorage", false);
             }
         }, 200);
@@ -515,16 +471,23 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                     public void onClick(DialogInterface dialog, int which) {
                         // 无法使用此功能
                         AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_cannot_access_sdcard));
+                        selectedPosition = 1;
                         mRxManager.post("toStorage", true);
                     }
                 });
             } else {
-                Uri rootUri = Uri.parse(((AppApplication) AppApplication.getInstance()).getSPUtils().getString("uri"));
-                // TODO
+//                mRlFile.setVisibility(View.GONE);
+//                mRlSdCard.setVisibility(View.VISIBLE);
+//                mRlAlbum.setVisibility(View.GONE);
+                selectedPosition = 1;
+                mRxManager.post("toStorage", true);
+//                Uri uri = Uri.parse(((AppApplication) AppApplication.getInstance()).getSPUtils().getString("uri"));
+//                mRxManager.post("toSDCard", uri);
             }
         } else {
             // 无法使用此功能
             AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_cannot_access_sdcard));
+            selectedPosition = 1;
             mRxManager.post("toStorage", true);
         }
     }
@@ -537,6 +500,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                 if (externalPath == null) {
                     // 无法使用此功能
                     AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_cannot_access_sdcard));
+                    selectedPosition = 1;
                     mRxManager.post("toStorage", true);
                     return;
                 }
@@ -553,17 +517,21 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                 if (needPermissions) {
                     startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), STORAGE_REQUEST_CODE);
                 } else {
+//                    mRlFile.setVisibility(View.GONE);
+//                    mRlSdCard.setVisibility(View.VISIBLE);
+//                    mRlAlbum.setVisibility(View.GONE);
                     Uri uri = data.getData();
                     getContentResolver().takePersistableUriPermission(data.getData(),
                             Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-//                    DocumentFile doc = DocumentFile.fromTreeUri(this, uri);
-                    Uri rootUri = DocumentsContract.buildChildDocumentsUriUsingTree(uri, DocumentsContract.getTreeDocumentId(uri));
-                    ((AppApplication) AppApplication.getInstance()).getSPUtils().put("uri", rootUri.toString());
-                    // TODO
+                    ((AppApplication) AppApplication.getInstance()).getSPUtils().put("uri", uri.toString());
+                    selectedPosition = 1;
+                    mRxManager.post("toStorage", true);
+//                    mRxManager.post("toSDCard", uri);
                 }
             } else {
                 // 无法使用此功能
                 AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_cannot_access_sdcard));
+                selectedPosition = 1;
                 mRxManager.post("toStorage", true);
             }
         } else if (requestCode == UNINSTALL_REQUEST_CODE) {

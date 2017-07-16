@@ -27,6 +27,11 @@
         android:layout_height="match_parent" />
 
     <RelativeLayout
+        android:id="@+id/rl_sdcard"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <RelativeLayout
         android:id="@+id/rl_album"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

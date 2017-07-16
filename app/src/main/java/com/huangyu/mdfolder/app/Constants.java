@@ -46,6 +46,8 @@ public class Constants extends BaseConstants {
         public static final int MENU_ZIP = 0x00000017;
 
         public static final int MENU_APPS = 0x00000018;
+
+        public static final int MENU_SDCARD = 0x00000019;
     }
 
     public static class FileType {

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
@@ -16,7 +17,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
-import android.text.TextUtils;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,8 +37,8 @@ import com.huangyu.library.util.LogUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
-import com.huangyu.mdfolder.mvp.presenter.FileListPresenter;
-import com.huangyu.mdfolder.mvp.view.IFileListView;
+import com.huangyu.mdfolder.mvp.presenter.SDCardPresenter;
+import com.huangyu.mdfolder.mvp.view.ISDCardView;
 import com.huangyu.mdfolder.ui.activity.AudioBrowserActivity;
 import com.huangyu.mdfolder.ui.activity.FileListActivity;
 import com.huangyu.mdfolder.ui.activity.ImageBrowserActivity;
@@ -61,9 +61,9 @@ import butterknife.ButterKnife;
 import rx.functions.Action1;
 
 /**
- * Created by huangyu on 2017-5-23.
+ * Created by huangyu on 2017-7-14.
  */
-public class FileListFragment extends BaseFragment<IFileListView, FileListPresenter> implements IFileListView {
+public class SDCardFragment extends BaseFragment<ISDCardView, SDCardPresenter> implements ISDCardView {
 
     @Bind(R.id.cl_main)
     CoordinatorLayout mCoordinatorLayout;
@@ -103,7 +103,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     @Override
-    protected IFileListView initAttachView() {
+    protected ISDCardView initAttachView() {
         return this;
     }
 
@@ -146,12 +146,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                                 ArrayList<FileItem> dataList = mAdapter.getDataList();
                                 for (int i = 0; i < dataList.size(); i++) {
                                     if (dataList.get(i).getType() == Constants.FileType.SINGLE_IMAGE) {
+                                        if (dataList.get(i).getPath().equals(file.getPath())) {
+                                            currentPosition = i;
+                                        }
                                         arrayList.add(dataList.get(i));
-                                    }
-                                }
-                                for (int i = 0; i < arrayList.size(); i++) {
-                                    if (dataList.get(i).getPath().equals(file.getPath())) {
-                                        currentPosition = i;
                                     }
                                 }
                                 Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
@@ -168,12 +166,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                                 ArrayList<FileItem> dataList = mAdapter.getDataList();
                                 for (int i = 0; i < dataList.size(); i++) {
                                     if (dataList.get(i).getType() == Constants.FileType.SINGLE_VIDEO) {
+                                        if (dataList.get(i).getPath().equals(file.getPath())) {
+                                            currentPosition = i;
+                                        }
                                         arrayList.add(dataList.get(i));
-                                    }
-                                }
-                                for (int i = 0; i < arrayList.size(); i++) {
-                                    if (dataList.get(i).getPath().equals(file.getPath())) {
-                                        currentPosition = i;
                                     }
                                 }
                                 Intent intent = new Intent(getActivity(), VideoBrowserActivity.class);
@@ -188,12 +184,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                                 ArrayList<FileItem> dataList = mAdapter.getDataList();
                                 for (int i = 0; i < dataList.size(); i++) {
                                     if (dataList.get(i).getType() == Constants.FileType.SINGLE_AUDIO) {
+                                        if (dataList.get(i).getPath().equals(file.getPath())) {
+                                            currentPosition = i;
+                                        }
                                         arrayList.add(dataList.get(i));
-                                    }
-                                }
-                                for (int i = 0; i < arrayList.size(); i++) {
-                                    if (dataList.get(i).getPath().equals(file.getPath())) {
-                                        currentPosition = i;
                                     }
                                 }
                                 Intent intent = new Intent(getActivity(), AudioBrowserActivity.class);
@@ -222,7 +216,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                                 AudioBrowserActivity.mFileList = mAdapter.getDataList();
                                 Intent intent = new Intent(getActivity(), AudioBrowserActivity.class);
                                 // bytes[] make TransactionTooLargeException
-                                // intent.putExtra(getString(R.string.intent_audio_list), mAdapter.getDataList());
+//                                intent.putExtra(getString(R.string.intent_audio_list), mAdapter.getDataList());
                                 intent.putExtra(getString(R.string.intent_audio_position), position);
                                 getActivity().startActivity(intent);
                             }
@@ -352,7 +346,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mPresenter.onRefreshInSwipe(mSearchStr, false);
+//                mPresenter.onRefreshInSwipe(mSearchStr, false);
             }
         });
 
@@ -379,136 +373,59 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mRxManager.on("onSearch", new Action1<String>() {
             @Override
             public void call(String text) {
-                // 内置存储全局搜索
-                if (SPUtils.isSearchGlobally()) {
-                    if (TextUtils.isEmpty(text)) {
-                        mPresenter.onRefreshInSwipe(mSearchStr, false);
-                    } else {
-                        mPresenter.onSearchFileList(text);
-                    }
-                }
-                // 单个文件迭代搜索
-                else {
-                    mSearchStr = text;
-                    mPresenter.onRefreshInSwipe(mSearchStr, false);
-                }
+//                // 内置存储全局搜索
+//                if (SPUtils.isSearchGlobally()) {
+//                    if (TextUtils.isEmpty(text)) {
+//                        mPresenter.onRefreshInSwipe(mSearchStr, false);
+//                    } else {
+//                        mPresenter.onSearchFileList(text);
+//                    }
+//                }
+//                // 单个文件迭代搜索
+//                else {
+                mSearchStr = text;
+                mPresenter.onRefreshInSwipe(mSearchStr, false);
+//                }
             }
         });
 
-        mRxManager.on("toStorage", new Action1<Boolean>() {
+        mRxManager.on("toSDCard", new Action1<Uri>() {
             @Override
-            public void call(Boolean isOuter) {
-                if (isOuter) {
-                    mPresenter.mSelectType = Constants.SelectType.MENU_SDCARD;
-                } else {
-                    mPresenter.mSelectType = Constants.SelectType.MENU_FILE;
-                }
-                mPresenter.onLoadStorageFileList(isOuter, mSearchStr);
+            public void call(Uri rootUri) {
+                mPresenter.onLoadRootFileList(rootUri, mSearchStr);
             }
         });
 
-        mRxManager.on("toRoot", new Action1<String>() {
-            @Override
-            public void call(String text) {
-                mPresenter.mSelectType = Constants.SelectType.MENU_FILE;
-                mPresenter.onLoadRootFileList(mSearchStr);
-            }
-        });
-
-        mRxManager.on("toPhoto", new Action1<String>() {
-            @Override
-            public void call(String s) {
-                mPresenter.mSelectType = Constants.SelectType.MENU_PHOTO;
-                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
-            }
-        });
-
-        mRxManager.on("toMusic", new Action1<String>() {
-            @Override
-            public void call(String s) {
-                mPresenter.mSelectType = Constants.SelectType.MENU_MUSIC;
-                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
-            }
-        });
-
-        mRxManager.on("toVideo", new Action1<String>() {
-            @Override
-            public void call(String s) {
-                mPresenter.mSelectType = Constants.SelectType.MENU_VIDEO;
-                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
-            }
-        });
-
-        mRxManager.on("toDocument", new Action1<String>() {
-            @Override
-            public void call(String s) {
-                mPresenter.mSelectType = Constants.SelectType.MENU_DOCUMENT;
-                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
-            }
-        });
-
-        mRxManager.on("toDownload", new Action1<String>() {
-            @Override
-            public void call(String s) {
-                mPresenter.mSelectType = Constants.SelectType.MENU_DOWNLOAD;
-                mPresenter.onLoadDownloadFileList(mSearchStr);
-            }
-        });
-
-        mRxManager.on("toApk", new Action1<String>() {
-            @Override
-            public void call(String s) {
-                mPresenter.mSelectType = Constants.SelectType.MENU_APK;
-                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
-            }
-        });
-
-        mRxManager.on("toZip", new Action1<String>() {
-            @Override
-            public void call(String s) {
-                mPresenter.mSelectType = Constants.SelectType.MENU_ZIP;
-                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
-            }
-        });
-
-        mRxManager.on("toApps", new Action1<String>() {
-            @Override
-            public void call(String s) {
-                mPresenter.mSelectType = Constants.SelectType.MENU_APPS;
-                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
-            }
-        });
-
-        mRxManager.on("onSortType", new Action1<Integer>() {
-            @Override
-            public void call(Integer sortType) {
-                mPresenter.mSortType = sortType;
-                mPresenter.onRefresh(mSearchStr, true, 0);
-            }
-        });
-
-        mRxManager.on("onOrderType", new Action1<Integer>() {
-            @Override
-            public void call(Integer orderType) {
-                mPresenter.mOrderType = orderType;
-                mPresenter.onRefresh(mSearchStr, true, 0);
-            }
-        });
-
-        mRxManager.on("onDeleteAndRefresh", new Action1<String>() {
-            @Override
-            public void call(String orderType) {
-                mPresenter.onLoadStorageFileList(false, mSearchStr);
-            }
-        });
-
-        mRxManager.on("onFinishAction", new Action1<String>() {
-
-            @Override
-            public void call(String s) {
-                finishAction();
-            }
-        });
+//        mRxManager.on("onSortType", new Action1<Integer>() {
+//            @Override
+//            public void call(Integer sortType) {
+//                mPresenter.mSortType = sortType;
+//                mPresenter.onRefresh(mSearchStr, true, 0);
+//            }
+//        });
+//
+//        mRxManager.on("onOrderType", new Action1<Integer>() {
+//            @Override
+//            public void call(Integer orderType) {
+//                mPresenter.mOrderType = orderType;
+//                mPresenter.onRefresh(mSearchStr, true, 0);
+//            }
+//        });
+//
+//        mRxManager.on("onDeleteAndRefresh", new Action1<String>() {
+//            @Override
+//            public void call(String orderType) {
+////                mPresenter.onLoadStorageFileList(false, mSearchStr);
+//            }
+//        });
+//
+//        mRxManager.on("onFinishAction", new Action1<String>() {
+//
+//            @Override
+//            public void call(String s) {
+//                finishAction();
+//            }
+//        });
     }
 
     @Override
@@ -699,26 +616,14 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         return getActivity().startActionMode(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                if (mPresenter.mSelectType == Constants.SelectType.MENU_APPS) {
-                    mode.getMenuInflater().inflate(R.menu.menu_control_apps, menu);
-                } else if (mPresenter.mSelectType == Constants.SelectType.MENU_SDCARD) {
-                    mode.getMenuInflater().inflate(R.menu.menu_control_sdcard, menu);
-                } else {
-                    mode.getMenuInflater().inflate(R.menu.menu_control, menu);
-                }
+                mode.getMenuInflater().inflate(R.menu.menu_control, menu);
                 return true;
             }
 
             @Override
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
                 menu.clear();
-                if (mPresenter.mSelectType == Constants.SelectType.MENU_APPS) {
-                    mode.getMenuInflater().inflate(R.menu.menu_control_apps, menu);
-                } else if (mPresenter.mSelectType == Constants.SelectType.MENU_SDCARD) {
-                    mode.getMenuInflater().inflate(R.menu.menu_control_sdcard, menu);
-                } else {
-                    mode.getMenuInflater().inflate(R.menu.menu_control, menu);
-                }
+                mode.getMenuInflater().inflate(R.menu.menu_control, menu);
                 return true;
             }
 
@@ -841,9 +746,9 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         } else if (mPresenter.mEditType == Constants.EditType.CUT) {
                             mPresenter.onMove(fileList);
                         } else if (mPresenter.mEditType == Constants.EditType.ZIP) {
-                            mPresenter.onCompress(fileList);
+                            mPresenter.onZip(fileList);
                         } else if (mPresenter.mEditType == Constants.EditType.UNZIP) {
-                            mPresenter.onExtract(fileList);
+                            mPresenter.onUnzip(fileList);
                         }
                         break;
                 }

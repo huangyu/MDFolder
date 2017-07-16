@@ -3,11 +3,8 @@ package com.huangyu.mdfolder.mvp.presenter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AlertDialog;
@@ -25,13 +22,13 @@ import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.mvp.model.DocumentFileModel;
 import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
-import com.huangyu.mdfolder.mvp.view.IFileListView;
+import com.huangyu.mdfolder.mvp.view.ISDCardView;
 import com.huangyu.mdfolder.ui.activity.FileListActivity;
 import com.huangyu.mdfolder.utils.CompressUtils;
-import com.huangyu.mdfolder.utils.DocumentFileUtils;
 import com.huangyu.mdfolder.utils.MediaScanUtils;
 import com.huangyu.mdfolder.utils.MimeTypeUtils;
 import com.huangyu.mdfolder.utils.SPUtils;
+import com.huangyu.mdfolder.utils.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -55,10 +52,10 @@ import static com.huangyu.mdfolder.app.Constants.OrderType.DESC;
 import static com.huangyu.mdfolder.app.Constants.UNINSTALL_REQUEST_CODE;
 
 /**
- * Created by huangyu on 2017/5/22.
+ * Created by huangyu on 2017-7-14.
  */
 
-public class FileListPresenter extends BasePresenter<IFileListView> {
+public class SDCardPresenter extends BasePresenter<ISDCardView> {
 
     private DocumentFileModel mDocumentFileModel;
     private FileListModel mFileListModel;
@@ -69,7 +66,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     private String mCurrentPath; // 当前路径
     private int mBeforeScrollY; // 当前position
     public int mEditType;   // 当前编辑状态
-    public int mSelectType;   // 当前选择类型
     public int mSortType;   // 当前排序类型
     public int mOrderType;  // 当前升降序类型
 
@@ -81,7 +77,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         mFileStack = new Stack<>();
         mScrollYStack = new Stack<>();
         mEditType = Constants.EditType.NONE;
-        mSelectType = Constants.SelectType.MENU_FILE;
         mSortType = Constants.SortType.TYPE;
         mOrderType = DESC;
     }
@@ -89,11 +84,11 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     /**
      * 获取根目录文件列表
      */
-    public void onLoadRootFileList(final String searchStr) {
+    public void onLoadRootFileList(final Uri rootUri, final String searchStr) {
         Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
             @Override
             public Observable<ArrayList<FileItem>> call() {
-                return Observable.just(getCurrentFileList(searchStr));
+                return Observable.just(getCurrentFileList(rootUri, searchStr));
             }
         })
                 .subscribeOn(Schedulers.io())
@@ -101,7 +96,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 .doOnSubscribe(new Action0() {
                     @Override
                     public void call() {
-                        mCurrentPath = mFileListModel.getRootPath();
+                        mCurrentPath = rootUri.toString();
                         mFileStack.clear();
                         mFileStack.push(mCurrentPath);
                         mBeforeScrollY = 0;
@@ -119,115 +114,13 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     @Override
                     public void onNext(ArrayList<FileItem> fileList) {
                         mView.removeAllTabs();
-                        mView.addTab(mCurrentPath);
+                        mView.addTab(DocumentFile.fromTreeUri(BaseApplication.getInstance().getApplicationContext(), rootUri).getName());
                         mView.refreshData(fileList, false, 0);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        mView.showError(e.getMessage());
-                        onCompleted();
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        mView.stopRefresh();
-                    }
-                });
-        mRxManager.add(subscription);
-    }
-
-    /**
-     * 获取存储器文件列表
-     */
-    public void onLoadStorageFileList(final boolean isOuter, final String searchStr) {
-        Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
-            @Override
-            public Observable<ArrayList<FileItem>> call() {
-                return Observable.just(getCurrentFileList(searchStr));
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .doOnSubscribe(new Action0() {
-                    @Override
-                    public void call() {
-                        mCurrentPath = mFileListModel.getStorageCardPath(isOuter);
-                        mFileStack.clear();
-                        mFileStack.push(mCurrentPath);
-                        mBeforeScrollY = 0;
-                        mScrollYStack.clear();
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<ArrayList<FileItem>>() {
-                    @Override
-                    public void onStart() {
-                        mView.showTabs();
-                        mView.startRefresh();
-                    }
-
-                    @Override
-                    public void onNext(ArrayList<FileItem> fileList) {
-                        mView.removeAllTabs();
-                        mView.addTab(mCurrentPath);
-                        mView.refreshData(fileList, false, 0);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mView.showError(e.getMessage());
-                        onCompleted();
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        mView.stopRefresh();
-                    }
-                });
-        mRxManager.add(subscription);
-    }
-
-    /**
-     * 获取下载文件列表
-     */
-    public void onLoadDownloadFileList(final String searchStr) {
-        Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
-            @Override
-            public Observable<ArrayList<FileItem>> call() {
-                return Observable.just(getCurrentFileList(searchStr));
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .doOnSubscribe(new Action0() {
-                    @Override
-                    public void call() {
-                        mCurrentPath = mFileListModel.getDownloadPath();
-                        mFileStack.clear();
-                        mFileStack.push(mCurrentPath);
-                        mBeforeScrollY = 0;
-                        mScrollYStack.clear();
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<ArrayList<FileItem>>() {
-                    @Override
-                    public void onStart() {
-                        mView.showTabs();
-                        mView.startRefresh();
-                    }
-
-                    @Override
-                    public void onNext(ArrayList<FileItem> fileList) {
-                        mView.removeAllTabs();
-                        mView.addTab(mCurrentPath);
-                        mView.refreshData(fileList, false, 0);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
                         mView.showError(e.getMessage());
                         onCompleted();
                     }
@@ -280,85 +173,13 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     }
 
     /**
-     * 获取不同类型文件列表
-     */
-    public void onLoadMultiTypeFileList(final String searchStr, final int fileType) {
-        Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
-            @Override
-            public Observable<ArrayList<FileItem>> call() {
-                return Observable.just(getCurrentFileList(searchStr));
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .doOnSubscribe(new Action0() {
-                    @Override
-                    public void call() {
-                        mCurrentPath = "";
-                        mFileStack.clear();
-                        mScrollYStack.clear();
-                        mBeforeScrollY = 0;
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<ArrayList<FileItem>>() {
-                    @Override
-                    public void onStart() {
-                        mView.showTabs();
-                        mView.startRefresh();
-                    }
-
-                    @Override
-                    public void onNext(ArrayList<FileItem> fileList) {
-                        mView.removeAllTabs();
-                        switch (fileType) {
-                            case Constants.SelectType.MENU_DOCUMENT:
-                                mView.addTab(mView.getResString(R.string.menu_document) + "  " + fileList.size());
-                                break;
-                            case Constants.SelectType.MENU_PHOTO:
-                                mView.addTab(mView.getResString(R.string.menu_image) + "  " + fileList.size());
-                                break;
-                            case Constants.SelectType.MENU_MUSIC:
-                                mView.addTab(mView.getResString(R.string.menu_audio) + "  " + fileList.size());
-                                break;
-                            case Constants.SelectType.MENU_VIDEO:
-                                mView.addTab(mView.getResString(R.string.menu_video) + "  " + fileList.size());
-                                break;
-                            case Constants.SelectType.MENU_APK:
-                                mView.addTab(mView.getResString(R.string.menu_apk) + "  " + fileList.size());
-                                break;
-                            case Constants.SelectType.MENU_ZIP:
-                                mView.addTab(mView.getResString(R.string.menu_compress_package) + "  " + fileList.size());
-                                break;
-                            case Constants.SelectType.MENU_APPS:
-                                mView.addTab(mView.getResString(R.string.menu_apps) + "  " + fileList.size());
-                                break;
-                        }
-                        mView.refreshData(fileList, false, 0);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mView.showError(e.getMessage());
-                        onCompleted();
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        mView.stopRefresh();
-                    }
-                });
-        mRxManager.add(subscription);
-    }
-
-    /**
      * 刷新界面
      */
     public void onRefreshInSwipe(final String searchStr, final boolean ifClearSelected) {
         Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
             @Override
             public Observable<ArrayList<FileItem>> call() {
-                return Observable.just(getCurrentFileList(searchStr));
+                return Observable.just(getCurrentFileList(Uri.parse(mCurrentPath), searchStr));
             }
         })
                 .subscribeOn(Schedulers.io())
@@ -372,36 +193,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                     @Override
                     public void onNext(ArrayList<FileItem> fileList) {
-                        switch (mSelectType) {
-                            case Constants.SelectType.MENU_DOCUMENT:
-                                mView.removeAllTabs();
-                                mView.addTab(mView.getResString(R.string.menu_document) + "  " + fileList.size());
-                                break;
-                            case Constants.SelectType.MENU_PHOTO:
-                                mView.removeAllTabs();
-                                mView.addTab(mView.getResString(R.string.menu_image) + "  " + fileList.size());
-                                break;
-                            case Constants.SelectType.MENU_MUSIC:
-                                mView.removeAllTabs();
-                                mView.addTab(mView.getResString(R.string.menu_audio) + "  " + fileList.size());
-                                break;
-                            case Constants.SelectType.MENU_VIDEO:
-                                mView.removeAllTabs();
-                                mView.addTab(mView.getResString(R.string.menu_video) + "  " + fileList.size());
-                                break;
-                            case Constants.SelectType.MENU_APK:
-                                mView.removeAllTabs();
-                                mView.addTab(mView.getResString(R.string.menu_apk) + "  " + fileList.size());
-                                break;
-                            case Constants.SelectType.MENU_ZIP:
-                                mView.removeAllTabs();
-                                mView.addTab(mView.getResString(R.string.menu_compress_package) + "  " + fileList.size());
-                                break;
-                            case Constants.SelectType.MENU_APPS:
-                                mView.removeAllTabs();
-                                mView.addTab(mView.getResString(R.string.menu_apps) + "  " + fileList.size());
-                                break;
-                        }
                         mView.refreshData(fileList, ifClearSelected, 0);
                     }
 
@@ -429,7 +220,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
             @Override
             public Observable<ArrayList<FileItem>> call() {
-                return Observable.just(getCurrentFileList(searchStr));
+                return Observable.just(getCurrentFileList(Uri.parse(mCurrentPath), searchStr));
             }
         })
                 .subscribeOn(Schedulers.io())
@@ -467,11 +258,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 新增文件
      */
     public void onAddFile() {
-        if (mSelectType != Constants.SelectType.MENU_FILE && mSelectType != Constants.SelectType.MENU_DOWNLOAD && mSelectType != Constants.SelectType.MENU_SDCARD) {
-            mView.showMessage(mView.getResString(R.string.tips_add_file_error));
-            return;
-        }
-
         final View view = mView.inflateFilenameInputDialogLayout();
         final TextInputLayout textInputLayout = mView.findTextInputLayout(view);
         final EditText editText = mView.findAlertDialogEditText(view);
@@ -551,19 +337,12 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         if (filePath == null) {
                                             return;
                                         }
-                                        if (mSelectType == Constants.SelectType.MENU_SDCARD) {
-                                            DocumentFile documentFile = DocumentFileUtils.getDocumentFile(new File(filePath), false);
-                                            mDocumentFileModel.addFile(documentFile, "application/octet-stream", filename);
+                                        if (mFileModel.addFile(filePath)) {
+                                            MediaScanUtils.scanFiles(mContext, new String[]{filePath}, new String[]{MimeTypeUtils.getMIMEType(filePath)});
                                             mView.showMessage(mView.getResString(R.string.tips_add_file_successfully));
                                             mView.refreshData(false, 0);
                                         } else {
-                                            if (mFileModel.addFile(filePath)) {
-                                                MediaScanUtils.scanFiles(mContext, new String[]{filePath}, new String[]{MimeTypeUtils.getMIMEType(filePath)});
-                                                mView.showMessage(mView.getResString(R.string.tips_add_file_successfully));
-                                                mView.refreshData(false, 0);
-                                            } else {
-                                                mView.showMessage(mView.getResString(R.string.tips_add_file_error));
-                                            }
+                                            mView.showMessage(mView.getResString(R.string.tips_add_file_error));
                                         }
                                     }
 
@@ -598,11 +377,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * 新增文件夹
      */
     public void onAddFolder() {
-        if (mSelectType != Constants.SelectType.MENU_FILE && mSelectType != Constants.SelectType.MENU_DOWNLOAD && mSelectType != Constants.SelectType.MENU_SDCARD) {
-            mView.showMessage(mView.getResString(R.string.tips_add_folder_error));
-            return;
-        }
-
         final View view = mView.inflateFilenameInputDialogLayout();
         final TextInputLayout textInputLayout = mView.findTextInputLayout(view);
         final EditText editText = mView.findAlertDialogEditText(view);
@@ -682,19 +456,12 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         if (filePath == null) {
                                             return;
                                         }
-                                        if (mSelectType == Constants.SelectType.MENU_SDCARD) {
-                                            DocumentFileUtils.getDocumentFile(new File(filePath), true);
-//                                            mDocumentFileModel.addFolder(documentFile, filename);
+                                        if (mFileModel.addFolder(filePath)) {
+                                            MediaScanUtils.scanFiles(mContext, new String[]{filePath}, new String[]{MimeTypeUtils.getMIMEType(filePath)});
                                             mView.showMessage(mView.getResString(R.string.tips_add_folder_successfully));
                                             mView.refreshData(false, 0);
                                         } else {
-                                            if (mFileModel.addFolder(filePath)) {
-                                                MediaScanUtils.scanFiles(mContext, new String[]{filePath}, new String[]{MimeTypeUtils.getMIMEType(filePath)});
-                                                mView.showMessage(mView.getResString(R.string.tips_add_folder_successfully));
-                                                mView.refreshData(false, 0);
-                                            } else {
-                                                mView.showMessage(mView.getResString(R.string.tips_add_folder_error));
-                                            }
+                                            mView.showMessage(mView.getResString(R.string.tips_add_folder_error));
                                         }
                                     }
 
@@ -737,9 +504,8 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
             final View view = mView.inflateFilenameInputDialogLayout();
             final TextInputLayout textInputLayout = mView.findTextInputLayout(view);
             final EditText editText = mView.findAlertDialogEditText(view);
-            final FileItem fileItem = fileList.get(0);
-            final String filename = fileItem.getName();
-            final String filePath = fileItem.getPath();
+            final String filename = fileList.get(0).getName();
+            final String filePath = fileList.get(0).getPath();
             editText.setText(filename);
             if (filename.contains(".")) {
                 editText.setSelection(0, filename.lastIndexOf("."));
@@ -773,14 +539,8 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     .map(new Func1<Object, Boolean>() {
                                         @Override
                                         public Boolean call(Object o) {
-                                            boolean result;
-                                            if (mSelectType == Constants.SelectType.MENU_SDCARD) {
-                                                DocumentFile documentFile = DocumentFileUtils.getDocumentFile(new File(filePath), fileItem.isDirectory());
-                                                result = mDocumentFileModel.renameFile(documentFile, filename);
-                                            } else {
-                                                result = mFileModel.renameFile(filePath, filename);
-                                            }
-                                            String newPath = new File(filePath).getParent() + File.separator + filename;
+                                            boolean result = mFileModel.renameFile(filePath, editText.getText().toString());
+                                            String newPath = new File(filePath).getParent() + File.separator + editText.getText().toString();
                                             if (result) {
                                                 SPUtils.removeFileRemark(filePath);
                                                 MediaScanUtils.renameMediaFile(mContext, filePath, newPath);
@@ -928,24 +688,12 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     public Boolean call(FileItem file) {
                                         boolean result;
                                         String newPath;
-                                        if (mSelectType == Constants.SelectType.MENU_SDCARD) {
-                                            if (o.getKey()) {
-                                                DocumentFile documentFile = DocumentFileUtils.getDocumentFile(new File(file.getPath()), file.isDirectory());
-                                                result = mDocumentFileModel.hideFile(documentFile, file.getName());
-                                                newPath = new File(file.getPath()).getParent() + File.separator + "." + file.getName();
-                                            } else {
-                                                DocumentFile documentFile = DocumentFileUtils.getDocumentFile(new File(file.getPath()), file.isDirectory());
-                                                result = mDocumentFileModel.showFile(documentFile, file.getName());
-                                                newPath = new File(file.getPath()).getParent() + File.separator + file.getName().replaceFirst("\\.", "");
-                                            }
+                                        if (o.getKey()) {
+                                            result = mFileModel.hideFile(file.getPath(), file.getName());
+                                            newPath = new File(file.getPath()).getParent() + File.separator + "." + file.getName();
                                         } else {
-                                            if (o.getKey()) {
-                                                result = mFileModel.hideFile(file.getPath(), file.getName());
-                                                newPath = new File(file.getPath()).getParent() + File.separator + "." + file.getName();
-                                            } else {
-                                                result = mFileModel.showFile(file.getPath(), file.getName());
-                                                newPath = new File(file.getPath()).getParent() + File.separator + file.getName().replaceFirst("\\.", "");
-                                            }
+                                            result = mFileModel.showFile(file.getPath(), file.getName());
+                                            newPath = new File(file.getPath()).getParent() + File.separator + file.getName().replaceFirst("\\.", "");
                                         }
                                         if (result) {
                                             MediaScanUtils.renameMediaFile(mContext, file.getPath(), newPath);
@@ -1043,15 +791,10 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     @Override
                                     public Boolean call(FileItem file) {
                                         boolean result;
-                                        if (mSelectType == Constants.SelectType.MENU_SDCARD) {
-                                            DocumentFile documentFile = DocumentFileUtils.getDocumentFile(new File(file.getPath()), o.getKey());
-                                            result = mDocumentFileModel.deleteFile(documentFile);
+                                        if (o.getKey()) {
+                                            result = mFileModel.deleteFolder(file.getPath());
                                         } else {
-                                            if (o.getKey()) {
-                                                result = mFileModel.deleteFolder(file.getPath());
-                                            } else {
-                                                result = mFileModel.deleteFile(file.getPath());
-                                            }
+                                            result = mFileModel.deleteFile(file.getPath());
                                         }
                                         if (result) {
                                             SPUtils.removeFileRemark(file.getPath());
@@ -1095,7 +838,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      *
      * @param fileList 文件列表
      */
-    public void onCompress(final ArrayList<FileItem> fileList) {
+    public void onZip(final ArrayList<FileItem> fileList) {
         mView.showNormalAlert(mView.getResString(R.string.tips_compress_files), mView.getResString(R.string.act_compress), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -1190,7 +933,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      *
      * @param fileList 文件列表
      */
-    public void onExtract(final ArrayList<FileItem> fileList) {
+    public void onUnzip(final ArrayList<FileItem> fileList) {
         mView.showNormalAlert(mView.getResString(R.string.tips_extract_file), mView.getResString(R.string.act_extract), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -1198,38 +941,27 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 String suffix = FileUtils.getSuffix(fileList.get(0).getName());
                 switch (suffix) {
                     case ".7z":
-                        Subscription subscription = Observable.create(new Observable.OnSubscribe<Boolean>() {
+                        Subscription subscription = Observable.from(fileList).map(new Func1<FileItem, File>() {
                             @Override
-                            public void call(Subscriber<? super Boolean> subscriber) {
-                                boolean result = mFileListModel.un7zipFileList(filePath, mCurrentPath);
-                                if (result) {
-                                    ArrayList<File> list = FileUtils.listFilesInDir(mCurrentPath);
-                                    int size = list.size();
-                                    String[] pathArray = new String[size];
-                                    String[] mimeTypeArray = new String[size];
-                                    for (int i = 0; i < size; i++) {
-                                        String path = list.get(i).getPath();
-                                        pathArray[i] = path;
-                                        mimeTypeArray[i] = MimeTypeUtils.getMIMEType(path);
-                                    }
-                                    MediaScanUtils.scanFiles(mContext, pathArray, mimeTypeArray);
-                                }
-                                subscriber.onNext(result);
-                                subscriber.onCompleted();
+                            public File call(FileItem fileItem) {
+                                return new File(fileItem.getPath());
                             }
                         })
+                                .toList()
                                 .delay(300, TimeUnit.MILLISECONDS)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new Subscriber<Boolean>() {
+                                .subscribe(new Subscriber<List<File>>() {
                                     @Override
                                     public void onStart() {
                                         mView.showProgressDialog(mContext.getString(R.string.tips_extracting));
                                     }
 
                                     @Override
-                                    public void onNext(Boolean result) {
+                                    public void onNext(List<File> fileList) {
+                                        boolean result = mFileListModel.un7zipFileList(filePath, mCurrentPath);
                                         if (result) {
+                                            MediaScanUtils.scanFiles(mContext, new String[]{mCurrentPath}, new String[]{MimeTypeUtils.getMIMEType(mCurrentPath)});
                                             mView.showMessage(mView.getResString(R.string.tips_extract_successfully));
                                         } else {
                                             mView.showMessage(mView.getResString(R.string.tips_extract_in_error));
@@ -1251,38 +983,27 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                         mRxManager.add(subscription);
                         break;
                     case ".rar":
-                        Subscription subscription2 = Observable.create(new Observable.OnSubscribe<Boolean>() {
+                        Subscription subscription2 = Observable.from(fileList).map(new Func1<FileItem, File>() {
                             @Override
-                            public void call(Subscriber<? super Boolean> subscriber) {
-                                boolean result = mFileListModel.unRarFileList(filePath, mCurrentPath);
-                                if (result) {
-                                    ArrayList<File> list = FileUtils.listFilesInDir(mCurrentPath);
-                                    int size = list.size();
-                                    String[] pathArray = new String[size];
-                                    String[] mimeTypeArray = new String[size];
-                                    for (int i = 0; i < size; i++) {
-                                        String path = list.get(i).getPath();
-                                        pathArray[i] = path;
-                                        mimeTypeArray[i] = MimeTypeUtils.getMIMEType(path);
-                                    }
-                                    MediaScanUtils.scanFiles(mContext, pathArray, mimeTypeArray);
-                                }
-                                subscriber.onNext(result);
-                                subscriber.onCompleted();
+                            public File call(FileItem fileItem) {
+                                return new File(fileItem.getPath());
                             }
                         })
+                                .toList()
                                 .delay(300, TimeUnit.MILLISECONDS)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new Subscriber<Boolean>() {
+                                .subscribe(new Subscriber<List<File>>() {
                                     @Override
                                     public void onStart() {
                                         mView.showProgressDialog(mContext.getString(R.string.tips_extracting));
                                     }
 
                                     @Override
-                                    public void onNext(Boolean result) {
+                                    public void onNext(List<File> fileList) {
+                                        boolean result = mFileListModel.unRarFileList(filePath, mCurrentPath);
                                         if (result) {
+                                            MediaScanUtils.scanFiles(mContext, new String[]{mCurrentPath}, new String[]{MimeTypeUtils.getMIMEType(mCurrentPath)});
                                             mView.showMessage(mView.getResString(R.string.tips_extract_successfully));
                                         } else {
                                             mView.showMessage(mView.getResString(R.string.tips_extract_in_error));
@@ -1316,30 +1037,17 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         @Override
                                         public void onClick(View v) {
                                             final String password = editText.getText().toString();
-                                            Subscription subscription = Observable.create(new Observable.OnSubscribe<Boolean>() {
+                                            Subscription subscription = Observable.from(fileList).map(new Func1<FileItem, File>() {
                                                 @Override
-                                                public void call(Subscriber<? super Boolean> subscriber) {
-                                                    boolean result = mFileListModel.unZipFileList(filePath, mCurrentPath, password);
-                                                    if (result) {
-                                                        ArrayList<File> list = FileUtils.listFilesInDir(mCurrentPath);
-                                                        int size = list.size();
-                                                        String[] pathArray = new String[size];
-                                                        String[] mimeTypeArray = new String[size];
-                                                        for (int i = 0; i < list.size(); i++) {
-                                                            String path = list.get(i).getPath();
-                                                            pathArray[i] = path;
-                                                            mimeTypeArray[i] = MimeTypeUtils.getMIMEType(path);
-                                                        }
-                                                        MediaScanUtils.scanFiles(mContext, pathArray, mimeTypeArray);
-                                                    }
-                                                    subscriber.onNext(result);
-                                                    subscriber.onCompleted();
+                                                public File call(FileItem fileItem) {
+                                                    return new File(fileItem.getPath());
                                                 }
                                             })
+                                                    .toList()
                                                     .delay(300, TimeUnit.MILLISECONDS)
                                                     .subscribeOn(Schedulers.io())
                                                     .observeOn(AndroidSchedulers.mainThread())
-                                                    .subscribe(new Subscriber<Boolean>() {
+                                                    .subscribe(new Subscriber<List<File>>() {
                                                         @Override
                                                         public void onStart() {
                                                             dialog.dismiss();
@@ -1347,8 +1055,10 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                                         }
 
                                                         @Override
-                                                        public void onNext(Boolean result) {
+                                                        public void onNext(List<File> fileList) {
+                                                            boolean result = mFileListModel.unZipFileList(filePath, mCurrentPath, password);
                                                             if (result) {
+                                                                MediaScanUtils.scanFiles(mContext, new String[]{mCurrentPath}, new String[]{MimeTypeUtils.getMIMEType(mCurrentPath)});
                                                                 mView.showMessage(mView.getResString(R.string.tips_extract_successfully));
                                                             } else {
                                                                 mView.showMessage(mView.getResString(R.string.tips_extract_in_error));
@@ -1381,38 +1091,27 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             });
 
                         } else {
-                            Subscription subscription3 = Observable.create(new Observable.OnSubscribe<Boolean>() {
+                            Subscription subscription3 = Observable.from(fileList).map(new Func1<FileItem, File>() {
                                 @Override
-                                public void call(Subscriber<? super Boolean> subscriber) {
-                                    boolean result = mFileListModel.unZipFileList(filePath, mCurrentPath);
-                                    if (result) {
-                                        ArrayList<File> list = FileUtils.listFilesInDir(mCurrentPath);
-                                        int size = list.size();
-                                        String[] pathArray = new String[size];
-                                        String[] mimeTypeArray = new String[size];
-                                        for (int i = 0; i < list.size(); i++) {
-                                            String path = list.get(i).getPath();
-                                            pathArray[i] = path;
-                                            mimeTypeArray[i] = MimeTypeUtils.getMIMEType(path);
-                                        }
-                                        MediaScanUtils.scanFiles(mContext, pathArray, mimeTypeArray);
-                                    }
-                                    subscriber.onNext(result);
-                                    subscriber.onCompleted();
+                                public File call(FileItem fileItem) {
+                                    return new File(fileItem.getPath());
                                 }
                             })
+                                    .toList()
                                     .delay(500, TimeUnit.MILLISECONDS)
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new Subscriber<Boolean>() {
+                                    .subscribe(new Subscriber<List<File>>() {
                                         @Override
                                         public void onStart() {
                                             mView.showProgressDialog(mContext.getString(R.string.tips_extracting));
                                         }
 
                                         @Override
-                                        public void onNext(Boolean result) {
+                                        public void onNext(List<File> fileList) {
+                                            boolean result = mFileListModel.unZipFileList(filePath, mCurrentPath);
                                             if (result) {
+                                                MediaScanUtils.scanFiles(mContext, new String[]{mCurrentPath}, new String[]{MimeTypeUtils.getMIMEType(mCurrentPath)});
                                                 mView.showMessage(mView.getResString(R.string.tips_extract_successfully));
                                             } else {
                                                 mView.showMessage(mView.getResString(R.string.tips_extract_in_error));
@@ -1458,33 +1157,14 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             @Override
                             public Boolean call(FileItem file) {
                                 boolean result;
-                                String destPath = mCurrentPath + File.separator + file.getName();
-                                if (mSelectType == Constants.SelectType.MENU_SDCARD) {
-                                    DocumentFile srcFile = DocumentFileUtils.getDocumentFile(new File(file.getPath()), o.getKey());
-                                    DocumentFile destFile = DocumentFileUtils.getDocumentFile(new File(destPath), o.getKey());
-                                    if (o.getKey()) {
-                                        result = mDocumentFileModel.copyFolder(srcFile, destFile);
-                                    } else {
-                                        result = mDocumentFileModel.copyFile(srcFile, destFile);
-                                    }
+                                String newPath = mCurrentPath + File.separator + file.getName();
+                                if (o.getKey()) {
+                                    result = mFileModel.copyFolder(file.getPath(), newPath);
                                 } else {
-                                    if (o.getKey()) {
-                                        result = mFileModel.moveFolder(file.getPath(), destPath);
-                                    } else {
-                                        result = mFileModel.moveFile(file.getPath(), destPath);
-                                    }
+                                    result = mFileModel.copyFile(file.getPath(), newPath);
                                 }
                                 if (result) {
-                                    ArrayList<File> list = FileUtils.listFilesInDir(destPath);
-                                    int size = list.size();
-                                    String[] pathArray = new String[size];
-                                    String[] mimeTypeArray = new String[size];
-                                    for (int i = 0; i < size; i++) {
-                                        String path = list.get(i).getPath();
-                                        pathArray[i] = path;
-                                        mimeTypeArray[i] = MimeTypeUtils.getMIMEType(path);
-                                    }
-                                    MediaScanUtils.scanFiles(mContext, pathArray, mimeTypeArray);
+                                    MediaScanUtils.scanFiles(mContext, new String[]{newPath}, new String[]{MimeTypeUtils.getMIMEType(newPath)});
                                 }
                                 return result;
                             }
@@ -1536,34 +1216,15 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             @Override
                             public Boolean call(FileItem file) {
                                 boolean result;
-                                String destPath = mCurrentPath + File.separator + file.getName();
-                                if (mSelectType == Constants.SelectType.MENU_SDCARD) {
-                                    DocumentFile srcFile = DocumentFileUtils.getDocumentFile(new File(file.getPath()), o.getKey());
-                                    DocumentFile destFile = DocumentFileUtils.getDocumentFile(new File(destPath), o.getKey());
-                                    if (o.getKey()) {
-                                        result = mDocumentFileModel.moveFolder(srcFile, destFile);
-                                    } else {
-                                        result = mDocumentFileModel.moveFile(srcFile, destFile);
-                                    }
+                                String newPath = mCurrentPath + File.separator + file.getName();
+                                if (o.getKey()) {
+                                    result = mFileModel.moveFolder(file.getPath(), newPath);
                                 } else {
-                                    if (o.getKey()) {
-                                        result = mFileModel.moveFolder(file.getPath(), destPath);
-                                    } else {
-                                        result = mFileModel.moveFile(file.getPath(), destPath);
-                                    }
+                                    result = mFileModel.moveFile(file.getPath(), newPath);
                                 }
                                 if (result) {
                                     SPUtils.removeFileRemark(file.getPath());
-                                    ArrayList<File> list = FileUtils.listFilesInDir(destPath);
-                                    int size = list.size();
-                                    String[] pathArray = new String[size];
-                                    String[] mimeTypeArray = new String[size];
-                                    for (int i = 0; i < size; i++) {
-                                        String path = list.get(i).getPath();
-                                        pathArray[i] = path;
-                                        mimeTypeArray[i] = MimeTypeUtils.getMIMEType(path);
-                                    }
-                                    MediaScanUtils.scanFiles(mContext, pathArray, mimeTypeArray);
+                                    MediaScanUtils.scanFiles(mContext, new String[]{newPath}, new String[]{MimeTypeUtils.getMIMEType(newPath)});
                                 }
                                 return result;
                             }
@@ -1602,37 +1263,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      * @param searchStr 查询文字
      * @return 当前路径文件列表
      */
-    private ArrayList<FileItem> getCurrentFileList(String searchStr) {
-        ArrayList<FileItem> fileItemList = null;
-
-        switch (mSelectType) {
-            case Constants.SelectType.MENU_DOCUMENT:
-                fileItemList = mFileListModel.getDocumentList(searchStr, mContext.getContentResolver());
-                break;
-            case Constants.SelectType.MENU_MUSIC:
-                fileItemList = mFileListModel.getAudioList(searchStr, mContext.getContentResolver());
-                break;
-            case Constants.SelectType.MENU_PHOTO:
-                fileItemList = mFileListModel.getImageList(searchStr, mContext.getContentResolver());
-                break;
-            case Constants.SelectType.MENU_VIDEO:
-                fileItemList = mFileListModel.getVideoList(searchStr, mContext.getContentResolver());
-                break;
-            case Constants.SelectType.MENU_FILE:
-            case Constants.SelectType.MENU_DOWNLOAD:
-            case Constants.SelectType.MENU_SDCARD:
-                fileItemList = transformFileList(mFileListModel.getFileList(mCurrentPath, searchStr));
-                break;
-            case Constants.SelectType.MENU_APK:
-                fileItemList = mFileListModel.getApkList(searchStr, mContext.getContentResolver());
-                break;
-            case Constants.SelectType.MENU_ZIP:
-                fileItemList = mFileListModel.getCompressList(searchStr, mContext.getContentResolver());
-                break;
-            case Constants.SelectType.MENU_APPS:
-                fileItemList = mFileListModel.getInstalledList(searchStr);
-                break;
-        }
+    private ArrayList<FileItem> getCurrentFileList(Uri uri, String searchStr) {
+        DocumentFile[] documentFileList = mDocumentFileModel.getFileList(uri);
+        ArrayList<FileItem> fileItemList = transformFileList(documentFileList, searchStr);
 
         if (fileItemList == null) {
             return null;
@@ -1667,55 +1300,47 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     /**
      * 转换文件列表
      *
-     * @param fileList 文件列表
+     * @param documentFileList 文件列表
      * @return ArrayList<FileItem>
      */
-    private ArrayList<FileItem> transformFileList(ArrayList<File> fileList) {
-        if (fileList != null && fileList.size() > 0) {
-            PackageManager pm = BaseApplication.getInstance().getApplicationContext().getPackageManager();
-            ArrayList<FileItem> fileItemList = new ArrayList<>();
-            FileItem fileItem;
-            for (File file : fileList) {
-                fileItem = new FileItem();
-                fileItem.setName(file.getName());
-                fileItem.setPath(file.getPath());
-                if (file.isDirectory()) {
+    private ArrayList<FileItem> transformFileList(DocumentFile[] documentFileList, String searchStr) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            if (documentFileList != null && documentFileList.length > 0) {
+                ArrayList<FileItem> fileItemList = new ArrayList<>();
+                FileItem fileItem;
+                for (DocumentFile file : documentFileList) {
+                    fileItem = new FileItem();
+                    fileItem.setName(file.getName());
+                    Uri uri = file.getUri();
+                    fileItem.setPath(uri.toString());
+                    if (file.isDirectory()) {
 //                    fileItem.setSize(FileUtils.getDirLength(file));
-                    fileItem.setSize("0");
-                    File[] listFiles = file.listFiles();
-                    if (listFiles != null && listFiles.length > 0) {
-                        int hiddenCount = 0;
-                        for (File f : listFiles) {
-                            if (f.isHidden() && !SPUtils.isShowHiddenFiles()) {
-                                hiddenCount++;
-                            }
+                        fileItem.setSize("0");
+                        DocumentFile[] listFiles = file.listFiles();
+                        if (listFiles != null && listFiles.length > 0) {
+                            fileItem.setCount(listFiles.length);
+                        } else {
+                            fileItem.setCount(0);
                         }
-                        fileItem.setCount(file.list().length - hiddenCount);
                     } else {
+                        fileItem.setSize(String.valueOf(file.length()));
                         fileItem.setCount(0);
                     }
-                } else {
-                    fileItem.setSize(String.valueOf(FileUtils.getFileLength(file)));
-                    fileItem.setCount(0);
-                }
-                fileItem.setDate(String.valueOf(file.lastModified() / 1000));
-                fileItem.setIsDirectory(file.isDirectory());
-                fileItem.setParent(file.getParent());
-                fileItem.setType(MimeTypeUtils.getTypeBySuffix(FileUtils.getSuffix(file.getName())));
-                fileItem.setIsShow(!file.isHidden());
-                fileItem.setRemark(SPUtils.getFileRemark(file.getPath()));
+                    fileItem.setDate(String.valueOf(file.lastModified() / 1000));
+                    fileItem.setIsDirectory(file.isDirectory());
+//                fileItem.setParent(file.getParentFile().getName());
+                    fileItem.setType(MimeTypeUtils.getTypeBySuffix(FileUtils.getSuffix(file.getName())));
+                    fileItem.setIsShow(true);
+                    fileItem.setRemark(SPUtils.getFileRemark(file.getUri().toString()));
 
-                if (file.getName().endsWith(".apk")) {
-                    PackageInfo packageInfo = pm.getPackageArchiveInfo(file.getPath(), PackageManager.GET_ACTIVITIES);
-                    ApplicationInfo appInfo = packageInfo.applicationInfo;
-                    appInfo.sourceDir = file.getPath();
-                    appInfo.publicSourceDir = file.getPath();
-                    Drawable icon = appInfo.loadIcon(pm);
-                    fileItem.setIcon(icon);
+                    boolean searchResult = TextUtils.isEmpty(searchStr);
+                    boolean nameResult = StringUtils.containsIgnoreCase(fileItem.getName(), searchStr);
+                    if (searchResult || nameResult) {
+                        fileItemList.add(fileItem);
+                    }
                 }
-                fileItemList.add(fileItem);
+                return mFileListModel.orderByType(fileItemList);
             }
-            return mFileListModel.orderByType(fileItemList);
         }
         return null;
     }
