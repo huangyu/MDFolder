@@ -84,12 +84,6 @@ public class FileListModel implements IBaseModel {
                 String fileRealName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
                 if (FileUtils.isFileExists(filePath) && !isFolder(fileRealName)) {
                     if (fileRealName.endsWith(".apk")) {
-                        PackageInfo packageInfo = pm.getPackageArchiveInfo(filePath, PackageManager.GET_ACTIVITIES);
-                        ApplicationInfo appInfo = packageInfo.applicationInfo;
-                        appInfo.sourceDir = filePath;
-                        appInfo.publicSourceDir = filePath;
-                        Drawable icon = appInfo.loadIcon(pm);
-
                         FileItem fileItem = new FileItem();
                         fileItem.setName(fileRealName);
                         fileItem.setPath(filePath);
@@ -99,7 +93,14 @@ public class FileListModel implements IBaseModel {
                         fileItem.setIsDirectory(false);
                         fileItem.setType(Constants.FileType.APK);
                         fileItem.setIsShow(true);
-                        fileItem.setIcon(icon);
+                        PackageInfo packageInfo = pm.getPackageArchiveInfo(filePath, PackageManager.GET_ACTIVITIES);
+                        if (packageInfo != null) {
+                            ApplicationInfo appInfo = packageInfo.applicationInfo;
+                            appInfo.sourceDir = filePath;
+                            appInfo.publicSourceDir = filePath;
+                            Drawable icon = appInfo.loadIcon(pm);
+                            fileItem.setIcon(icon);
+                        }
 
                         String remark = SPUtils.getFileRemark(filePath);
                         boolean searchResult = TextUtils.isEmpty(searchStr);

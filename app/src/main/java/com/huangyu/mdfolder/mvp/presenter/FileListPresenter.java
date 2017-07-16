@@ -407,6 +407,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                     @Override
                     public void onError(Throwable e) {
+                        e.printStackTrace();
                         mView.showError(e.getMessage());
                         onCompleted();
                     }
@@ -1707,11 +1708,13 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                 if (file.getName().endsWith(".apk")) {
                     PackageInfo packageInfo = pm.getPackageArchiveInfo(file.getPath(), PackageManager.GET_ACTIVITIES);
-                    ApplicationInfo appInfo = packageInfo.applicationInfo;
-                    appInfo.sourceDir = file.getPath();
-                    appInfo.publicSourceDir = file.getPath();
-                    Drawable icon = appInfo.loadIcon(pm);
-                    fileItem.setIcon(icon);
+                    if (packageInfo != null) {
+                        ApplicationInfo appInfo = packageInfo.applicationInfo;
+                        appInfo.sourceDir = file.getPath();
+                        appInfo.publicSourceDir = file.getPath();
+                        Drawable icon = appInfo.loadIcon(pm);
+                        fileItem.setIcon(icon);
+                    }
                 }
                 fileItemList.add(fileItem);
             }
