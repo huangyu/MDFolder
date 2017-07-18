@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.provider.DocumentFile;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.huangyu.library.app.BaseApplication;
@@ -24,6 +25,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.huangyu.mdfolder.utils.SDCardUtils.getStoragePath;
 
 /**
  * Created by huangyu on 2017/7/13.
@@ -54,13 +57,16 @@ public class DocumentFileUtils {
             return null;
         }
 
-        String baseFolder = null;
+        Context context = BaseApplication.getInstance().getApplicationContext();
+        String sdcardRootPath = getStoragePath(context, true);
+        String internalRootPath = getStoragePath(context, false);
 
-        // First try to get the base folder via unofficial StorageVolume API from the URIs.
+        String baseFolder = null;
         for (int i = 0; baseFolder == null && i < treeUris.length; i++) {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
                 String treeBase = getFullPathFromTreeUri(treeUris[i]);
-                if (treeBase != null && fullPath.startsWith(treeBase)) {
+//                if (treeBase != null && fullPath.startsWith(treeBase)) {
+                if (treeBase != null) {
                     treeUri = treeUris[i];
                     baseFolder = treeBase;
                 }
@@ -68,28 +74,29 @@ public class DocumentFileUtils {
         }
 
         if (baseFolder == null) {
-            // Alternatively, take root folder from device and assume that base URI works.
             treeUri = treeUris[0];
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                baseFolder = getExtSdCardFolder(file);
-            }
+//            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+//                baseFolder = getExtSdCardFolder(file);
+//            }
         }
 
-        if (baseFolder == null) {
+        String relativePath;
+        if (!TextUtils.isEmpty(sdcardRootPath) && fullPath.startsWith(sdcardRootPath)) {
+            relativePath = fullPath.substring(sdcardRootPath.length() + 1);
+        } else if (!TextUtils.isEmpty(internalRootPath) && fullPath.startsWith(internalRootPath)) {
+            relativePath = fullPath.substring(internalRootPath.length() + 1);
+        } else {
             return null;
         }
 
-        String relativePath = fullPath.substring(baseFolder.length() + 1);
-
-        // start with root of SD card and then parse through document tree.
-        DocumentFile document = DocumentFile.fromTreeUri(BaseApplication.getInstance(), treeUri);
+        DocumentFile document = DocumentFile.fromTreeUri(context, treeUri);
 
         String[] parts = relativePath.split("\\/");
         for (int i = 0; i < parts.length; i++) {
             DocumentFile nextDocument = document.findFile(parts[i]);
 
             if (nextDocument == null) {
-                if (i < parts.length - 1) {
+                if (i > parts.length - 1) {
                     return null;
                 } else if (isDirectory) {
                     nextDocument = document.createDirectory(parts[i]);
@@ -101,6 +108,23 @@ public class DocumentFileUtils {
         }
 
         return document;
+    }
+
+    public static boolean isDocumentFile(File file) {
+        Context context = BaseApplication.getInstance().getApplicationContext();
+        try {
+            String sdcardRootPath = SDCardUtils.getStoragePath(context, true);
+            if (TextUtils.isEmpty(sdcardRootPath)) {
+                return false;
+            }
+            String path = file.getCanonicalPath();
+            if (!TextUtils.isEmpty(path) && path.startsWith(sdcardRootPath)) {
+                return true;
+            }
+        } catch (IOException e) {
+            return false;
+        }
+        return false;
     }
 
     /**
@@ -159,6 +183,7 @@ public class DocumentFileUtils {
      * @param volumeId The volume id.
      * @return The path.
      */
+
     private static String getVolumePath(final String volumeId) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             return null;
@@ -247,15 +272,15 @@ public class DocumentFileUtils {
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     private static String getExtSdCardFolder(@NonNull final File file) {
         String[] extSdPaths = getExtSdCardPaths();
-        try {
-            for (String extSdPath : extSdPaths) {
-                if (file.getCanonicalPath().startsWith(extSdPath)) {
-                    return extSdPath;
-                }
-            }
-        } catch (IOException e) {
-            return null;
+//        try {
+        for (String extSdPath : extSdPaths) {
+//                if (file.getCanonicalPath().startsWith(extSdPath)) {
+            return extSdPath;
+//                }
         }
+//        } catch (IOException e) {
+//            return null;
+//        }
         return null;
     }
 
@@ -307,7 +332,7 @@ public class DocumentFileUtils {
                 if ("primary".equalsIgnoreCase(type)) {
                     return Environment.getExternalStorageDirectory() + File.separator + split[1];
                 } else {
-                    return SDCardUtils.getStoragePath(context, true) + File.separator + split[1];
+                    return getStoragePath(context, true) + File.separator + split[1];
                 }
             }
             // DownloadsProvider

@@ -35,13 +35,19 @@
             android:orderInCategory="5"
             android:title="@string/menu_sort_by_size"
             app:showAsAction="withText" />
+
+        <item
+            android:id="@+id/action_sort_by_remark"
+            android:orderInCategory="6"
+            android:title="@string/menu_sort_by_remark"
+            app:showAsAction="withText" />
     </group>
 
     <group android:checkableBehavior="all">
         <item
             android:id="@+id/action_sort_ascending"
             android:checked="true"
-            android:orderInCategory="5"
+            android:orderInCategory="7"
             android:title="@string/menu_sort_by_ascending"
             app:showAsAction="withText" />
     </group>

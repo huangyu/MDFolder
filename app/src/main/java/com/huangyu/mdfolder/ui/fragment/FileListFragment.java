@@ -588,6 +588,8 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             mRecyclerView.scrollToPosition(0);
             mRecyclerView.scrollTo(0, scrollY);
         }
+
+        showFloatingActionMenu();
     }
 
     @Override
@@ -664,6 +666,11 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     @Override
     public void closeFloatingActionMenu() {
         mFamAdd.close(true);
+    }
+
+    @Override
+    public void showFloatingActionMenu() {
+        mFamAdd.showMenuButton(true);
     }
 
     @Override

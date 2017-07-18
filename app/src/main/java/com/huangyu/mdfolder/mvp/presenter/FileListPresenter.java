@@ -1460,23 +1460,24 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             public Boolean call(FileItem file) {
                                 boolean result;
                                 String destPath = mCurrentPath + File.separator + file.getName();
-                                if (mSelectType == Constants.SelectType.MENU_SDCARD) {
-                                    DocumentFile srcFile = DocumentFileUtils.getDocumentFile(new File(file.getPath()), o.getKey());
-                                    DocumentFile destFile = DocumentFileUtils.getDocumentFile(new File(destPath), o.getKey());
-                                    if (o.getKey()) {
-                                        result = mDocumentFileModel.copyFolder(srcFile, destFile);
-                                    } else {
-                                        result = mDocumentFileModel.copyFile(srcFile, destFile);
-                                    }
+                                File srcFile = new File(file.getPath());
+                                File destFile = new File(destPath);
+                                if (o.getKey()) {
+                                    mDocumentFileModel.createOrExistsDir(srcFile);
+                                    mDocumentFileModel.createOrExistsDir(destFile);
+                                    result = mDocumentFileModel.copyFolder(srcFile, destFile);
                                 } else {
-                                    if (o.getKey()) {
-                                        result = mFileModel.copyFolder(file.getPath(), destPath);
-                                    } else {
-                                        result = mFileModel.copyFile(file.getPath(), destPath);
-                                    }
+                                    mDocumentFileModel.createOrExistsFile(srcFile);
+                                    mDocumentFileModel.createOrExistsFile(destFile);
+                                    result = mDocumentFileModel.copyFile(srcFile, destFile);
                                 }
+                                return result;
+                            }
+                        }).subscribe(new Subscriber<Boolean>() {
+                            @Override
+                            public void onNext(Boolean result) {
                                 if (result) {
-                                    ArrayList<File> list = FileUtils.listFilesInDir(destPath);
+                                    ArrayList<File> list = FileUtils.listFilesInDir(mCurrentPath);
                                     int size = list.size();
                                     String[] pathArray = new String[size];
                                     String[] mimeTypeArray = new String[size];
@@ -1486,13 +1487,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         mimeTypeArray[i] = MimeTypeUtils.getMIMEType(path);
                                     }
                                     MediaScanUtils.scanFiles(mContext, pathArray, mimeTypeArray);
-                                }
-                                return result;
-                            }
-                        }).subscribe(new Subscriber<Boolean>() {
-                            @Override
-                            public void onNext(Boolean result) {
-                                if (result) {
                                     mView.showMessage(mView.getResString(R.string.tips_copy_successfully));
                                 } else {
                                     mView.showMessage(mView.getResString(R.string.tips_copy_in_error));
@@ -1538,24 +1532,24 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             public Boolean call(FileItem file) {
                                 boolean result;
                                 String destPath = mCurrentPath + File.separator + file.getName();
-                                if (mSelectType == Constants.SelectType.MENU_SDCARD) {
-                                    DocumentFile srcFile = DocumentFileUtils.getDocumentFile(new File(file.getPath()), o.getKey());
-                                    DocumentFile destFile = DocumentFileUtils.getDocumentFile(new File(destPath), o.getKey());
-                                    if (o.getKey()) {
-                                        result = mDocumentFileModel.moveFolder(srcFile, destFile);
-                                    } else {
-                                        result = mDocumentFileModel.moveFile(srcFile, destFile);
-                                    }
+                                File srcFile = new File(file.getPath());
+                                File destFile = new File(destPath);
+                                if (o.getKey()) {
+                                    mDocumentFileModel.createOrExistsDir(srcFile);
+                                    mDocumentFileModel.createOrExistsDir(destFile);
+                                    result = mDocumentFileModel.moveFolder(srcFile, destFile);
                                 } else {
-                                    if (o.getKey()) {
-                                        result = mFileModel.moveFolder(file.getPath(), destPath);
-                                    } else {
-                                        result = mFileModel.moveFile(file.getPath(), destPath);
-                                    }
+                                    mDocumentFileModel.createOrExistsFile(srcFile);
+                                    mDocumentFileModel.createOrExistsFile(destFile);
+                                    result = mDocumentFileModel.moveFile(srcFile, destFile);
                                 }
+                                return result;
+                            }
+                        }).subscribe(new Subscriber<Boolean>() {
+                            @Override
+                            public void onNext(Boolean result) {
                                 if (result) {
-                                    SPUtils.removeFileRemark(file.getPath());
-                                    ArrayList<File> list = FileUtils.listFilesInDir(destPath);
+                                    ArrayList<File> list = FileUtils.listFilesInDir(mCurrentPath);
                                     int size = list.size();
                                     String[] pathArray = new String[size];
                                     String[] mimeTypeArray = new String[size];
@@ -1565,13 +1559,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         mimeTypeArray[i] = MimeTypeUtils.getMIMEType(path);
                                     }
                                     MediaScanUtils.scanFiles(mContext, pathArray, mimeTypeArray);
-                                }
-                                return result;
-                            }
-                        }).subscribe(new Subscriber<Boolean>() {
-                            @Override
-                            public void onNext(Boolean result) {
-                                if (result) {
                                     mView.showMessage(mView.getResString(R.string.tips_move_successfully));
                                 } else {
                                     mView.showMessage(mView.getResString(R.string.tips_move_in_error));
@@ -1607,6 +1594,11 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         ArrayList<FileItem> fileItemList = null;
 
         switch (mSelectType) {
+            case Constants.SelectType.MENU_FILE:
+            case Constants.SelectType.MENU_DOWNLOAD:
+            case Constants.SelectType.MENU_SDCARD:
+                fileItemList = transformFileList(mFileListModel.getFileList(mCurrentPath, searchStr));
+                break;
             case Constants.SelectType.MENU_DOCUMENT:
                 fileItemList = mFileListModel.getDocumentList(searchStr, mContext.getContentResolver());
                 break;
@@ -1618,11 +1610,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 break;
             case Constants.SelectType.MENU_VIDEO:
                 fileItemList = mFileListModel.getVideoList(searchStr, mContext.getContentResolver());
-                break;
-            case Constants.SelectType.MENU_FILE:
-            case Constants.SelectType.MENU_DOWNLOAD:
-            case Constants.SelectType.MENU_SDCARD:
-                fileItemList = transformFileList(mFileListModel.getFileList(mCurrentPath, searchStr));
                 break;
             case Constants.SelectType.MENU_APK:
                 fileItemList = mFileListModel.getApkList(searchStr, mContext.getContentResolver());
@@ -1651,6 +1638,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 break;
             case Constants.SortType.SIZE:
                 fileItemList = mFileListModel.orderBySize(fileItemList);
+                break;
+            case Constants.SortType.REMARK:
+                fileItemList = mFileListModel.orderByRemark(fileItemList);
                 break;
         }
 

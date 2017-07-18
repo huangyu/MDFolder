@@ -9,12 +9,12 @@ import android.support.v4.content.FileProvider;
 import android.support.v4.provider.DocumentFile;
 
 import com.huangyu.library.app.BaseApplication;
+import com.huangyu.library.util.CloseUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.utils.DocumentFileUtils;
 import com.huangyu.mdfolder.utils.MimeTypeUtils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +22,9 @@ import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.huangyu.mdfolder.utils.DocumentFileUtils.getDocumentFile;
+import static com.huangyu.mdfolder.utils.DocumentFileUtils.isDocumentFile;
 
 /**
  * Created by huangyu on 2017/7/14.
@@ -143,12 +146,12 @@ public class DocumentFileModel {
     }
 
     public boolean isFileExists(String path) {
-        DocumentFile documentFile = DocumentFileUtils.getDocumentFile(new File(path), false);
+        DocumentFile documentFile = getDocumentFile(new File(path), false);
         return documentFile != null && documentFile.exists();
     }
 
     public boolean isFolderExists(String path) {
-        DocumentFile documentFile = DocumentFileUtils.getDocumentFile(new File(path), true);
+        DocumentFile documentFile = getDocumentFile(new File(path), true);
         return documentFile != null && documentFile.exists();
     }
 
@@ -164,19 +167,19 @@ public class DocumentFileModel {
         return file.delete();
     }
 
-    public boolean moveFile(DocumentFile srcFile, DocumentFile destFile) {
+    public boolean moveFile(File srcFile, File destFile) {
         return copyOrMoveFile(srcFile, destFile, true);
     }
 
-    public boolean moveFolder(DocumentFile srcDir, DocumentFile destDir) {
+    public boolean moveFolder(File srcDir, File destDir) {
         return copyOrMoveDir(srcDir, destDir, true);
     }
 
-    public boolean copyFile(DocumentFile srcFile, DocumentFile destFile) {
+    public boolean copyFile(File srcFile, File destFile) {
         return copyOrMoveFile(srcFile, destFile, false);
     }
 
-    public boolean copyFolder(DocumentFile srcDir, DocumentFile destDir) {
+    public boolean copyFolder(File srcDir, File destDir) {
         return copyOrMoveDir(srcDir, destDir, false);
     }
 
@@ -192,81 +195,102 @@ public class DocumentFileModel {
         return file.renameTo(newName.replaceFirst("\\.", ""));
     }
 
-    private boolean copyOrMoveDir(DocumentFile srcDir, DocumentFile destDir, boolean isMove) {
+    private boolean copyOrMoveDir(File srcDir, File destDir, boolean isMove) {
         if (srcDir == null || destDir == null) return false;
-        String srcPath = DocumentFileUtils.getPath(srcDir.getUri()) + File.separator;
-        String destPath = DocumentFileUtils.getPath(destDir.getUri()) + File.separator;
+        String srcPath = srcDir.getPath() + File.separator;
+        String destPath = destDir.getPath() + File.separator;
         if (destPath.contains(srcPath)) return false;
         if (!srcDir.exists() || !srcDir.isDirectory()) return false;
-        if (!createOrExistsDir(new File(destPath))) return false;
-        DocumentFile[] files = srcDir.listFiles();
-        for (DocumentFile file : files) {
-            File oneDestFile = new File(destPath + file.getName());
-            DocumentFile destFile;
+        if (!createOrExistsDir(destDir)) return false;
+        File[] files = srcDir.listFiles();
+        for (File file : files) {
+            File destFile = new File(destPath + file.getName());
             if (file.isFile()) {
-                destFile = DocumentFileUtils.getDocumentFile(oneDestFile, false);
                 if (!copyOrMoveFile(file, destFile, isMove)) return false;
             } else if (file.isDirectory()) {
-                destFile = DocumentFile.fromFile(oneDestFile);
                 if (!copyOrMoveDir(file, destFile, isMove)) return false;
             }
         }
-        return !isMove || srcDir.delete();
-    }
-
-    private boolean copyOrMoveFile(DocumentFile srcFile, DocumentFile destFile, boolean isMove) {
-        if (srcFile == null || destFile == null) return false;
-        if (!srcFile.exists() || !srcFile.isFile()) return false;
-//        if (destFile.exists() && destFile.isFile()) return false;
-//        if (!createOrExistsDir(destFile.getParentFile())) return false;
-        return toMoveFile(srcFile, destFile, isMove);
-    }
-
-    private boolean toMoveFile(DocumentFile srcFile, DocumentFile destFile, boolean isMove) {
-        if (srcFile.isFile()) {
-            copy(srcFile, destFile);
-//                ContentResolver resolver = BaseApplication.getInstance().getApplicationContext().getContentResolver();
-//                DocumentsContract.moveDocument(resolver, srcFile.getUri(), srcFile.getParentFile().getUri(), destFile.getUri());
-            return !isMove || srcFile.delete();
+        if (DocumentFileUtils.isDocumentFile(srcDir)) {
+            return !isMove || DocumentFileUtils.getDocumentFile(srcDir, false).delete();
         } else {
-            return false;
+            return !isMove || srcDir.delete();
         }
     }
 
-    private boolean copy(DocumentFile srcFile, DocumentFile destFile) {
+    private boolean copyOrMoveFile(File srcFile, File destFile, boolean isMove) {
+        if (srcFile == null || destFile == null) return false;
+        if (!srcFile.exists() || !srcFile.isFile()) return false;
+        return copy(srcFile, destFile, isMove);
+    }
+
+    private boolean copy(File srcFile, File destFile, boolean isMove) {
         InputStream inStream = null;
         OutputStream outStream = null;
+        Context context = BaseApplication.getInstance().getApplicationContext().getApplicationContext();
         try {
-            ContentResolver contentResolver = BaseApplication.getInstance().getApplicationContext().getContentResolver();
-            inStream = contentResolver.openInputStream(srcFile.getUri());
-            outStream = contentResolver.openOutputStream(destFile.getUri());
-            byte[] buffer = new byte[16384];
-            int bytesRead;
-            while ((bytesRead = inStream.read(buffer)) != -1) {
-                outStream.write(buffer, 0, bytesRead);
+            ContentResolver contentResolver = context.getContentResolver();
+            if (DocumentFileUtils.isDocumentFile(srcFile)) {
+                DocumentFile srcDocument = DocumentFileUtils.getDocumentFile(srcFile, false);
+                inStream = contentResolver.openInputStream(srcDocument.getUri());
+            } else {
+                if (!srcFile.exists()) {
+                    srcFile.createNewFile();
+                }
+                inStream = contentResolver.openInputStream(Uri.fromFile(srcFile));
             }
-            return true;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            if (DocumentFileUtils.isDocumentFile(destFile)) {
+                DocumentFile destDocument = DocumentFileUtils.getDocumentFile(destFile, false);
+                outStream = contentResolver.openOutputStream(destDocument.getUri());
+            } else {
+                if (!destFile.exists()) {
+                    destFile.createNewFile();
+                }
+                outStream = contentResolver.openOutputStream(Uri.fromFile(destFile));
+            }
+
+            if (DocumentFileUtils.isDocumentFile(srcFile)) {
+                return !isMove || DocumentFileUtils.getDocumentFile(srcFile, false).delete();
+            } else {
+                return !isMove || srcFile.delete();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            try {
-                inStream.close();
-                outStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            CloseUtils.closeIOQuietly(inStream);
+            CloseUtils.closeIOQuietly(outStream);
         }
         return false;
     }
 
-    private boolean createOrExistsDir(File file) {
+    public boolean createOrExistsFile(File file) {
+        if (file != null) {
+            if (!file.exists()) {
+                if (DocumentFileUtils.isDocumentFile(file)) {
+                    DocumentFileUtils.getDocumentFile(file, false);
+                } else {
+                    try {
+                        file.createNewFile();
+                    } catch (IOException e) {
+                        DocumentFileUtils.getDocumentFile(file, false);
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean createOrExistsDir(File file) {
         if (file != null) {
             if (file.exists()) {
                 return file.isDirectory();
             } else {
-                DocumentFileUtils.getDocumentFile(file, true);
+                if (isDocumentFile(file)) {
+                    DocumentFileUtils.getDocumentFile(file, true);
+                } else {
+                    file.mkdirs();
+                }
             }
             return true;
         }

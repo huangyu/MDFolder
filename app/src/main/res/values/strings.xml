@@ -59,6 +59,7 @@
     <string name="menu_sort_by_time">Sort by time</string>
     <string name="menu_sort_by_alphabet">Sort by alphabet</string>
     <string name="menu_sort_by_size">Sort by size</string>
+    <string name="menu_sort_by_remark">Sort by remark</string>
     <string name="menu_sort_by_ascending">Ascending </string>
 
     <string name="act_exit">Exit</string>

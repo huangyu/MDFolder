@@ -56,10 +56,11 @@
     <string name="menu_show_hide">显示/隐藏</string>
     <string name="menu_select_all">全选</string>
     <string name="menu_inverse_all">反选</string>
-    <string name="menu_sort_by_type">按类型</string>
-    <string name="menu_sort_by_time">按时间</string>
-    <string name="menu_sort_by_alphabet">按字母</string>
-    <string name="menu_sort_by_size">按大小</string>
+    <string name="menu_sort_by_type">按类型排序</string>
+    <string name="menu_sort_by_time">按时间排序</string>
+    <string name="menu_sort_by_alphabet">按字母排序</string>
+    <string name="menu_sort_by_size">按大小排序</string>
+    <string name="menu_sort_by_remark">按备注排序</string>
     <string name="menu_sort_by_ascending">升序</string>
 
     <string name="act_exit">退出</string>

@@ -63,6 +63,8 @@ public interface IFileListView extends IBaseView {
 
     AlertDialog showNormalAlert(String message, String positiveString, DialogInterface.OnClickListener positiveClick);
 
+    void showFloatingActionMenu();
+
     void closeFloatingActionMenu();
 
     String getResString(int resId);

@@ -26,6 +26,7 @@ import com.huangyu.mdfolder.utils.SDCardUtils;
 import com.huangyu.mdfolder.utils.SPUtils;
 import com.huangyu.mdfolder.utils.StringUtils;
 import com.huangyu.mdfolder.utils.comparator.AlphabetComparator;
+import com.huangyu.mdfolder.utils.comparator.RemarkComparator;
 import com.huangyu.mdfolder.utils.comparator.SizeComparator;
 import com.huangyu.mdfolder.utils.comparator.TimeComparator;
 import com.huangyu.mdfolder.utils.comparator.TypeComparator;
@@ -838,6 +839,15 @@ public class FileListModel implements IBaseModel {
      */
     public ArrayList<FileItem> orderBySize(ArrayList<FileItem> fileList) {
         Collections.sort(fileList, new SizeComparator());
+        return fileList;
+    }
+
+
+    /**
+     * 按备注排序
+     */
+    public ArrayList<FileItem> orderByRemark(ArrayList<FileItem> fileList) {
+        Collections.sort(fileList, new RemarkComparator());
         return fileList;
     }
 

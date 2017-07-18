@@ -13,7 +13,8 @@ public class TypeComparator implements Comparator<FileItem> {
         if (file1.isDirectory() && !file2.isDirectory()) {
             return -1;
         } else if (file1.isDirectory() && file2.isDirectory() || !file1.isDirectory() && !file2.isDirectory()) {
-            return file1.getName().compareToIgnoreCase(file2.getName());
+//            return file1.getName().compareToIgnoreCase(file2.getName());
+            return 0;
         } else if (!file1.isDirectory() && file2.isDirectory()) {
             return 1;
         } else {

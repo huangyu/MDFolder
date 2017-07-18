@@ -84,6 +84,8 @@ public class Constants extends BaseConstants {
         public static final int ALPHABET = 0x00000042;
 
         public static final int SIZE = 0x00000043;
+
+        public static final int REMARK = 0x00000044;
     }
 
     public static class OrderType {

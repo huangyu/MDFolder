@@ -31,7 +31,6 @@ import com.huangyu.mdfolder.app.AppApplication;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.ui.fragment.AlbumFolderFragment;
 import com.huangyu.mdfolder.ui.fragment.FileListFragment;
-import com.huangyu.mdfolder.ui.fragment.SDCardFragment;
 import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.SDCardUtils;
 
@@ -65,16 +64,12 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     @Bind(R.id.rl_file)
     RelativeLayout mRlFile;
 
-    @Bind(R.id.rl_sdcard)
-    RelativeLayout mRlSdCard;
-
     @Bind(R.id.rl_album)
     RelativeLayout mRlAlbum;
 
     private SearchView mSearchView;
     private FileListFragment mFileListFragment;
     private AlbumFolderFragment mAlbumFolderFragment;
-    private SDCardFragment mSDCardFragment;
     private boolean isSearchViewShow;
     private long mCurrentTime;
     private int selectedPosition = 0;
@@ -189,12 +184,10 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     private void replaceFragment() {
         mFileListFragment = new FileListFragment();
         mAlbumFolderFragment = new AlbumFolderFragment();
-        mSDCardFragment = new SDCardFragment();
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.rl_file, mFileListFragment)
                 .replace(R.id.rl_album, mAlbumFolderFragment)
-                .replace(R.id.rl_sdcard, mSDCardFragment)
                 .commitAllowingStateLoss();
     }
 
@@ -221,7 +214,6 @@ public class FileListActivity extends ThematicActivity implements NavigationView
         if (selectedPosition != 0) {
             selectedPosition = 0;
             mRlFile.setVisibility(View.VISIBLE);
-            mRlSdCard.setVisibility(View.GONE);
             mRlAlbum.setVisibility(View.GONE);
             mRxManager.post("toStorage", false);
             mNavigationView.setCheckedItem(R.id.nav_inner_storage);
@@ -268,6 +260,10 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             case R.id.action_sort_by_size:
                 item.setChecked(!item.isChecked());
                 mRxManager.post("onSortType", Constants.SortType.SIZE);
+                break;
+            case R.id.action_sort_by_remark:
+                item.setChecked(!item.isChecked());
+                mRxManager.post("onSortType", Constants.SortType.REMARK);
                 break;
             case R.id.action_sort_ascending:
                 item.setChecked(!item.isChecked());
@@ -326,7 +322,6 @@ public class FileListActivity extends ThematicActivity implements NavigationView
 
         if (item.getItemId() != R.id.nav_photo) {
             mRlFile.setVisibility(View.VISIBLE);
-            mRlSdCard.setVisibility(View.GONE);
             mRlAlbum.setVisibility(View.GONE);
         }
         getWindow().getDecorView().postDelayed(new Runnable() {
@@ -351,7 +346,6 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                     case R.id.nav_photo:
                         selectedPosition = 4;
                         mRlFile.setVisibility(View.GONE);
-                        mRlSdCard.setVisibility(View.GONE);
                         mRlAlbum.setVisibility(View.VISIBLE);
                         break;
                     case R.id.nav_music:
