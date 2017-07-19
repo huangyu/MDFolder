@@ -20,6 +20,7 @@ import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
 import com.huangyu.mdfolder.ui.adapter.ImagePagerAdapter;
 import com.huangyu.mdfolder.utils.AlertUtils;
+import com.huangyu.mdfolder.utils.transformer.DepthPageTransformer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -81,6 +82,7 @@ public class ImageBrowserActivity extends ThematicActivity {
         mAdapter = new ImagePagerAdapter(this, mFileList);
         mViewPager.setAdapter(mAdapter);
         mViewPager.setCurrentItem(mCurrentPosition);
+        mViewPager.setPageTransformer(true, new DepthPageTransformer());
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

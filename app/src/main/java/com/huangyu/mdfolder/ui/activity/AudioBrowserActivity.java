@@ -23,6 +23,7 @@ import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
 import com.huangyu.mdfolder.ui.adapter.AudioPagerAdapter;
 import com.huangyu.mdfolder.utils.AlertUtils;
+import com.huangyu.mdfolder.utils.transformer.DepthPageTransformer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -81,6 +82,7 @@ public class AudioBrowserActivity extends ThematicActivity implements EasyVideoC
         mAdapter = new AudioPagerAdapter(this, mFileList, this);
         mViewPager.setAdapter(mAdapter);
         mViewPager.setCurrentItem(mCurrentPosition);
+        mViewPager.setPageTransformer(true, new DepthPageTransformer());
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

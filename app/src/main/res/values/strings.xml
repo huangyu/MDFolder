@@ -79,6 +79,10 @@
     <string name="tips_compressing">Compressing&#8230;</string>
     <string name="tips_extracting">Extracting&#8230;</string>
     <string name="tips_loading">Loading&#8230;</string>
+    <string name="tips_deleting">Deleting&#8230;</string>
+    <string name="tips_handling">Handling&#8230;</string>
+    <string name="tips_copying">Copying&#8230;</string>
+    <string name="tips_moving">Moving&#8230;</string>
     <string name="tips_require_file_permissions">Require file permissions.</string>
     <string name="tips_no_permissions">App has no permissions, can not normally use.</string>
     <string name="tips_leave">Double click to leave.</string>

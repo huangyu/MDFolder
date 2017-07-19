@@ -37,7 +37,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -545,6 +544,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     @Override
                                     public void onStart() {
                                         dialog.dismiss();
+                                        mView.showProgressDialog(mContext.getString(R.string.tips_handling));
                                     }
 
                                     @Override
@@ -576,6 +576,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                                     @Override
                                     public void onCompleted() {
+                                        mView.hideProgressDialog();
                                         mView.hideKeyboard(mView.findAlertDialogEditText(view));
                                         mView.closeFloatingActionMenu();
                                     }
@@ -676,6 +677,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     @Override
                                     public void onStart() {
                                         dialog.dismiss();
+                                        mView.showProgressDialog(mContext.getString(R.string.tips_handling));
                                     }
 
                                     @Override
@@ -707,6 +709,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                                     @Override
                                     public void onCompleted() {
+                                        mView.hideProgressDialog();
                                         mView.hideKeyboard(mView.findAlertDialogEditText(view));
                                         mView.closeFloatingActionMenu();
                                     }
@@ -794,7 +797,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         @Override
                                         public void onStart() {
                                             dialog.dismiss();
-                                            mView.startRefresh();
+                                            mView.showProgressDialog(mContext.getString(R.string.tips_handling));
                                         }
 
                                         @Override
@@ -814,7 +817,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                                         @Override
                                         public void onCompleted() {
-                                            mView.stopRefresh();
+                                            mView.hideProgressDialog();
                                             mView.finishAction();
                                         }
                                     });
@@ -863,13 +866,12 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             final String remark = editText.getText().toString();
                             Subscription subscription = Observable.just(null)
                                     .subscribeOn(Schedulers.io())
-                                    .observeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(new Subscriber<Object>() {
                                         @Override
                                         public void onStart() {
                                             dialog.dismiss();
-                                            mView.startRefresh();
+                                            mView.showProgressDialog(mContext.getString(R.string.tips_handling));
                                         }
 
                                         @Override
@@ -886,7 +888,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                                         @Override
                                         public void onCompleted() {
-                                            mView.stopRefresh();
+                                            mView.hideProgressDialog();
                                             mView.finishAction();
                                         }
                                     });
@@ -921,6 +923,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     }
                 })
                         .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Action1<GroupedObservable<Boolean, FileItem>>() {
                             @Override
                             public void call(final GroupedObservable<Boolean, FileItem> o) {
@@ -954,8 +957,14 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         return result;
                                     }
                                 })
+                                        .subscribeOn(Schedulers.io())
                                         .observeOn(AndroidSchedulers.mainThread())
                                         .subscribe(new Subscriber<Boolean>() {
+                                            @Override
+                                            public void onStart() {
+                                                mView.showProgressDialog(mContext.getString(R.string.tips_handling));
+                                            }
+
                                             @Override
                                             public void onNext(Boolean result) {
                                                 if (result) {
@@ -973,6 +982,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                                             @Override
                                             public void onCompleted() {
+                                                mView.hideProgressDialog();
                                                 mView.finishAction();
                                             }
                                         });
@@ -1037,6 +1047,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     }
                 })
                         .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Action1<GroupedObservable<Boolean, FileItem>>() {
                             @Override
                             public void call(final GroupedObservable<Boolean, FileItem> o) {
@@ -1061,8 +1072,14 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         return result;
                                     }
                                 })
+                                        .subscribeOn(Schedulers.io())
                                         .observeOn(AndroidSchedulers.mainThread())
                                         .subscribe(new Subscriber<Boolean>() {
+                                            @Override
+                                            public void onStart() {
+                                                mView.showProgressDialog(mContext.getString(R.string.tips_deleting));
+                                            }
+
                                             @Override
                                             public void onNext(Boolean result) {
                                                 if (result) {
@@ -1080,6 +1097,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                                             @Override
                                             public void onCompleted() {
+                                                mView.hideProgressDialog();
                                                 mView.finishAction();
                                             }
                                         });
@@ -1131,7 +1149,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     }
                                 })
                                         .toList()
-                                        .delay(300, TimeUnit.MILLISECONDS)
                                         .subscribeOn(Schedulers.io())
                                         .observeOn(AndroidSchedulers.mainThread())
                                         .subscribe(new Subscriber<List<File>>() {
@@ -1219,7 +1236,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                 subscriber.onCompleted();
                             }
                         })
-                                .delay(300, TimeUnit.MILLISECONDS)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(new Subscriber<Boolean>() {
@@ -1272,7 +1288,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                 subscriber.onCompleted();
                             }
                         })
-                                .delay(300, TimeUnit.MILLISECONDS)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(new Subscriber<Boolean>() {
@@ -1337,7 +1352,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                                     subscriber.onCompleted();
                                                 }
                                             })
-                                                    .delay(300, TimeUnit.MILLISECONDS)
                                                     .subscribeOn(Schedulers.io())
                                                     .observeOn(AndroidSchedulers.mainThread())
                                                     .subscribe(new Subscriber<Boolean>() {
@@ -1402,7 +1416,6 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     subscriber.onCompleted();
                                 }
                             })
-                                    .delay(500, TimeUnit.MILLISECONDS)
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(new Subscriber<Boolean>() {
@@ -1452,7 +1465,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public Boolean call(FileItem file) {
                         return file.isDirectory();
                     }
-                }).subscribe(new Action1<GroupedObservable<Boolean, FileItem>>() {
+                }).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<GroupedObservable<Boolean, FileItem>>() {
                     @Override
                     public void call(final GroupedObservable<Boolean, FileItem> o) {
                         Subscription subscription = o.all(new Func1<FileItem, Boolean>() {
@@ -1474,6 +1487,11 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                 return result;
                             }
                         }).subscribe(new Subscriber<Boolean>() {
+                            @Override
+                            public void onStart() {
+                                mView.showProgressDialog(mContext.getString(R.string.tips_copying));
+                            }
+
                             @Override
                             public void onNext(Boolean result) {
                                 if (result) {
@@ -1501,6 +1519,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                             @Override
                             public void onCompleted() {
+                                mView.hideProgressDialog();
                                 mView.finishAction();
                             }
                         });
@@ -1524,7 +1543,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public Boolean call(FileItem file) {
                         return file.isDirectory();
                     }
-                }).subscribe(new Action1<GroupedObservable<Boolean, FileItem>>() {
+                }).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<GroupedObservable<Boolean, FileItem>>() {
                     @Override
                     public void call(final GroupedObservable<Boolean, FileItem> o) {
                         Subscription subscription = o.all(new Func1<FileItem, Boolean>() {
@@ -1546,6 +1565,11 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                 return result;
                             }
                         }).subscribe(new Subscriber<Boolean>() {
+                            @Override
+                            public void onStart() {
+                                mView.showProgressDialog(mContext.getString(R.string.tips_moving));
+                            }
+
                             @Override
                             public void onNext(Boolean result) {
                                 if (result) {
@@ -1573,6 +1597,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                             @Override
                             public void onCompleted() {
+                                mView.hideProgressDialog();
                                 mView.finishAction();
                             }
                         });

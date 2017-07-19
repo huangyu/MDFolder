@@ -80,6 +80,10 @@
     <string name="tips_compressing">压缩中&#8230;</string>
     <string name="tips_extracting">解压中&#8230;</string>
     <string name="tips_loading">加载中&#8230;</string>
+    <string name="tips_deleting">删除中&#8230;</string>
+    <string name="tips_handling">处理中&#8230;</string>
+    <string name="tips_copying">复制中&#8230;</string>
+    <string name="tips_moving">移动中&#8230;</string>
     <string name="tips_require_file_permissions">请授予文件权限以正常使用</string>
     <string name="tips_no_permissions">应用无相关权限，无法正常使用</string>
     <string name="tips_leave">快速双击将退出应用</string>
