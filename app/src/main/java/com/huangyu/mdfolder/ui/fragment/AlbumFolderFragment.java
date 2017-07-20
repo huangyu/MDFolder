@@ -316,21 +316,21 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
             }
         });
 
-        if (mPresenter.isInAlbum) {
-            mPresenter.loadAlbum(mSearchStr);
-        } else {
-            mPresenter.loadImage(mSearchStr, true);
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
 //        if (mPresenter.isInAlbum) {
 //            mPresenter.loadAlbum(mSearchStr);
 //        } else {
 //            mPresenter.loadImage(mSearchStr, true);
 //        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mPresenter.isInAlbum) {
+            mPresenter.loadAlbum(mSearchStr);
+        } else {
+            mPresenter.loadImage(mSearchStr, true);
+        }
     }
 
     public void startRefresh() {

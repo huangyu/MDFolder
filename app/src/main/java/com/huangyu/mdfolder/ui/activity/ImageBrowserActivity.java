@@ -34,6 +34,7 @@ import com.huangyu.mdfolder.utils.AlertUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +44,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -187,12 +189,57 @@ public class ImageBrowserActivity extends ThematicActivity {
             public void onClick(DialogInterface dialog, int which) {
                 if (FileUtils.deleteFile(fileItem.getPath())) {
                     if (mFileList.size() <= 1) {
-                        finish();
+                        onBackPressed();
                         return;
                     }
 
-                    Subscription subscription = Observable.just(mFileListModel.getImageList("", getContentResolver()))
+                    Subscription subscription = Observable.create(new Observable.OnSubscribe<ArrayList<FileItem>>() {
+                        @Override
+                        public void call(Subscriber<? super ArrayList<FileItem>> subscriber) {
+                            Iterator<FileItem> it = mFileList.iterator();
+                            while (it.hasNext()) {
+                                FileItem file = it.next();
+                                if (file.getPath().equals(fileItem.getPath())) {
+                                    it.remove();
+                                    break;
+                                }
+                            }
+                            subscriber.onNext(mFileList);
+                            subscriber.onCompleted();
+                        }
+                    })
                             .subscribeOn(Schedulers.io())
+                            .map(new Func1<ArrayList<FileItem>, ArrayList<FileItem>>() {
+                                @Override
+                                public ArrayList<FileItem> call(ArrayList<FileItem> fileList) {
+                                    switch (mSortType) {
+                                        case Constants.SortType.TYPE:
+                                            fileList = mFileListModel.orderByType(fileList);
+                                            break;
+                                        case Constants.SortType.TIME:
+                                            fileList = mFileListModel.orderByTime(fileList);
+                                            break;
+                                        case Constants.SortType.ALPHABET:
+                                            fileList = mFileListModel.orderByAlphabet(fileList);
+                                            break;
+                                        case Constants.SortType.SIZE:
+                                            fileList = mFileListModel.orderBySize(fileList);
+                                            break;
+                                        case Constants.SortType.REMARK:
+                                            fileList = mFileListModel.orderByRemark(fileList);
+                                            break;
+                                    }
+
+                                    switch (mOrderType) {
+                                        case Constants.OrderType.DESC:
+                                            break;
+                                        case Constants.OrderType.ASC:
+                                            mFileListModel.orderByOrder(fileList);
+                                            break;
+                                    }
+                                    return fileList;
+                                }
+                            })
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(new Subscriber<ArrayList<FileItem>>() {
                                 @Override
@@ -208,34 +255,8 @@ public class ImageBrowserActivity extends ThematicActivity {
                                 }
 
                                 @Override
-                                public void onNext(ArrayList<FileItem> fileItemList) {
-                                    switch (mSortType) {
-                                        case Constants.SortType.TYPE:
-                                            fileItemList = mFileListModel.orderByType(fileItemList);
-                                            break;
-                                        case Constants.SortType.TIME:
-                                            fileItemList = mFileListModel.orderByTime(fileItemList);
-                                            break;
-                                        case Constants.SortType.ALPHABET:
-                                            fileItemList = mFileListModel.orderByAlphabet(fileItemList);
-                                            break;
-                                        case Constants.SortType.SIZE:
-                                            fileItemList = mFileListModel.orderBySize(fileItemList);
-                                            break;
-                                        case Constants.SortType.REMARK:
-                                            fileItemList = mFileListModel.orderByRemark(fileItemList);
-                                            break;
-                                    }
-
-                                    switch (mOrderType) {
-                                        case Constants.OrderType.DESC:
-                                            break;
-                                        case Constants.OrderType.ASC:
-                                            mFileListModel.orderByOrder(fileItemList);
-                                            break;
-                                    }
-
-                                    mFileList = fileItemList;
+                                public void onNext(ArrayList<FileItem> fileList) {
+                                    mFileList = fileList;
                                     mAdapter = new ImagePagerAdapter(ImageBrowserActivity.this, mFileList);
                                     mViewPager.setAdapter(mAdapter);
                                 }
@@ -244,11 +265,9 @@ public class ImageBrowserActivity extends ThematicActivity {
                                 public void onCompleted() {
                                     if (mCurrentPosition >= mFileList.size() - 1) {
                                         mCurrentPosition = mFileList.size() - 1;
-                                    } else {
-                                        mCurrentPosition++;
                                     }
-                                    mTvNumber.setText(mCurrentPosition + 1 + "/" + mFileList.size());
                                     mViewPager.setCurrentItem(mCurrentPosition);
+                                    mTvNumber.setText((mCurrentPosition + 1) + "/" + mFileList.size());
                                     mRxManager.post("onDeleteAndRefresh", "");
                                     hideProgressDialog();
                                 }
