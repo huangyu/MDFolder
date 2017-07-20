@@ -249,6 +249,12 @@ public class DocumentFileModel {
                 outStream = contentResolver.openOutputStream(Uri.fromFile(destFile));
             }
 
+            byte[] buffer = new byte[16384];
+            int bytesRead;
+            while ((bytesRead = inStream.read(buffer)) != -1) {
+                outStream.write(buffer, 0, bytesRead);
+            }
+
             if (DocumentFileUtils.isDocumentFile(srcFile)) {
                 return !isMove || DocumentFileUtils.getDocumentFile(srcFile, false).delete();
             } else {
