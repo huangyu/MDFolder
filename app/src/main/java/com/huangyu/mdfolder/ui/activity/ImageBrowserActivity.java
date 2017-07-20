@@ -1,16 +1,28 @@
 package com.huangyu.mdfolder.ui.activity;
 
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.v4.app.SharedElementCallback;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.R;
@@ -18,15 +30,15 @@ import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
-import com.huangyu.mdfolder.ui.adapter.ImagePagerAdapter;
 import com.huangyu.mdfolder.utils.AlertUtils;
-import com.huangyu.mdfolder.utils.transformer.DepthPageTransformer;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -57,6 +69,7 @@ public class ImageBrowserActivity extends ThematicActivity {
     private FileListModel mFileListModel;
     private FileModel mFileModel;
     private int mCurrentPosition;
+    private int mEnterPosition;
     private int mSortType;
     private int mOrderType;
 
@@ -73,16 +86,21 @@ public class ImageBrowserActivity extends ThematicActivity {
     @Override
     @SuppressWarnings("unchecked")
     protected void initView(Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            postponeEnterTransition();
+        }
+
         mFileListModel = new FileListModel();
         mFileModel = new FileModel();
         mFileList = (ArrayList<FileItem>) getIntent().getSerializableExtra(getString(R.string.intent_image_list));
         mCurrentPosition = getIntent().getIntExtra(getString(R.string.intent_image_position), 0);
+        mEnterPosition = getIntent().getIntExtra(getString(R.string.intent_image_position), 0);
         mSortType = getIntent().getIntExtra(getString(R.string.intent_image_sort_type), 0);
         mOrderType = getIntent().getIntExtra(getString(R.string.intent_image_order_type), 0);
         mAdapter = new ImagePagerAdapter(this, mFileList);
         mViewPager.setAdapter(mAdapter);
         mViewPager.setCurrentItem(mCurrentPosition);
-        mViewPager.setPageTransformer(true, new DepthPageTransformer());
+//        mViewPager.setPageTransformer(true, new DepthPageTransformer());
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -119,7 +137,7 @@ public class ImageBrowserActivity extends ThematicActivity {
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                onBackPressed();
             }
         });
     }
@@ -204,6 +222,9 @@ public class ImageBrowserActivity extends ThematicActivity {
                                         case Constants.SortType.SIZE:
                                             fileItemList = mFileListModel.orderBySize(fileItemList);
                                             break;
+                                        case Constants.SortType.REMARK:
+                                            fileItemList = mFileListModel.orderByRemark(fileItemList);
+                                            break;
                                     }
 
                                     switch (mOrderType) {
@@ -258,6 +279,98 @@ public class ImageBrowserActivity extends ThematicActivity {
     protected void onDestroy() {
         hideProgressDialog();
         super.onDestroy();
+    }
+
+    @Override
+    public void finishAfterTransition() {
+        Intent intent = new Intent();
+        intent.putExtra(getString(R.string.intent_exit_position), mCurrentPosition);
+        setResult(RESULT_OK, intent);
+        if (mEnterPosition != mCurrentPosition) {
+            setCallback();
+        }
+        super.finishAfterTransition();
+    }
+
+    @TargetApi(21)
+    private void setCallback() {
+        setEnterSharedElementCallback(new SharedElementCallback() {
+            @Override
+            public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+                names.clear();
+                sharedElements.clear();
+                View view = mViewPager.findViewWithTag(getString(R.string.transition_image_name) + mCurrentPosition);
+                names.add(view.getTransitionName());
+                sharedElements.put(view.getTransitionName(), view);
+            }
+        });
+    }
+
+    @TargetApi(21)
+    public void setStartPostTransition(final View sharedView) {
+        sharedView.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        sharedView.getViewTreeObserver().removeOnPreDrawListener(this);
+                        startPostponedEnterTransition();
+                        return false;
+                    }
+                });
+    }
+
+    /**
+     * Created by huangyu on 2017-6-20.
+     */
+    public class ImagePagerAdapter extends PagerAdapter {
+
+        private Context mContext;
+        private List<FileItem> mImageList;
+
+        public ImagePagerAdapter(Context context, List<FileItem> imageList) {
+            this.mContext = context;
+            this.mImageList = imageList;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((View) object);
+        }
+
+        @Override
+        public int getCount() {
+            return mImageList == null ? 0 : mImageList.size();
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup viewGroup, final int position) {
+            View view = LayoutInflater.from(mContext).inflate(R.layout.item_image_pager, viewGroup, false);
+            PhotoView photoView = ButterKnife.findById(view, R.id.photo_view);
+            String suffix = FileUtils.getSuffix(mImageList.get(position).getName());
+            if (suffix.equals(".gif")) {
+                Glide.with(mContext).load(mImageList.get(position).getPath()).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(photoView);
+            } else {
+                Glide.with(mContext).load(mImageList.get(position).getPath()).into(photoView);
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                String name = mContext.getString(R.string.transition_image_name) + position;
+                photoView.setTransitionName(name);
+                photoView.setTag(name);
+                if (position == mEnterPosition) {
+                    setStartPostTransition(photoView);
+                }
+            }
+
+            viewGroup.addView(photoView);
+            return photoView;
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view.equals(object);
+        }
+
     }
 
 }

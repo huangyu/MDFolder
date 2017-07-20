@@ -258,6 +258,9 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
             case Constants.SortType.SIZE:
                 fileItemList = mFileListModel.orderBySize(fileItemList);
                 break;
+            case Constants.SortType.REMARK:
+                fileItemList = mFileListModel.orderByRemark(fileItemList);
+                break;
         }
 
         switch (mOrderType) {

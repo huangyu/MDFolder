@@ -1,14 +1,18 @@
 package com.huangyu.mdfolder.ui.fragment;
 
+import android.annotation.TargetApi;
+import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -29,6 +33,7 @@ import android.widget.LinearLayout;
 import com.huangyu.library.BuildConfig;
 import com.huangyu.library.ui.BaseFragment;
 import com.huangyu.library.ui.CommonRecyclerViewAdapter;
+import com.huangyu.library.ui.CommonRecyclerViewHolder;
 import com.huangyu.library.util.LogToFileUtils;
 import com.huangyu.library.util.LogUtils;
 import com.huangyu.mdfolder.R;
@@ -44,11 +49,13 @@ import com.huangyu.mdfolder.ui.widget.AlbumVerticalGirdDecoration;
 import com.huangyu.mdfolder.ui.widget.TabView;
 import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.KeyboardUtils;
+import com.huangyu.mdfolder.utils.OnSharedViewListener;
 import com.huangyu.mdfolder.utils.SPUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -84,6 +91,9 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
 
     private ProgressDialog mProgressDialog;
 
+    private int mExitPosition;
+    private int mEnterPosition;
+
     private final int mDefaultGridCount = 2;
 
     @Override
@@ -116,7 +126,16 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                         intent.putExtra(getString(R.string.intent_image_position), position);
                         intent.putExtra(getString(R.string.intent_image_sort_type), mPresenter.mSortType);
                         intent.putExtra(getString(R.string.intent_image_order_type), mPresenter.mOrderType);
-                        getActivity().startActivity(intent);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            CommonRecyclerViewHolder holder = (CommonRecyclerViewHolder) view.getTag();
+                            ImageView ivImage = holder.getView(R.id.iv_image);
+                            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
+                                    getActivity(), ivImage, ivImage.getTransitionName());
+                            getActivity().startActivityForResult(intent, 0, options.toBundle());
+                            mSharedViewListener.onSharedViewListener(position);
+                        } else {
+                            getActivity().startActivity(intent);
+                        }
                     } else {
                         if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
                             AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_can_not_access_file));
@@ -296,16 +315,22 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                 }
             }
         });
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
         if (mPresenter.isInAlbum) {
             mPresenter.loadAlbum(mSearchStr);
         } else {
             mPresenter.loadImage(mSearchStr, true);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+//        if (mPresenter.isInAlbum) {
+//            mPresenter.loadAlbum(mSearchStr);
+//        } else {
+//            mPresenter.loadImage(mSearchStr, true);
+//        }
     }
 
     public void startRefresh() {
@@ -622,6 +647,48 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
         View firstVisibleChildView = layoutManager.findViewByPosition(position);
         int itemHeight = firstVisibleChildView.getHeight();
         return (position / mDefaultGridCount) * itemHeight - firstVisibleChildView.getTop();
+    }
+
+    /************************************ 转场动画相关 ************************************/
+    private OnSharedViewListener mSharedViewListener = new OnSharedViewListener() {
+        @Override
+        public void onSharedViewListener(int enterPosition) {
+            setCallback(enterPosition);
+        }
+    };
+
+    @TargetApi(21)
+    public void onActivityReenter(int resultCode, Intent data) {
+        getActivity().postponeEnterTransition();
+        mExitPosition = data.getIntExtra(getString(R.string.intent_exit_position), mEnterPosition);
+        mRecyclerView.scrollToPosition(mExitPosition);
+        mRecyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                getActivity().startPostponedEnterTransition();
+            }
+        });
+    }
+
+    @TargetApi(21)
+    private void setCallback(final int enterPosition) {
+        mEnterPosition = enterPosition;
+        getActivity().setExitSharedElementCallback(new SharedElementCallback() {
+            @Override
+            public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+                if (mExitPosition != -1 && mExitPosition != enterPosition && names.size() > 0) {
+                    names.clear();
+                    sharedElements.clear();
+                    View view = mRecyclerView.findViewById(mExitPosition);
+                    if (view != null) {
+                        names.add(view.getTransitionName());
+                        sharedElements.put(view.getTransitionName(), view);
+                    }
+                }
+                mExitPosition = -1;
+                setExitSharedElementCallback(null);
+            }
+        });
     }
 
 }

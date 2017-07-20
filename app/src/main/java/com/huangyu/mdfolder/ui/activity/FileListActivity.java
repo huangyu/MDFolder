@@ -472,6 +472,14 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     }
 
     @Override
+    public void onActivityReenter(int resultCode, Intent data) {
+        super.onActivityReenter(resultCode, data);
+        if (resultCode == RESULT_OK && data != null && mAlbumFolderFragment != null) {
+            mAlbumFolderFragment.onActivityReenter(resultCode, data);
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == STORAGE_REQUEST_CODE && resultCode == RESULT_OK) {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {

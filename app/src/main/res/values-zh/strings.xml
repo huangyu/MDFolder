@@ -24,9 +24,12 @@
     <string name="intent_video_position">VideoPosition</string>
     <string name="intent_audio_list">AudioList</string>
     <string name="intent_audio_position">AudioPosition</string>
+    <string name="intent_exit_position">ExitPosition</string>
 
     <string name="navigation_drawer_open">打开导航栏</string>
     <string name="navigation_drawer_close">关闭导航栏</string>
+
+    <string name="transition_image_name">Image transition</string>
 
     <string name="menu_other">其他</string>
     <string name="menu_root">系统目录</string>

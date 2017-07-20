@@ -16,6 +16,7 @@
 package com.huangyu.mdfolder.ui.adapter;
 
 import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -77,6 +78,11 @@ public class AlbumFileAdapter extends CommonRecyclerViewAdapter<FileItem> {
             holder.itemView.setSelected(false);
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            holder.itemView.setTransitionName(mContext.getString(R.string.transition_image_name) + position);
+            ivImage.setTransitionName(mContext.getString(R.string.transition_image_name) + position);
+            ivImage.setId(position);
+        }
     }
 
     @Override
