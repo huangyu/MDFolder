@@ -24,7 +24,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.huangyu.library.ui.CommonRecyclerViewAdapter;
 import com.huangyu.library.ui.CommonRecyclerViewHolder;
-import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.ui.activity.FileListActivity;
@@ -46,17 +45,14 @@ public class AlbumFileAdapter extends CommonRecyclerViewAdapter<FileItem> {
     public void convert(CommonRecyclerViewHolder holder, FileItem fileItem, int position) {
         ImageView ivImage = holder.getView(R.id.iv_image);
         TextView tvName = holder.getView(R.id.tv_name);
-        TextView tvSize = holder.getView(R.id.tv_size);
 
         FileListActivity activity = (FileListActivity) mContext;
         if (activity.isLightMode()) {
             holder.itemView.setBackgroundResource(R.drawable.select_item);
             tvName.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryText));
-            tvSize.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryText));
         } else {
             holder.itemView.setBackgroundResource(R.drawable.select_item_dark);
             tvName.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryTextWhite));
-            tvSize.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryTextWhite));
         }
 
         Glide.with(mContext).load(fileItem.getPath()).into(ivImage);
@@ -64,12 +60,6 @@ public class AlbumFileAdapter extends CommonRecyclerViewAdapter<FileItem> {
         String fileRemark = fileItem.getRemark();
         if (!TextUtils.isEmpty(fileRemark)) {
             tvName.append(" (" + fileRemark + ")");
-        }
-        try {
-            tvSize.setText(FileUtils.getFileOrDirSize(Long.valueOf(fileItem.getSize())));
-        } catch (Exception e) {
-            // 部分机器查询出来的文件大小为空，用文件路径来处理
-            tvSize.setText(FileUtils.getFileSize(fileItem.getPath()));
         }
 
         if (getSelectedItemCount() > 0 && isSelected(position) && isSelected(fileItem)) {

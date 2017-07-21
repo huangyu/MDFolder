@@ -224,6 +224,10 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="ToolBarTitle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">serif</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:colorBackground">@color/colorWhite</item>

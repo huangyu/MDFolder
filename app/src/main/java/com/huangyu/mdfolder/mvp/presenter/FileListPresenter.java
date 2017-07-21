@@ -1149,16 +1149,10 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                 })
                                         .toList()
                                         .subscribeOn(Schedulers.io())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe(new Subscriber<List<File>>() {
+                                        .observeOn(Schedulers.io())
+                                        .map(new Func1<List<File>, Boolean>() {
                                             @Override
-                                            public void onStart() {
-                                                dialog.dismiss();
-                                                mView.showProgressDialog(mContext.getString(R.string.tips_compressing));
-                                            }
-
-                                            @Override
-                                            public void onNext(List<File> fileList) {
+                                            public Boolean call(List<File> fileList) {
                                                 ArrayList<File> fileArrayList = new ArrayList<>();
                                                 fileArrayList.addAll(fileList);
                                                 String newPath = mCurrentPath + File.separator + filename + ".zip";
@@ -1168,6 +1162,22 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                                         SPUtils.removeFileRemark(f.getPath());
                                                     }
                                                     MediaScanUtils.scanFiles(mContext, new String[]{newPath}, new String[]{MimeTypeUtils.getMIMEType(newPath)});
+
+                                                }
+                                                return result;
+                                            }
+                                        })
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(new Subscriber<Boolean>() {
+                                            @Override
+                                            public void onStart() {
+                                                dialog.dismiss();
+                                                mView.showProgressDialog(mContext.getString(R.string.tips_compressing));
+                                            }
+
+                                            @Override
+                                            public void onNext(Boolean result) {
+                                                if (result) {
                                                     mView.showMessage(mView.getResString(R.string.tips_compress_successfully));
                                                 } else {
                                                     mView.showMessage(mView.getResString(R.string.tips_compress_in_error));

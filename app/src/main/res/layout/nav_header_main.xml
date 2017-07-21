@@ -17,6 +17,8 @@
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:textSize="24sp"
         android:text="@string/app_name"
+        android:textStyle="bold"
+        android:typeface="serif"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
 </LinearLayout>
