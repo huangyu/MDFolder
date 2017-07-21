@@ -1,5 +1,6 @@
 package com.huangyu.mdfolder.utils.comparator;
 
+import com.huangyu.library.util.FileUtils;
 import com.huangyu.mdfolder.bean.FileItem;
 
 import java.util.Comparator;
@@ -12,9 +13,10 @@ public class TypeComparator implements Comparator<FileItem> {
     public int compare(FileItem file1, FileItem file2) {
         if (file1.isDirectory() && !file2.isDirectory()) {
             return -1;
-        } else if (file1.isDirectory() && file2.isDirectory() || !file1.isDirectory() && !file2.isDirectory()) {
-//            return file1.getName().compareToIgnoreCase(file2.getName());
+        } else if (file1.isDirectory() && file2.isDirectory()) {
             return file1.getName().compareToIgnoreCase(file2.getName());
+        } else if (!file1.isDirectory() && !file2.isDirectory()) {
+            return FileUtils.getSuffix2(file1.getName()).compareToIgnoreCase(FileUtils.getSuffix2(file2.getName()));
         } else if (!file1.isDirectory() && file2.isDirectory()) {
             return 1;
         } else {

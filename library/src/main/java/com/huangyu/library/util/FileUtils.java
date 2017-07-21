@@ -72,6 +72,19 @@ public final class FileUtils {
     }
 
     /**
+     * 获取文件后缀
+     */
+    public static String getSuffix2(String filename) {
+        if ((filename != null) && (filename.length() > 0)) {
+            int dot = filename.lastIndexOf('.');
+            if ((dot > -1) && (dot < (filename.length() - 1))) {
+                return filename.substring(dot);
+            }
+        }
+        return filename;
+    }
+
+    /**
      * 根据文件路径获取文件
      *
      * @param filePath 文件路径

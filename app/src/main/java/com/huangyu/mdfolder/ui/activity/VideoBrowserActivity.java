@@ -190,7 +190,7 @@ public class VideoBrowserActivity extends ThematicActivity implements EasyVideoC
                             .subscribe(new Subscriber<ArrayList<FileItem>>() {
                                 @Override
                                 public void onStart() {
-                                    AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_delete_successfully));
+                                    AlertUtils.showToast(VideoBrowserActivity.this, getString(R.string.tips_delete_successfully));
                                     showProgressDialog(getString(R.string.tips_loading));
                                 }
 
@@ -209,7 +209,7 @@ public class VideoBrowserActivity extends ThematicActivity implements EasyVideoC
 
                                 @Override
                                 public void onError(Throwable e) {
-                                    AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_error));
+                                    AlertUtils.showToast(VideoBrowserActivity.this, getString(R.string.tips_error));
                                     onCompleted();
                                 }
 
@@ -222,7 +222,7 @@ public class VideoBrowserActivity extends ThematicActivity implements EasyVideoC
                             });
                     mRxManager.add(subscription);
                 } else {
-                    AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_delete_in_error));
+                    AlertUtils.showToast(VideoBrowserActivity.this, getString(R.string.tips_delete_in_error));
                 }
             }
         });
@@ -275,7 +275,7 @@ public class VideoBrowserActivity extends ThematicActivity implements EasyVideoC
 
     @Override
     public void onError(EasyVideoPlayer player, Exception e) {
-        AlertUtils.showSnack(mViewPager, getString(R.string.tips_not_support));
+        AlertUtils.showToast(VideoBrowserActivity.this, getString(R.string.tips_not_support));
     }
 
     @Override

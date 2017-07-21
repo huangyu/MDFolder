@@ -138,7 +138,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                         }
                     } else {
                         if (!mPresenter.openFile(getContext(), new File(file.getPath()))) {
-                            AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_can_not_access_file));
+                            AlertUtils.showToast(getContext(), getString(R.string.tips_can_not_access_file));
                         }
                     }
                 } else if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT
@@ -357,11 +357,11 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
             LogUtils.logd(error);
             LogToFileUtils.saveCrashInfoFile(error);
         }
-        AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_error));
+        AlertUtils.showToast(getContext(), getString(R.string.tips_error));
     }
 
     public void showMessage(String message) {
-        AlertUtils.showSnack(mCoordinatorLayout, message);
+        AlertUtils.showToast(getContext(), message);
     }
 
     @Override

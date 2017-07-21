@@ -244,13 +244,13 @@ public class ImageBrowserActivity extends ThematicActivity {
                             .subscribe(new Subscriber<ArrayList<FileItem>>() {
                                 @Override
                                 public void onStart() {
-                                    AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_delete_successfully));
+                                    AlertUtils.showToast(ImageBrowserActivity.this, getString(R.string.tips_delete_successfully));
                                     showProgressDialog(getString(R.string.tips_loading));
                                 }
 
                                 @Override
                                 public void onError(Throwable e) {
-                                    AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_error));
+                                    AlertUtils.showToast(ImageBrowserActivity.this, getString(R.string.tips_error));
                                     onCompleted();
                                 }
 
@@ -274,7 +274,7 @@ public class ImageBrowserActivity extends ThematicActivity {
                             });
                     mRxManager.add(subscription);
                 } else {
-                    AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_delete_in_error));
+                    AlertUtils.showToast(ImageBrowserActivity.this, getString(R.string.tips_delete_in_error));
                 }
             }
         });

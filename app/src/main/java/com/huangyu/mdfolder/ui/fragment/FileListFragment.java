@@ -594,7 +594,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
     @Override
     public void showMessage(String message) {
-        AlertUtils.showSnack(mCoordinatorLayout, message);
+        AlertUtils.showToast(getContext(), message);
     }
 
     @Override
@@ -603,7 +603,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             LogUtils.logd(error);
             LogToFileUtils.saveCrashInfoFile(error);
         }
-        AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_error));
+        AlertUtils.showToast(getContext(), getString(R.string.tips_error));
     }
 
     @Override

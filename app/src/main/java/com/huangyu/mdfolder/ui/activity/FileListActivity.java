@@ -226,7 +226,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             mCurrentTime = System.currentTimeMillis();
             View view = ButterKnife.findById(this, R.id.cl_main);
             if (view != null) {
-                AlertUtils.showSnack(view, getString(R.string.tips_leave));
+                AlertUtils.showToast(FileListActivity.this, getString(R.string.tips_leave));
             }
         }
     }
@@ -465,7 +465,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             }
         } else {
             // 无法使用此功能
-            AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_cannot_access_sdcard));
+            AlertUtils.showToast(FileListActivity.this, getString(R.string.tips_cannot_access_sdcard));
             selectedPosition = 1;
             mRxManager.post("toStorage", true);
         }
@@ -486,7 +486,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                 String externalPath = SDCardUtils.getStoragePath(this, true);
                 if (externalPath == null) {
                     // 无法使用此功能
-                    AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_cannot_access_sdcard));
+                    AlertUtils.showToast(FileListActivity.this, getString(R.string.tips_cannot_access_sdcard));
                     selectedPosition = 1;
                     mRxManager.post("toStorage", true);
                     return;
@@ -513,7 +513,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                 }
             } else {
                 // 无法使用此功能
-                AlertUtils.showSnack(getWindow().getDecorView(), getString(R.string.tips_cannot_access_sdcard));
+                AlertUtils.showToast(FileListActivity.this, getString(R.string.tips_cannot_access_sdcard));
                 selectedPosition = 1;
                 mRxManager.post("toStorage", true);
             }
