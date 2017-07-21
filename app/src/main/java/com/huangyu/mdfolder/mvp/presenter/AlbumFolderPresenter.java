@@ -89,7 +89,7 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
 
                     @Override
                     public void onNext(ArrayList<FileItem> albumFolderList) {
-                        mView.addTab(mView.getResString(R.string.str_image) + "  " + albumFolderList.size());
+                        mView.addTab(mView.getResString(R.string.str_album) + "  " + albumFolderList.size());
                         mView.refreshAlbum(albumFolderList, mScrollY);
                         isInAlbum = true;
                     }
@@ -132,7 +132,7 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
 
                     @Override
                     public void onNext(ArrayList<FileItem> albumFolderList) {
-                        mView.addTab(mView.getResString(R.string.str_image) + "  " + albumFolderList.size());
+                        mView.addTab(mView.getResString(R.string.str_album) + "  " + albumFolderList.size());
                         mView.refreshAlbum(albumFolderList, mScrollY);
                         isInAlbum = true;
                     }

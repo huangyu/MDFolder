@@ -17,9 +17,7 @@ package com.huangyu.mdfolder.ui.adapter;
 
 import android.content.Context;
 import android.os.Build;
-import android.text.TextUtils;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.huangyu.library.ui.CommonRecyclerViewAdapter;
@@ -44,28 +42,22 @@ public class AlbumFileAdapter extends CommonRecyclerViewAdapter<FileItem> {
     @Override
     public void convert(CommonRecyclerViewHolder holder, FileItem fileItem, int position) {
         ImageView ivImage = holder.getView(R.id.iv_image);
-        TextView tvName = holder.getView(R.id.tv_name);
 
         FileListActivity activity = (FileListActivity) mContext;
         if (activity.isLightMode()) {
             holder.itemView.setBackgroundResource(R.drawable.select_item);
-            tvName.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryText));
         } else {
             holder.itemView.setBackgroundResource(R.drawable.select_item_dark);
-            tvName.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryTextWhite));
         }
 
         Glide.with(mContext).load(fileItem.getPath()).into(ivImage);
-        tvName.setText(fileItem.getName());
-        String fileRemark = fileItem.getRemark();
-        if (!TextUtils.isEmpty(fileRemark)) {
-            tvName.append(" (" + fileRemark + ")");
-        }
 
         if (getSelectedItemCount() > 0 && isSelected(position) && isSelected(fileItem)) {
             holder.itemView.setSelected(true);
+            ivImage.setImageAlpha(50);
         } else {
             holder.itemView.setSelected(false);
+            ivImage.setImageAlpha(255);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

@@ -77,8 +77,10 @@ public class AlbumFolderAdapter extends CommonRecyclerViewAdapter<FileItem> {
         tvSize.setText(String.valueOf(fileItem.getImages().size()));
 
         if (getSelectedItemCount() > 0 && isSelected(position) && isSelected(fileItem)) {
+            ivImage.setImageAlpha(50);
             holder.itemView.setSelected(true);
         } else {
+            ivImage.setImageAlpha(255);
             holder.itemView.setSelected(false);
         }
     }

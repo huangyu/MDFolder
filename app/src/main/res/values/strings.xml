@@ -6,6 +6,7 @@
     <string name="str_video_browser">Video Browser</string>
     <string name="str_audio_browser">Audio Browser</string>
     <string name="str_folder">Folder</string>
+    <string name="str_album">Album</string>
     <string name="str_image">Image</string>
     <string name="str_file_info">File Info</string>
     <string name="str_zip_info">Zip Info</string>

@@ -196,6 +196,7 @@ public class ImageBrowserActivity extends ThematicActivity {
                     Subscription subscription = Observable.create(new Observable.OnSubscribe<ArrayList<FileItem>>() {
                         @Override
                         public void call(Subscriber<? super ArrayList<FileItem>> subscriber) {
+                            subscriber.onStart();
                             Iterator<FileItem> it = mFileList.iterator();
                             while (it.hasNext()) {
                                 FileItem file = it.next();
@@ -244,7 +245,6 @@ public class ImageBrowserActivity extends ThematicActivity {
                             .subscribe(new Subscriber<ArrayList<FileItem>>() {
                                 @Override
                                 public void onStart() {
-                                    AlertUtils.showToast(ImageBrowserActivity.this, getString(R.string.tips_delete_successfully));
                                     showProgressDialog(getString(R.string.tips_loading));
                                 }
 
@@ -270,6 +270,7 @@ public class ImageBrowserActivity extends ThematicActivity {
                                     mTvNumber.setText((mCurrentPosition + 1) + "/" + mFileList.size());
                                     mRxManager.post("onDeleteAndRefresh", "");
                                     hideProgressDialog();
+                                    AlertUtils.showToast(ImageBrowserActivity.this, getString(R.string.tips_delete_successfully));
                                 }
                             });
                     mRxManager.add(subscription);

@@ -12,11 +12,11 @@ import android.view.View;
  * Created by huangyu on 2017/7/5.
  */
 
-public class AlbumVerticalGirdDecoration extends RecyclerView.ItemDecoration {
+public class VerticalGirdDecoration extends RecyclerView.ItemDecoration {
 
     private Drawable mDivider;
 
-    public AlbumVerticalGirdDecoration(Drawable drawable) {
+    public VerticalGirdDecoration(Drawable drawable) {
         mDivider = drawable;
     }
 

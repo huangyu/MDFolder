@@ -44,7 +44,7 @@ import com.huangyu.mdfolder.ui.activity.FileListActivity;
 import com.huangyu.mdfolder.ui.activity.ImageBrowserActivity;
 import com.huangyu.mdfolder.ui.adapter.AlbumFileAdapter;
 import com.huangyu.mdfolder.ui.adapter.AlbumFolderAdapter;
-import com.huangyu.mdfolder.ui.widget.AlbumVerticalGirdDecoration;
+import com.huangyu.mdfolder.ui.widget.VerticalGirdDecoration;
 import com.huangyu.mdfolder.ui.widget.TabView;
 import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.KeyboardUtils;
@@ -85,6 +85,8 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
 
     private AlbumFolderAdapter mAlbumAdapter;
     private AlbumFileAdapter mPhotoAdapter;
+    private VerticalGirdDecoration mAlbumVerticalGirdDecoration;
+    private VerticalGirdDecoration mImageVerticalGirdDecoration;
     private String mSearchStr;
     private ActionMode mActionMode;
 
@@ -204,8 +206,15 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
         mRecyclerView.setAdapter(mAlbumAdapter);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), mDefaultGridCount));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.grid_decoration, null);
-        mRecyclerView.addItemDecoration(new AlbumVerticalGirdDecoration(drawable));
+
+        Drawable albumDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.album_grid_decoration, null);
+        mAlbumVerticalGirdDecoration = new VerticalGirdDecoration(albumDrawable);
+        Drawable imageDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.image_grid_decoration, null);
+        mImageVerticalGirdDecoration = new VerticalGirdDecoration(imageDrawable);
+        mRecyclerView.removeItemDecoration(mAlbumVerticalGirdDecoration);
+        mRecyclerView.removeItemDecoration(mImageVerticalGirdDecoration);
+        mRecyclerView.addItemDecoration(mAlbumVerticalGirdDecoration);
+
         ((SimpleItemAnimator) mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
         String themeMode = ((FileListActivity) getActivity()).getThemeMode();
@@ -454,6 +463,9 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
             mPhotoAdapter.setData(imageList);
         }
         if (!(mRecyclerView.getAdapter() instanceof AlbumFileAdapter)) {
+            mRecyclerView.removeItemDecoration(mAlbumVerticalGirdDecoration);
+            mRecyclerView.removeItemDecoration(mImageVerticalGirdDecoration);
+            mRecyclerView.addItemDecoration(mImageVerticalGirdDecoration);
             mRecyclerView.setAdapter(mPhotoAdapter);
         }
     }
@@ -479,6 +491,9 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                 mRecyclerView.removeOnLayoutChangeListener(this);
             }
         });
+        mRecyclerView.removeItemDecoration(mAlbumVerticalGirdDecoration);
+        mRecyclerView.removeItemDecoration(mImageVerticalGirdDecoration);
+        mRecyclerView.addItemDecoration(mAlbumVerticalGirdDecoration);
         mRecyclerView.setAdapter(mAlbumAdapter);
     }
 
