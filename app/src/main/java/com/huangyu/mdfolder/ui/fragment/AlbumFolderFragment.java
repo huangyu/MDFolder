@@ -30,11 +30,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.huangyu.library.BuildConfig;
+import com.huangyu.library.app.BaseApplication;
 import com.huangyu.library.ui.BaseFragment;
 import com.huangyu.library.ui.CommonRecyclerViewAdapter;
 import com.huangyu.library.ui.CommonRecyclerViewHolder;
-import com.huangyu.library.util.LogToFileUtils;
 import com.huangyu.library.util.LogUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.Constants;
@@ -353,9 +352,9 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
     }
 
     public void showError(String error) {
-        if (BuildConfig.DEBUG) {
+        if (BaseApplication.isDebug()) {
             LogUtils.logd(error);
-            LogToFileUtils.saveCrashInfoFile(error);
+//            LogToFileUtils.saveCrashInfoFile(error);
         }
         AlertUtils.showToast(getContext(), getString(R.string.tips_error));
     }

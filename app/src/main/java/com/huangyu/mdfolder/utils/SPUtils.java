@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import com.huangyu.library.app.BaseApplication;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.AppApplication;
+import com.huangyu.mdfolder.app.Constants;
 
 /**
  * Created by huangyu on 2017-6-21.
@@ -114,6 +115,38 @@ public class SPUtils {
     public static void removeFileRemark(String filePath) {
         com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
         sp.remove(filePath);
+    }
+
+    /**
+     * 获取排序类型
+     */
+    public static int getSortType() {
+        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        return sp.getInt("sort_type", Constants.SortType.TYPE);
+    }
+
+    /**
+     * 设置排序类型
+     */
+    public static void setSortType(int type) {
+        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        sp.put("sort_type", type);
+    }
+
+    /**
+     * 获取升降序类型
+     */
+    public static int getOrderType() {
+        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        return sp.getInt("order_type", Constants.OrderType.ASC);
+    }
+
+    /**
+     * 设置升降序类型
+     */
+    public static void setOrderType(int type) {
+        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        sp.put("order_type", type);
     }
 
 }

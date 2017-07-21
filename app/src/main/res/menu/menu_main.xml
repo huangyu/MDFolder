@@ -13,7 +13,6 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/action_sort_by_type"
-            android:checked="true"
             android:orderInCategory="2"
             android:title="@string/menu_sort_by_type"
             app:showAsAction="withText" />
@@ -45,8 +44,7 @@
 
     <group android:checkableBehavior="all">
         <item
-            android:id="@+id/action_sort_ascending"
-            android:checked="true"
+            android:id="@+id/action_order_by_ascending"
             android:orderInCategory="7"
             android:title="@string/menu_sort_by_ascending"
             app:showAsAction="withText" />

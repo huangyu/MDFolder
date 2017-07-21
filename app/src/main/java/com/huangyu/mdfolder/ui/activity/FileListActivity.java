@@ -33,6 +33,7 @@ import com.huangyu.mdfolder.ui.fragment.AlbumFolderFragment;
 import com.huangyu.mdfolder.ui.fragment.FileListFragment;
 import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.SDCardUtils;
+import com.huangyu.mdfolder.utils.SPUtils;
 
 import java.io.File;
 import java.util.List;
@@ -173,6 +174,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
         if (isChanged()) {
             replaceFragment();
         }
+
     }
 
     @Override
@@ -243,33 +245,77 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.clear();
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        initSearchView(menu);
+
+        int sortType = SPUtils.getSortType();
+        switch (sortType) {
+            case Constants.SortType.TYPE:
+                menu.getItem(1).setChecked(true);
+                break;
+            case Constants.SortType.ALPHABET:
+                menu.getItem(2).setChecked(true);
+                break;
+            case Constants.SortType.TIME:
+                menu.getItem(3).setChecked(true);
+                break;
+            case Constants.SortType.SIZE:
+                menu.getItem(4).setChecked(true);
+                break;
+            case Constants.SortType.REMARK:
+                menu.getItem(5).setChecked(true);
+                break;
+        }
+
+        int orderType = SPUtils.getOrderType();
+        switch (orderType) {
+            case Constants.OrderType.ASC:
+                menu.getItem(6).setChecked(false);
+                break;
+            case Constants.OrderType.DESC:
+                menu.getItem(6).setChecked(true);
+                break;
+        }
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_sort_by_type:
                 item.setChecked(!item.isChecked());
+                SPUtils.setSortType(Constants.SortType.TYPE);
                 mRxManager.post("onSortType", Constants.SortType.TYPE);
                 break;
             case R.id.action_sort_by_time:
                 item.setChecked(!item.isChecked());
+                SPUtils.setSortType(Constants.SortType.TIME);
                 mRxManager.post("onSortType", Constants.SortType.TIME);
                 break;
             case R.id.action_sort_by_alphabet:
                 item.setChecked(!item.isChecked());
+                SPUtils.setSortType(Constants.SortType.ALPHABET);
                 mRxManager.post("onSortType", Constants.SortType.ALPHABET);
                 break;
             case R.id.action_sort_by_size:
                 item.setChecked(!item.isChecked());
+                SPUtils.setSortType(Constants.SortType.SIZE);
                 mRxManager.post("onSortType", Constants.SortType.SIZE);
                 break;
             case R.id.action_sort_by_remark:
                 item.setChecked(!item.isChecked());
+                SPUtils.setSortType(Constants.SortType.REMARK);
                 mRxManager.post("onSortType", Constants.SortType.REMARK);
                 break;
-            case R.id.action_sort_ascending:
+            case R.id.action_order_by_ascending:
                 item.setChecked(!item.isChecked());
                 if (item.isChecked()) {
+                    SPUtils.setOrderType(Constants.OrderType.DESC);
                     mRxManager.post("onOrderType", Constants.OrderType.DESC);
                 } else {
+                    SPUtils.setOrderType(Constants.OrderType.ASC);
                     mRxManager.post("onOrderType", Constants.OrderType.ASC);
                 }
                 break;

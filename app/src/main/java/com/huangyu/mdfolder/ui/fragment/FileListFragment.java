@@ -28,11 +28,10 @@ import android.widget.LinearLayout;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-import com.huangyu.library.BuildConfig;
+import com.huangyu.library.app.BaseApplication;
 import com.huangyu.library.ui.BaseFragment;
 import com.huangyu.library.ui.CommonRecyclerViewAdapter;
 import com.huangyu.library.util.FileUtils;
-import com.huangyu.library.util.LogToFileUtils;
 import com.huangyu.library.util.LogUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.Constants;
@@ -599,11 +598,11 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
     @Override
     public void showError(String error) {
-        if (BuildConfig.DEBUG) {
+        if (BaseApplication.isDebug()) {
             LogUtils.logd(error);
-            LogToFileUtils.saveCrashInfoFile(error);
+//            LogToFileUtils.saveCrashInfoFile(error);
         }
-        AlertUtils.showToast(getContext(), getString(R.string.tips_error));
+        AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_error));
     }
 
     @Override

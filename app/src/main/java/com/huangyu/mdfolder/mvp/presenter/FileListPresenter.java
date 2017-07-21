@@ -50,7 +50,6 @@ import rx.functions.Func3;
 import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
 
-import static com.huangyu.mdfolder.app.Constants.OrderType.DESC;
 import static com.huangyu.mdfolder.app.Constants.UNINSTALL_REQUEST_CODE;
 
 /**
@@ -81,8 +80,8 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         mScrollYStack = new Stack<>();
         mEditType = Constants.EditType.NONE;
         mSelectType = Constants.SelectType.MENU_FILE;
-        mSortType = Constants.SortType.TYPE;
-        mOrderType = DESC;
+        mSortType = SPUtils.getSortType();
+        mOrderType = SPUtils.getOrderType();
     }
 
     /**
@@ -1221,16 +1220,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             public void call(Subscriber<? super Boolean> subscriber) {
                                 boolean result = mFileListModel.un7zipFileList(filePath, mCurrentPath);
                                 if (result) {
-                                    ArrayList<File> list = FileUtils.listFilesInDir(mCurrentPath);
-                                    int size = list.size();
-                                    String[] pathArray = new String[size];
-                                    String[] mimeTypeArray = new String[size];
-                                    for (int i = 0; i < size; i++) {
-                                        String path = list.get(i).getPath();
-                                        pathArray[i] = path;
-                                        mimeTypeArray[i] = MimeTypeUtils.getMIMEType(path);
-                                    }
-                                    MediaScanUtils.scanFiles(mContext, pathArray, mimeTypeArray);
+                                    scanFile(mCurrentPath);
                                 }
                                 subscriber.onNext(result);
                                 subscriber.onCompleted();
@@ -1273,16 +1263,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             public void call(Subscriber<? super Boolean> subscriber) {
                                 boolean result = mFileListModel.unRarFileList(filePath, mCurrentPath);
                                 if (result) {
-                                    ArrayList<File> list = FileUtils.listFilesInDir(mCurrentPath);
-                                    int size = list.size();
-                                    String[] pathArray = new String[size];
-                                    String[] mimeTypeArray = new String[size];
-                                    for (int i = 0; i < size; i++) {
-                                        String path = list.get(i).getPath();
-                                        pathArray[i] = path;
-                                        mimeTypeArray[i] = MimeTypeUtils.getMIMEType(path);
-                                    }
-                                    MediaScanUtils.scanFiles(mContext, pathArray, mimeTypeArray);
+                                    scanFile(mCurrentPath);
                                 }
                                 subscriber.onNext(result);
                                 subscriber.onCompleted();
@@ -1337,16 +1318,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                                 public void call(Subscriber<? super Boolean> subscriber) {
                                                     boolean result = mFileListModel.unZipFileList(filePath, mCurrentPath, password);
                                                     if (result) {
-                                                        ArrayList<File> list = FileUtils.listFilesInDir(mCurrentPath);
-                                                        int size = list.size();
-                                                        String[] pathArray = new String[size];
-                                                        String[] mimeTypeArray = new String[size];
-                                                        for (int i = 0; i < list.size(); i++) {
-                                                            String path = list.get(i).getPath();
-                                                            pathArray[i] = path;
-                                                            mimeTypeArray[i] = MimeTypeUtils.getMIMEType(path);
-                                                        }
-                                                        MediaScanUtils.scanFiles(mContext, pathArray, mimeTypeArray);
+                                                        scanFile(mCurrentPath);
                                                     }
                                                     subscriber.onNext(result);
                                                     subscriber.onCompleted();
@@ -1401,16 +1373,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                 public void call(Subscriber<? super Boolean> subscriber) {
                                     boolean result = mFileListModel.unZipFileList(filePath, mCurrentPath);
                                     if (result) {
-                                        ArrayList<File> list = FileUtils.listFilesInDir(mCurrentPath);
-                                        int size = list.size();
-                                        String[] pathArray = new String[size];
-                                        String[] mimeTypeArray = new String[size];
-                                        for (int i = 0; i < list.size(); i++) {
-                                            String path = list.get(i).getPath();
-                                            pathArray[i] = path;
-                                            mimeTypeArray[i] = MimeTypeUtils.getMIMEType(path);
-                                        }
-                                        MediaScanUtils.scanFiles(mContext, pathArray, mimeTypeArray);
+                                        scanFile(mCurrentPath);
                                     }
                                     subscriber.onNext(result);
                                     subscriber.onCompleted();
@@ -1495,16 +1458,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             @Override
                             public void onNext(Boolean result) {
                                 if (result) {
-                                    ArrayList<File> list = FileUtils.listFilesInDir(mCurrentPath);
-                                    int size = list.size();
-                                    String[] pathArray = new String[size];
-                                    String[] mimeTypeArray = new String[size];
-                                    for (int i = 0; i < size; i++) {
-                                        String path = list.get(i).getPath();
-                                        pathArray[i] = path;
-                                        mimeTypeArray[i] = MimeTypeUtils.getMIMEType(path);
-                                    }
-                                    MediaScanUtils.scanFiles(mContext, pathArray, mimeTypeArray);
+                                    scanFile(mCurrentPath);
                                     mView.showMessage(mView.getResString(R.string.tips_copy_successfully));
                                 } else {
                                     mView.showMessage(mView.getResString(R.string.tips_copy_in_error));
@@ -1573,16 +1527,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             @Override
                             public void onNext(Boolean result) {
                                 if (result) {
-                                    ArrayList<File> list = FileUtils.listFilesInDir(mCurrentPath);
-                                    int size = list.size();
-                                    String[] pathArray = new String[size];
-                                    String[] mimeTypeArray = new String[size];
-                                    for (int i = 0; i < size; i++) {
-                                        String path = list.get(i).getPath();
-                                        pathArray[i] = path;
-                                        mimeTypeArray[i] = MimeTypeUtils.getMIMEType(path);
-                                    }
-                                    MediaScanUtils.scanFiles(mContext, pathArray, mimeTypeArray);
+                                    scanFile(mCurrentPath);
                                     mView.showMessage(mView.getResString(R.string.tips_move_successfully));
                                 } else {
                                     mView.showMessage(mView.getResString(R.string.tips_move_in_error));
@@ -1815,6 +1760,19 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      */
     public boolean shareFile(Context context, List<File> fileList) {
         return mFileModel.shareFile(context, fileList);
+    }
+
+    private void scanFile(String filePath) {
+        ArrayList<File> list = FileUtils.listFilesInDir(filePath);
+        int size = list.size();
+        String[] pathArray = new String[size];
+        String[] mimeTypeArray = new String[size];
+        for (int i = 0; i < size; i++) {
+            String path = list.get(i).getPath();
+            pathArray[i] = path;
+            mimeTypeArray[i] = MimeTypeUtils.getMIMEType(path);
+        }
+        MediaScanUtils.scanFiles(mContext, pathArray, mimeTypeArray);
     }
 
 }
