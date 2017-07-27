@@ -93,16 +93,19 @@ public class FileListModel implements IBaseModel {
                     fileItem.setDate(date);
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(new File(filePath).isDirectory());
-                    fileItem.setType(MimeTypeUtils.getTypeBySuffix(FileUtils.getSuffix(fileRealName)));
+                    int mimeType = MimeTypeUtils.getTypeBySuffix(FileUtils.getSuffix(fileRealName));
+                    fileItem.setType(mimeType);
                     fileItem.setIsShow(true);
 
-                    PackageInfo packageInfo = pm.getPackageArchiveInfo(filePath, PackageManager.GET_ACTIVITIES);
-                    if (packageInfo != null) {
-                        ApplicationInfo appInfo = packageInfo.applicationInfo;
-                        appInfo.sourceDir = filePath;
-                        appInfo.publicSourceDir = filePath;
-                        Drawable icon = appInfo.loadIcon(pm);
-                        fileItem.setIcon(icon);
+                    if (mimeType == Constants.FileType.APK) {
+                        PackageInfo packageInfo = pm.getPackageArchiveInfo(filePath, PackageManager.GET_ACTIVITIES);
+                        if (packageInfo != null) {
+                            ApplicationInfo appInfo = packageInfo.applicationInfo;
+                            appInfo.sourceDir = filePath;
+                            appInfo.publicSourceDir = filePath;
+                            Drawable icon = appInfo.loadIcon(pm);
+                            fileItem.setIcon(icon);
+                        }
                     }
 
                     String remark = SPUtils.getFileRemark(filePath);
@@ -158,16 +161,19 @@ public class FileListModel implements IBaseModel {
                     fileItem.setDate(fileDate);
                     fileItem.setParent(null);
                     fileItem.setIsDirectory(new File(filePath).isDirectory());
-                    fileItem.setType(MimeTypeUtils.getTypeBySuffix(FileUtils.getSuffix(fileRealName)));
+                    int mimeType = MimeTypeUtils.getTypeBySuffix(FileUtils.getSuffix(fileRealName));
+                    fileItem.setType(mimeType);
                     fileItem.setIsShow(true);
 
-                    PackageInfo packageInfo = pm.getPackageArchiveInfo(filePath, PackageManager.GET_ACTIVITIES);
-                    if (packageInfo != null) {
-                        ApplicationInfo appInfo = packageInfo.applicationInfo;
-                        appInfo.sourceDir = filePath;
-                        appInfo.publicSourceDir = filePath;
-                        Drawable icon = appInfo.loadIcon(pm);
-                        fileItem.setIcon(icon);
+                    if (mimeType == Constants.FileType.APK) {
+                        PackageInfo packageInfo = pm.getPackageArchiveInfo(filePath, PackageManager.GET_ACTIVITIES);
+                        if (packageInfo != null) {
+                            ApplicationInfo appInfo = packageInfo.applicationInfo;
+                            appInfo.sourceDir = filePath;
+                            appInfo.publicSourceDir = filePath;
+                            Drawable icon = appInfo.loadIcon(pm);
+                            fileItem.setIcon(icon);
+                        }
                     }
 
                     String remark = SPUtils.getFileRemark(filePath);
