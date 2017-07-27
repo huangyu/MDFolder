@@ -385,37 +385,41 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                         selectedPosition = 2;
                         mRxManager.post("toRoot", "");
                         break;
-                    case R.id.nav_download:
+                    case R.id.nav_recent:
                         selectedPosition = 3;
+                        mRxManager.post("toRecent", "");
+                        break;
+                    case R.id.nav_download:
+                        selectedPosition = 4;
                         mRxManager.post("toDownload", "");
                         break;
                     case R.id.nav_photo:
-                        selectedPosition = 4;
+                        selectedPosition = 5;
                         mRlFile.setVisibility(View.GONE);
                         mRlAlbum.setVisibility(View.VISIBLE);
                         break;
                     case R.id.nav_music:
-                        selectedPosition = 5;
+                        selectedPosition = 6;
                         mRxManager.post("toMusic", "");
                         break;
                     case R.id.nav_video:
-                        selectedPosition = 6;
+                        selectedPosition = 7;
                         mRxManager.post("toVideo", "");
                         break;
                     case R.id.nav_document:
-                        selectedPosition = 7;
+                        selectedPosition = 8;
                         mRxManager.post("toDocument", "");
                         break;
                     case R.id.nav_apk:
-                        selectedPosition = 8;
+                        selectedPosition = 9;
                         mRxManager.post("toApk", "");
                         break;
                     case R.id.nav_zip:
-                        selectedPosition = 9;
+                        selectedPosition = 10;
                         mRxManager.post("toZip", "");
                         break;
                     case R.id.nav_apps:
-                        selectedPosition = 10;
+                        selectedPosition = 11;
                         mRxManager.post("toApps", "");
                         break;
                     case R.id.nav_settings:

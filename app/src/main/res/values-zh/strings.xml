@@ -40,6 +40,7 @@
     <string name="menu_image">图片</string>
     <string name="menu_audio">音频</string>
     <string name="menu_video">视频</string>
+    <string name="menu_recent">最近文件</string>
     <string name="menu_document">文档</string>
     <string name="menu_download">下载</string>
     <string name="menu_share">分享</string>

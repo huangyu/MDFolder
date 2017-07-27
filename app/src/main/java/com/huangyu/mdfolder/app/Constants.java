@@ -14,7 +14,6 @@ public class Constants extends BaseConstants {
     public static final int UNINSTALL_REQUEST_CODE = 0x03;
 
     public static class EditType {
-
         public static final int NONE = 0x00000000;
 
         public static final int SELECT = 0x00000001;
@@ -48,50 +47,52 @@ public class Constants extends BaseConstants {
         public static final int MENU_APPS = 0x00000018;
 
         public static final int MENU_SDCARD = 0x00000019;
+
+        public static final int MENU_RECENT = 0x0000020;
     }
 
     public static class FileType {
-        public static final int FILE = 0x00000020;
+        public static final int FILE = 0x00000030;
 
-        public static final int IMAGE = 0x00000021;
+        public static final int IMAGE = 0x00000031;
 
-        public static final int AUDIO = 0x00000022;
+        public static final int AUDIO = 0x00000032;
 
-        public static final int VIDEO = 0x00000023;
+        public static final int VIDEO = 0x00000033;
 
-        public static final int DOCUMENT = 0x00000024;
+        public static final int DOCUMENT = 0x00000034;
 
-        public static final int SINGLE_IMAGE = 0x00000025;
+        public static final int SINGLE_IMAGE = 0x00000035;
 
-        public static final int SINGLE_AUDIO = 0x00000026;
+        public static final int SINGLE_AUDIO = 0x00000036;
 
-        public static final int SINGLE_VIDEO = 0x00000027;
+        public static final int SINGLE_VIDEO = 0x00000037;
 
-        public static final int SINGLE_DOCUMENT = 0x00000028;
+        public static final int SINGLE_DOCUMENT = 0x00000038;
 
-        public static final int APK = 0x00000029;
+        public static final int APK = 0x00000039;
 
-        public static final int COMPRESS = 0x00000030;
+        public static final int COMPRESS = 0x00000040;
 
-        public static final int INSTALLED = 0x00000031;
+        public static final int INSTALLED = 0x00000041;
     }
 
     public static class SortType {
-        public static final int TYPE = 0x00000040;
+        public static final int TYPE = 0x00000050;
 
-        public static final int TIME = 0x00000041;
+        public static final int TIME = 0x00000051;
 
-        public static final int ALPHABET = 0x00000042;
+        public static final int ALPHABET = 0x00000052;
 
-        public static final int SIZE = 0x00000043;
+        public static final int SIZE = 0x00000053;
 
-        public static final int REMARK = 0x00000044;
+        public static final int REMARK = 0x00000054;
     }
 
     public static class OrderType {
-        public static final int DESC = 0x00000050;
+        public static final int DESC = 0x00000070;
 
-        public static final int ASC = 0x00000051;
+        public static final int ASC = 0x00000071;
     }
 
 }

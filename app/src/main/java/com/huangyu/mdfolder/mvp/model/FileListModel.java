@@ -34,7 +34,9 @@ import com.huangyu.mdfolder.utils.filter.SearchFilter;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,39 +86,94 @@ public class FileListModel implements IBaseModel {
 
                 String fileRealName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
                 if (FileUtils.isFileExists(filePath) && !isFolder(fileRealName)) {
-                    if (fileRealName.endsWith(".apk")) {
-                        FileItem fileItem = new FileItem();
-                        fileItem.setName(fileRealName);
-                        fileItem.setPath(filePath);
-                        fileItem.setSize(fileLength);
-                        fileItem.setDate(date);
-                        fileItem.setParent(null);
-                        fileItem.setIsDirectory(false);
-                        fileItem.setType(Constants.FileType.APK);
-                        fileItem.setIsShow(true);
-                        PackageInfo packageInfo = pm.getPackageArchiveInfo(filePath, PackageManager.GET_ACTIVITIES);
-                        if (packageInfo != null) {
-                            ApplicationInfo appInfo = packageInfo.applicationInfo;
-                            appInfo.sourceDir = filePath;
-                            appInfo.publicSourceDir = filePath;
-                            Drawable icon = appInfo.loadIcon(pm);
-                            fileItem.setIcon(icon);
-                        }
+                    FileItem fileItem = new FileItem();
+                    fileItem.setName(fileRealName);
+                    fileItem.setPath(filePath);
+                    fileItem.setSize(fileLength);
+                    fileItem.setDate(date);
+                    fileItem.setParent(null);
+                    fileItem.setIsDirectory(new File(filePath).isDirectory());
+                    fileItem.setType(MimeTypeUtils.getTypeBySuffix(FileUtils.getSuffix(fileRealName)));
+                    fileItem.setIsShow(true);
 
-                        String remark = SPUtils.getFileRemark(filePath);
-                        boolean searchResult = TextUtils.isEmpty(searchStr);
-                        boolean nameResult = StringUtils.containsIgnoreCase(fileRealName, searchStr);
-                        boolean remarkResult = StringUtils.containsIgnoreCase(remark, searchStr);
-                        fileItem.setRemark(remark);
-                        if (TextUtils.isEmpty(remark)) {
-                            if (searchResult || nameResult) {
-                                fileItemList.add(fileItem);
-                            }
-                        } else {
-                            if (searchResult || nameResult || remarkResult) {
-                                fileItemList.add(fileItem);
-                            }
+                    PackageInfo packageInfo = pm.getPackageArchiveInfo(filePath, PackageManager.GET_ACTIVITIES);
+                    if (packageInfo != null) {
+                        ApplicationInfo appInfo = packageInfo.applicationInfo;
+                        appInfo.sourceDir = filePath;
+                        appInfo.publicSourceDir = filePath;
+                        Drawable icon = appInfo.loadIcon(pm);
+                        fileItem.setIcon(icon);
+                    }
+
+                    String remark = SPUtils.getFileRemark(filePath);
+                    boolean searchResult = TextUtils.isEmpty(searchStr);
+                    boolean nameResult = StringUtils.containsIgnoreCase(fileRealName, searchStr);
+                    boolean remarkResult = StringUtils.containsIgnoreCase(remark, searchStr);
+                    fileItem.setRemark(remark);
+                    if (TextUtils.isEmpty(remark)) {
+                        if (searchResult || nameResult) {
+                            fileItemList.add(fileItem);
                         }
+                    } else {
+                        if (searchResult || nameResult || remarkResult) {
+                            fileItemList.add(fileItem);
+                        }
+                    }
+                }
+            }
+            cursor.close();
+            return fileItemList;
+        }
+        return null;
+    }
+
+    public ArrayList<FileItem> getRecentFileList(ContentResolver contentResolver) {
+        String[] projection = new String[]{
+                MediaStore.Files.FileColumns.DATA,
+                MediaStore.Files.FileColumns.SIZE,
+                MediaStore.Files.FileColumns.DATE_MODIFIED};
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, -7);
+        Date date = calendar.getTime();
+
+        Cursor cursor = contentResolver.query(MediaStore.Files.getContentUri("external"), projection,
+                MediaStore.Files.FileColumns.DATE_MODIFIED + " > ? ",
+                new String[]{"" + date.getTime() / 1000}, null);
+        if (cursor != null) {
+            PackageManager pm = BaseApplication.getInstance().getApplicationContext().getPackageManager();
+            ArrayList<FileItem> fileItemList = new ArrayList<>();
+            while (cursor.moveToNext()) {
+                String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA));
+                String fileLength = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.SIZE));
+                String fileDate = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATE_MODIFIED));
+
+                String fileRealName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
+                if (FileUtils.isFileExists(filePath) && !isFolder(fileRealName)) {
+                    FileItem fileItem = new FileItem();
+                    fileItem.setName(fileRealName);
+                    fileItem.setPath(filePath);
+                    fileItem.setSize(fileLength);
+                    fileItem.setDate(fileDate);
+                    fileItem.setParent(null);
+                    fileItem.setIsDirectory(new File(filePath).isDirectory());
+                    fileItem.setType(MimeTypeUtils.getTypeBySuffix(FileUtils.getSuffix(fileRealName)));
+                    fileItem.setIsShow(true);
+
+                    PackageInfo packageInfo = pm.getPackageArchiveInfo(filePath, PackageManager.GET_ACTIVITIES);
+                    if (packageInfo != null) {
+                        ApplicationInfo appInfo = packageInfo.applicationInfo;
+                        appInfo.sourceDir = filePath;
+                        appInfo.publicSourceDir = filePath;
+                        Drawable icon = appInfo.loadIcon(pm);
+                        fileItem.setIcon(icon);
+                    }
+
+                    String remark = SPUtils.getFileRemark(filePath);
+                    fileItem.setRemark(remark);
+                    if (!fileItem.isDirectory()) {
+                        fileItemList.add(fileItem);
                     }
                 }
             }

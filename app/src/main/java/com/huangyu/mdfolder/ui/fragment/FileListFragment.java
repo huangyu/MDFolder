@@ -141,15 +141,15 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                             // 同目录下图片浏览
                             if (file.getType() == Constants.FileType.SINGLE_IMAGE) {
                                 int currentPosition = 0;
-                                ArrayList<FileItem> arrayList = new ArrayList<>();
                                 ArrayList<FileItem> dataList = mAdapter.getDataList();
+                                ArrayList<FileItem> arrayList = new ArrayList<>();
                                 for (int i = 0; i < dataList.size(); i++) {
                                     if (dataList.get(i).getType() == Constants.FileType.SINGLE_IMAGE) {
                                         arrayList.add(dataList.get(i));
                                     }
                                 }
                                 for (int i = 0; i < arrayList.size(); i++) {
-                                    if (dataList.get(i).getPath().equals(file.getPath())) {
+                                    if (arrayList.get(i).getPath().equals(file.getPath())) {
                                         currentPosition = i;
                                     }
                                 }
@@ -171,7 +171,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                                     }
                                 }
                                 for (int i = 0; i < arrayList.size(); i++) {
-                                    if (dataList.get(i).getPath().equals(file.getPath())) {
+                                    if (arrayList.get(i).getPath().equals(file.getPath())) {
                                         currentPosition = i;
                                     }
                                 }
@@ -191,7 +191,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                                     }
                                 }
                                 for (int i = 0; i < arrayList.size(); i++) {
-                                    if (dataList.get(i).getPath().equals(file.getPath())) {
+                                    if (arrayList.get(i).getPath().equals(file.getPath())) {
                                         currentPosition = i;
                                     }
                                 }
@@ -414,11 +414,19 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             }
         });
 
+        mRxManager.on("toRecent", new Action1<String>() {
+            @Override
+            public void call(String text) {
+                mPresenter.mSelectType = Constants.SelectType.MENU_RECENT;
+                mPresenter.onLoadMultiTypeFileList(mSearchStr);
+            }
+        });
+
         mRxManager.on("toPhoto", new Action1<String>() {
             @Override
             public void call(String s) {
                 mPresenter.mSelectType = Constants.SelectType.MENU_PHOTO;
-                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
+                mPresenter.onLoadMultiTypeFileList(mSearchStr);
             }
         });
 
@@ -426,7 +434,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public void call(String s) {
                 mPresenter.mSelectType = Constants.SelectType.MENU_MUSIC;
-                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
+                mPresenter.onLoadMultiTypeFileList(mSearchStr);
             }
         });
 
@@ -434,7 +442,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public void call(String s) {
                 mPresenter.mSelectType = Constants.SelectType.MENU_VIDEO;
-                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
+                mPresenter.onLoadMultiTypeFileList(mSearchStr);
             }
         });
 
@@ -442,7 +450,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public void call(String s) {
                 mPresenter.mSelectType = Constants.SelectType.MENU_DOCUMENT;
-                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
+                mPresenter.onLoadMultiTypeFileList(mSearchStr);
             }
         });
 
@@ -458,7 +466,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public void call(String s) {
                 mPresenter.mSelectType = Constants.SelectType.MENU_APK;
-                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
+                mPresenter.onLoadMultiTypeFileList(mSearchStr);
             }
         });
 
@@ -466,7 +474,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public void call(String s) {
                 mPresenter.mSelectType = Constants.SelectType.MENU_ZIP;
-                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
+                mPresenter.onLoadMultiTypeFileList(mSearchStr);
             }
         });
 
@@ -474,7 +482,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public void call(String s) {
                 mPresenter.mSelectType = Constants.SelectType.MENU_APPS;
-                mPresenter.onLoadMultiTypeFileList(mSearchStr, mPresenter.mSelectType);
+                mPresenter.onLoadMultiTypeFileList(mSearchStr);
             }
         });
 

@@ -241,7 +241,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     /**
      * 获取不同类型文件列表
      */
-    public void onLoadMultiTypeFileList(final String searchStr, final int fileType) {
+    public void onLoadMultiTypeFileList(final String searchStr) {
         Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
             @Override
             public Observable<ArrayList<FileItem>> call() {
@@ -270,7 +270,10 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     @Override
                     public void onNext(ArrayList<FileItem> fileList) {
                         mView.removeAllTabs();
-                        switch (fileType) {
+                        switch (mSelectType) {
+                            case Constants.SelectType.MENU_RECENT:
+                                mView.addTab(mView.getResString(R.string.menu_recent) + "  " + fileList.size());
+                                break;
                             case Constants.SelectType.MENU_DOCUMENT:
                                 mView.addTab(mView.getResString(R.string.menu_document) + "  " + fileList.size());
                                 break;
@@ -1605,6 +1608,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
             case Constants.SelectType.MENU_DOWNLOAD:
             case Constants.SelectType.MENU_SDCARD:
                 fileItemList = transformFileList(mFileListModel.getFileList(mCurrentPath, searchStr));
+                break;
+            case Constants.SelectType.MENU_RECENT:
+                fileItemList = mFileListModel.getRecentFileList(mContext.getContentResolver());
                 break;
             case Constants.SelectType.MENU_DOCUMENT:
                 fileItemList = mFileListModel.getDocumentList(searchStr, mContext.getContentResolver());
