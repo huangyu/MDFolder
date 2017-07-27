@@ -838,6 +838,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     getActivity().supportInvalidateOptionsMenu();
                     mActionMode = null;
                     mPresenter.mEditType = Constants.EditType.NONE;
+                    mAdapter.clearSelectedState();
                 }
             }
         });
@@ -885,6 +886,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 mPresenter.mEditType = Constants.EditType.NONE;
                 mAdapter.mSelectedFileList = null;
                 mPresenter.isPasteActonMode = false;
+                mAdapter.clearSelectedState();
             }
         });
     }

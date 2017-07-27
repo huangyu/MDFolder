@@ -175,7 +175,6 @@ public class FileListActivity extends ThematicActivity implements NavigationView
         if (isChanged()) {
             replaceFragment();
         }
-
     }
 
     @Override

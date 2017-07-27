@@ -90,7 +90,7 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
                     @Override
                     public void onNext(ArrayList<FileItem> albumFolderList) {
                         mView.addTab(mView.getResString(R.string.str_album) + "  " + albumFolderList.size());
-                        mView.refreshAlbum(albumFolderList, mScrollY);
+                        mView.refreshAlbumView(albumFolderList, mScrollY);
                         isInAlbum = true;
                     }
 
@@ -133,7 +133,7 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
                     @Override
                     public void onNext(ArrayList<FileItem> albumFolderList) {
                         mView.addTab(mView.getResString(R.string.str_album) + "  " + albumFolderList.size());
-                        mView.refreshAlbum(albumFolderList, mScrollY);
+                        mView.refreshAlbumView(albumFolderList, mScrollY);
                         isInAlbum = true;
                     }
 
@@ -176,7 +176,7 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
                     @Override
                     public void onNext(ArrayList<FileItem> imageList) {
                         mView.addTab(mView.getResString(R.string.str_image) + "  " + imageList.size());
-                        mView.refreshData(imageList, ifClearSelected);
+                        mView.refreshImageView(imageList, ifClearSelected);
                         isInAlbum = false;
                     }
 
@@ -218,7 +218,7 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
                     @Override
                     public void onNext(ArrayList<FileItem> imageList) {
                         mView.addTab(mView.getResString(R.string.str_image) + "  " + imageList.size());
-                        mView.refreshData(imageList, ifClearSelected);
+                        mView.refreshImageView(imageList, ifClearSelected);
                         isInAlbum = false;
                     }
 
@@ -275,19 +275,20 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
     }
 
     /**
-     * 重命名文件（暂时只支持单个文件）
+     * 重命名文件（只支持单个文件）
      *
      * @param fileList 文件列表
      */
-    public void onRenameFile(final ArrayList<FileItem> fileList) {
+    public void onRenameFile(final ArrayList<FileItem> fileList, final ArrayList<Integer> selectedItemList) {
         if (fileList.size() != 1) {
             mView.showMessage(mView.getResString(R.string.tips_choose_one_file));
         } else {
             final View view = mView.inflateFilenameInputDialogLayout();
             final TextInputLayout textInputLayout = mView.findTextInputLayout(view);
             final EditText editText = mView.findAlertDialogEditText(view);
-            final String filename = fileList.get(0).getName();
-            final String filePath = fileList.get(0).getPath();
+            final FileItem fileItem = fileList.get(0);
+            final String filename = fileItem.getName();
+            final String filePath = fileItem.getPath();
             editText.setText(filename);
             if (filename.contains(".")) {
                 editText.setSelection(0, filename.lastIndexOf("."));
@@ -338,6 +339,11 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
                                         @Override
                                         public void onNext(Boolean result) {
                                             if (result) {
+                                                String newPath = new File(filePath).getParent() + File.separator + editText.getText().toString();
+                                                int position = selectedItemList.get(0);
+                                                fileItem.setPath(newPath);
+                                                fileItem.setName(editText.getText().toString());
+                                                mView.changeData(fileItem, position);
                                                 mView.showMessage(mView.getResString(R.string.tips_rename_successfully));
                                             } else {
                                                 mView.showMessage(mView.getResString(R.string.tips_rename_in_error));
@@ -427,6 +433,7 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
                                             @Override
                                             public void onCompleted() {
                                                 mView.finishAction();
+                                                refreshAfterFinishAction();
                                             }
                                         });
                                 mRxManager.add(subscription);
@@ -450,6 +457,7 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
                 @Override
                 public void onCancel(DialogInterface dialog) {
                     mView.finishAction();
+                    refreshAfterFinishAction();
                 }
             });
         }
@@ -460,7 +468,7 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
      *
      * @param fileList 文件列表
      */
-    public void onDelete(final ArrayList<FileItem> fileList) {
+    public void onDelete(final ArrayList<FileItem> fileList, final ArrayList<Integer> selectedItemList) {
         mView.showNormalAlert(mView.getResString(R.string.tips_delete_files), mView.getResString(R.string.act_delete), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -494,6 +502,9 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
                                             @Override
                                             public void onNext(Boolean result) {
                                                 if (result) {
+                                                    for (Integer position : selectedItemList) {
+                                                        mView.deleteData(position);
+                                                    }
                                                     mView.showMessage(mView.getResString(R.string.tips_delete_successfully));
                                                 } else {
                                                     mView.showMessage(mView.getResString(R.string.tips_delete_in_error));
@@ -524,7 +535,7 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
      *
      * @param fileList 文件列表
      */
-    public void onDeleteAlbum(final ArrayList<FileItem> fileList) {
+    public void onDeleteAlbum(final ArrayList<FileItem> fileList, final ArrayList<Integer> selectedItemList) {
         mView.showNormalAlert(mView.getResString(R.string.tips_delete_files), mView.getResString(R.string.act_delete), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -537,6 +548,9 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
                                 Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
                                 ContentResolver resolver = mContext.getContentResolver();
                                 resolver.delete(uri, MediaStore.Images.Media.BUCKET_ID + " = " + fileItem.getId(), null);
+                                for (Integer position : selectedItemList) {
+                                    mView.deleteData(position);
+                                }
                                 mView.showMessage(mView.getResString(R.string.tips_delete_successfully));
                             }
 
@@ -557,11 +571,11 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
     }
 
     /**
-     * 备注文件（暂时只支持单个文件）
+     * 备注文件（只支持单个文件）
      *
      * @param fileList 文件列表
      */
-    public void onRemark(final ArrayList<FileItem> fileList) {
+    public void onRemark(final ArrayList<FileItem> fileList, final ArrayList<Integer> selectedItemList) {
         if (fileList.size() != 1) {
             mView.showMessage(mView.getResString(R.string.tips_choose_one_file));
         } else {
@@ -598,6 +612,10 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
                                         @Override
                                         public void onNext(Object result) {
                                             SPUtils.setFileRemark(filePath, remark);
+                                            int position = selectedItemList.get(0);
+                                            FileItem fileItem = fileList.get(0);
+                                            fileItem.setRemark(remark);
+                                            mView.changeData(fileItem, position);
                                             mView.showMessage(mView.getResString(R.string.tips_remark_successfully));
                                         }
 
@@ -648,6 +666,15 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
      */
     public boolean shareFile(Context context, List<File> fileList) {
         return mFileModel.shareFile(context, fileList);
+    }
+
+    private void refreshAfterFinishAction() {
+        if (mEditType != Constants.EditType.COPY && mEditType != Constants.EditType.CUT
+                && mEditType != Constants.EditType.ZIP && mEditType != Constants.EditType.UNZIP) {
+            mView.refreshData(true);
+        } else {
+            mView.refreshData(false);
+        }
     }
 
 }

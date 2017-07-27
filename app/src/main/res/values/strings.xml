@@ -11,6 +11,7 @@
     <string name="str_file_info">File Info</string>
     <string name="str_zip_info">Zip Info</string>
     <string name="str_file_name">Name</string>
+    <string name="str_file_remark">Remark</string>
     <string name="str_file_path">Path</string>
     <string name="str_file_size">Size</string>
     <string name="str_file_date">Date</string>

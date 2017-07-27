@@ -16,9 +16,8 @@
 package com.huangyu.mdfolder.ui.adapter;
 
 import android.content.Context;
-import android.text.TextUtils;
+import android.os.Build;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.huangyu.library.ui.CommonRecyclerViewAdapter;
@@ -32,62 +31,45 @@ import java.util.ArrayList;
 /**
  * Created by huangyu on 2017/6/30.
  */
-public class AlbumFolderAdapter extends CommonRecyclerViewAdapter<FileItem> {
+public class ImageAdapter extends CommonRecyclerViewAdapter<FileItem> {
 
     public ArrayList<FileItem> mSelectedFileList;
 
-    public AlbumFolderAdapter(Context context) {
+    public ImageAdapter(Context context) {
         super(context);
     }
 
     @Override
     public void convert(CommonRecyclerViewHolder holder, FileItem fileItem, int position) {
         ImageView ivImage = holder.getView(R.id.iv_image);
-        TextView tvName = holder.getView(R.id.tv_name);
-        TextView tvSize = holder.getView(R.id.tv_size);
 
         FileListActivity activity = (FileListActivity) mContext;
         if (activity.isLightMode()) {
             holder.itemView.setBackgroundResource(R.drawable.select_item);
-            tvName.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryText));
-            tvSize.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryText));
-            if (fileItem.getImages() != null && fileItem.getImages().size() > 0) {
-                FileItem f = fileItem.getImages().get(0);
-                if (f != null) {
-                    Glide.with(mContext).load(f.getPath()).into(ivImage);
-                }
-            }
         } else {
             holder.itemView.setBackgroundResource(R.drawable.select_item_dark);
-            tvName.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryTextWhite));
-            tvSize.setTextColor(mContext.getResources().getColor(R.color.colorSecondaryTextWhite));
-            if (fileItem.getImages() != null && fileItem.getImages().size() > 0) {
-                FileItem f = fileItem.getImages().get(0);
-                if (f != null) {
-                    Glide.with(mContext).load(f.getPath()).into(ivImage);
-                }
-            }
         }
 
-        tvName.setText(fileItem.getName());
-        String fileRemark = fileItem.getRemark();
-        if (!TextUtils.isEmpty(fileRemark)) {
-            tvName.append(" (" + fileRemark + ")");
-        }
-        tvSize.setText(String.valueOf(fileItem.getImages().size()));
+        Glide.with(mContext).load(fileItem.getPath()).into(ivImage);
 
         if (getSelectedItemCount() > 0 && isSelected(position) && isSelected(fileItem)) {
-            ivImage.setImageAlpha(50);
             holder.itemView.setSelected(true);
+            ivImage.setImageAlpha(50);
         } else {
-            ivImage.setImageAlpha(255);
             holder.itemView.setSelected(false);
+            ivImage.setImageAlpha(255);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            holder.itemView.setTransitionName(mContext.getString(R.string.transition_image_name) + position);
+            ivImage.setTransitionName(mContext.getString(R.string.transition_image_name) + position);
+            ivImage.setId(position);
         }
     }
 
     @Override
     public int getLayoutResource() {
-        return R.layout.item_album_folder;
+        return R.layout.item_album_image;
     }
 
     private boolean isSelected(FileItem fileItem) {

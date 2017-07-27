@@ -149,6 +149,7 @@ public class AlertUtils {
         dialog.setOnCancelListener(onCancelListener);
 
         TextView tvName = ButterKnife.findById(view, R.id.tv_name);
+        TextView tvRemark = ButterKnife.findById(view, R.id.tv_remark);
         TextView tvPath = ButterKnife.findById(view, R.id.tv_path);
         TextView tvSize = ButterKnife.findById(view, R.id.tv_size);
         TextView tvDate = ButterKnife.findById(view, R.id.tv_date);
@@ -156,6 +157,7 @@ public class AlertUtils {
         TextView tvMd5 = ButterKnife.findById(view, R.id.tv_md5);
 
         tvName.setText(fileItem.getName());
+        tvRemark.setText(fileItem.getRemark());
         String path = fileItem.getPath();
         tvPath.setText(path.substring(0, path.lastIndexOf(File.separator)));
         if (fileItem.isDirectory()) {

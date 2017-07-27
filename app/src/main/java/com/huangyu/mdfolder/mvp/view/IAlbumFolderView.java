@@ -25,9 +25,17 @@ public interface IAlbumFolderView extends IBaseView {
 
     void showError(String error);
 
-    void refreshAlbum(ArrayList<FileItem> albumFolderList, int scrollY);
+    void addData(FileItem fileItem);
 
-    void refreshData(ArrayList<FileItem> imageList, boolean ifClearSelected);
+    void changeData(FileItem fileItem, int position);
+
+    void deleteData(int position);
+
+    void refreshData(boolean ifClearSelected);
+
+    void refreshAlbumView(ArrayList<FileItem> albumFolderList, int scrollY);
+
+    void refreshImageView(ArrayList<FileItem> imageList, boolean ifClearSelected);
 
     void finishAction();
 

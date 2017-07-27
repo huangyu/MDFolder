@@ -42,8 +42,8 @@ import com.huangyu.mdfolder.mvp.presenter.AlbumFolderPresenter;
 import com.huangyu.mdfolder.mvp.view.IAlbumFolderView;
 import com.huangyu.mdfolder.ui.activity.FileListActivity;
 import com.huangyu.mdfolder.ui.activity.ImageBrowserActivity;
-import com.huangyu.mdfolder.ui.adapter.AlbumFileAdapter;
-import com.huangyu.mdfolder.ui.adapter.AlbumFolderAdapter;
+import com.huangyu.mdfolder.ui.adapter.ImageAdapter;
+import com.huangyu.mdfolder.ui.adapter.AlbumAdapter;
 import com.huangyu.mdfolder.ui.widget.VerticalGirdDecoration;
 import com.huangyu.mdfolder.ui.widget.TabView;
 import com.huangyu.mdfolder.utils.AlertUtils;
@@ -83,8 +83,8 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
     @Bind(R.id.iv_center)
     ImageView mIvCenter;
 
-    private AlbumFolderAdapter mAlbumAdapter;
-    private AlbumFileAdapter mPhotoAdapter;
+    private AlbumAdapter mAlbumAdapter;
+    private ImageAdapter mImageAdapter;
     private VerticalGirdDecoration mAlbumVerticalGirdDecoration;
     private VerticalGirdDecoration mImageVerticalGirdDecoration;
     private String mSearchStr;
@@ -111,19 +111,19 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
     protected void initView(Bundle savedInstanceState) {
         mIvCenter.setColorFilter(getResources().getColor(R.color.colorDarkGrey));
 
-        mPhotoAdapter = new AlbumFileAdapter(getContext());
-        mPhotoAdapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
+        mImageAdapter = new ImageAdapter(getContext());
+        mImageAdapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 if (mPresenter.mEditType == Constants.EditType.NONE) {
-                    FileItem file = mPhotoAdapter.getItem(position);
+                    FileItem file = mImageAdapter.getItem(position);
                     if (file == null) {
                         finishAction();
                         return;
                     }
                     if (SPUtils.isBuildInMode()) {
                         Intent intent = new Intent(getActivity(), ImageBrowserActivity.class);
-                        intent.putExtra(getString(R.string.intent_image_list), mPhotoAdapter.getDataList());
+                        intent.putExtra(getString(R.string.intent_image_list), mImageAdapter.getDataList());
                         intent.putExtra(getString(R.string.intent_image_position), position);
                         intent.putExtra(getString(R.string.intent_image_sort_type), mPresenter.mSortType);
                         intent.putExtra(getString(R.string.intent_image_order_type), mPresenter.mOrderType);
@@ -145,15 +145,15 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                 } else if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT
                         && mPresenter.mEditType != Constants.EditType.ZIP && mPresenter.mEditType != Constants.EditType.UNZIP) {
                     mPresenter.mEditType = Constants.EditType.SELECT;
-                    mPhotoAdapter.switchSelectedState(position);
-                    mActionMode.setTitle(String.format(getString(R.string.tips_selected), mPhotoAdapter.getSelectedItemCount()));
-                    if (mPhotoAdapter.getSelectedItemCount() == 0) {
+                    mImageAdapter.switchSelectedState(position);
+                    mActionMode.setTitle(String.format(getString(R.string.tips_selected), mImageAdapter.getSelectedItemCount()));
+                    if (mImageAdapter.getSelectedItemCount() == 0) {
                         finishAction();
                     }
                 }
             }
         });
-        mPhotoAdapter.setOnItemLongClick(new CommonRecyclerViewAdapter.OnItemLongClickListener() {
+        mImageAdapter.setOnItemLongClick(new CommonRecyclerViewAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, int position) {
                 if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT
@@ -161,15 +161,15 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                     return;
                 }
                 mPresenter.mEditType = Constants.EditType.SELECT;
-                mPhotoAdapter.switchSelectedState(position);
+                mImageAdapter.switchSelectedState(position);
                 if (mActionMode == null) {
                     mActionMode = getPhotoControlActionMode();
                 }
-                mActionMode.setTitle(String.format(getString(R.string.tips_selected), mPhotoAdapter.getSelectedItemCount()));
+                mActionMode.setTitle(String.format(getString(R.string.tips_selected), mImageAdapter.getSelectedItemCount()));
             }
         });
 
-        mAlbumAdapter = new AlbumFolderAdapter(getContext());
+        mAlbumAdapter = new AlbumAdapter(getContext());
         mAlbumAdapter.setOnItemClick(new CommonRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -324,21 +324,21 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
             }
         });
 
-//        if (mPresenter.isInAlbum) {
-//            mPresenter.loadAlbum(mSearchStr);
-//        } else {
-//            mPresenter.loadImage(mSearchStr, true);
-//        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         if (mPresenter.isInAlbum) {
             mPresenter.loadAlbum(mSearchStr);
         } else {
             mPresenter.loadImage(mSearchStr, true);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+//        if (mPresenter.isInAlbum) {
+//            mPresenter.loadAlbum(mSearchStr);
+//        } else {
+//            mPresenter.loadImage(mSearchStr, true);
+//        }
     }
 
     public void startRefresh() {
@@ -366,6 +366,48 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
 //            LogToFileUtils.saveCrashInfoFile(error);
         }
         AlertUtils.showToast(getContext(), getString(R.string.tips_error));
+    }
+
+    @Override
+    public void addData(FileItem fileItem) {
+        if (mPresenter.isInAlbum) {
+            mAlbumAdapter.addItem(fileItem);
+            mAlbumAdapter.clearSelectedState();
+        } else {
+            mImageAdapter.addItem(fileItem);
+            mImageAdapter.clearSelectedState();
+        }
+    }
+
+    @Override
+    public void changeData(FileItem fileItem, int position) {
+        if (mPresenter.isInAlbum) {
+            mAlbumAdapter.changeItem(fileItem, position);
+            mAlbumAdapter.clearSelectedState();
+        } else {
+            mImageAdapter.changeItem(fileItem, position);
+            mImageAdapter.clearSelectedState();
+        }
+    }
+
+    @Override
+    public void deleteData(int position) {
+        if (mPresenter.isInAlbum) {
+            mAlbumAdapter.removeItem(position);
+            mAlbumAdapter.clearSelectedState();
+        } else {
+            mImageAdapter.removeItem(position);
+            mImageAdapter.clearSelectedState();
+        }
+    }
+
+    @Override
+    public void refreshData(boolean ifClearSelected) {
+        if (mPresenter.isInAlbum) {
+            mPresenter.loadAlbum(mSearchStr);
+        } else {
+            mPresenter.loadImage(mSearchStr, ifClearSelected);
+        }
     }
 
     public void showMessage(String message) {
@@ -449,28 +491,24 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
         return getContext().getString(resId);
     }
 
-    private void refreshData(boolean ifClearSelected) {
-        mPresenter.loadImage(mSearchStr, ifClearSelected);
-    }
-
-    public void refreshData(ArrayList<FileItem> imageList, boolean ifClearSelected) {
-        mPhotoAdapter.clearData(ifClearSelected);
+    public void refreshImageView(ArrayList<FileItem> imageList, boolean ifClearSelected) {
+        mImageAdapter.clearData(ifClearSelected);
 
         if (imageList == null || imageList.isEmpty()) {
             mLlEmpty.setVisibility(View.VISIBLE);
         } else {
             mLlEmpty.setVisibility(View.GONE);
-            mPhotoAdapter.setData(imageList);
+            mImageAdapter.setData(imageList);
         }
-        if (!(mRecyclerView.getAdapter() instanceof AlbumFileAdapter)) {
+        if (!(mRecyclerView.getAdapter() instanceof ImageAdapter)) {
             mRecyclerView.removeItemDecoration(mAlbumVerticalGirdDecoration);
             mRecyclerView.removeItemDecoration(mImageVerticalGirdDecoration);
             mRecyclerView.addItemDecoration(mImageVerticalGirdDecoration);
-            mRecyclerView.setAdapter(mPhotoAdapter);
+            mRecyclerView.setAdapter(mImageAdapter);
         }
     }
 
-    public void refreshAlbum(ArrayList<FileItem> albumFolderList, final int scrollY) {
+    public void refreshAlbumView(ArrayList<FileItem> albumFolderList, final int scrollY) {
         mAlbumAdapter.clearData(true);
 
         if (albumFolderList == null || albumFolderList.isEmpty()) {
@@ -531,10 +569,11 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
 
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                final ArrayList<FileItem> fileList = mPhotoAdapter.getSelectedDataList();
+                final ArrayList<FileItem> fileList = mImageAdapter.getSelectedDataList();
+                final ArrayList<Integer> selectedItemList = mImageAdapter.getSelectedItemList();
                 switch (item.getItemId()) {
                     case R.id.action_rename:
-                        mPresenter.onRenameFile(fileList);
+                        mPresenter.onRenameFile(fileList, selectedItemList);
                         break;
                     case R.id.action_info:
                         mPresenter.onShowFileInfo(fileList);
@@ -549,29 +588,29 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                         mPresenter.shareFile(getContext(), files);
                         break;
                     case R.id.action_delete:
-                        mPresenter.onDelete(fileList);
+                        mPresenter.onDelete(fileList, selectedItemList);
                         break;
                     case R.id.action_show_hide:
                         mPresenter.onShowHideFile(fileList);
                         break;
                     case R.id.action_select_all:
                         mPresenter.mEditType = Constants.EditType.SELECT;
-                        mPhotoAdapter.selectAll();
-                        mActionMode.setTitle(String.format(getString(R.string.tips_selected), mPhotoAdapter.getSelectedItemCount()));
-                        if (mPhotoAdapter.getSelectedItemCount() == 0) {
+                        mImageAdapter.selectAll();
+                        mActionMode.setTitle(String.format(getString(R.string.tips_selected), mImageAdapter.getSelectedItemCount()));
+                        if (mImageAdapter.getSelectedItemCount() == 0) {
                             finishAction();
                         }
                         break;
                     case R.id.action_inverse_all:
                         mPresenter.mEditType = Constants.EditType.SELECT;
-                        mPhotoAdapter.inverseAll();
-                        mActionMode.setTitle(String.format(getString(R.string.tips_selected), mPhotoAdapter.getSelectedItemCount()));
-                        if (mPhotoAdapter.getSelectedItemCount() == 0) {
+                        mImageAdapter.inverseAll();
+                        mActionMode.setTitle(String.format(getString(R.string.tips_selected), mImageAdapter.getSelectedItemCount()));
+                        if (mImageAdapter.getSelectedItemCount() == 0) {
                             finishAction();
                         }
                         break;
                     case R.id.action_remark:
-                        mPresenter.onRemark(fileList);
+                        mPresenter.onRemark(fileList, selectedItemList);
                         break;
                 }
                 return false;
@@ -581,12 +620,14 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
             public void onDestroyActionMode(ActionMode mode) {
                 if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT
                         && mPresenter.mEditType != Constants.EditType.ZIP && mPresenter.mEditType != Constants.EditType.UNZIP) {
-                    refreshData(true);
                     getActivity().supportInvalidateOptionsMenu();
                     mActionMode = null;
                     mPresenter.mEditType = Constants.EditType.NONE;
-                } else {
-                    refreshData(false);
+                    if (mPresenter.isInAlbum) {
+                        mAlbumAdapter.clearSelectedState();
+                    } else {
+                        mImageAdapter.clearSelectedState();
+                    }
                 }
             }
         });
@@ -610,12 +651,13 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 final ArrayList<FileItem> fileList = mAlbumAdapter.getSelectedDataList();
+                final ArrayList<Integer> selectedItemList = mAlbumAdapter.getSelectedItemList();
                 switch (item.getItemId()) {
                     case R.id.action_info:
                         mPresenter.onShowFileInfo(fileList);
                         break;
                     case R.id.action_delete:
-                        mPresenter.onDeleteAlbum(fileList);
+                        mPresenter.onDeleteAlbum(fileList, selectedItemList);
                         break;
                     case R.id.action_select_all:
                         mPresenter.mEditType = Constants.EditType.SELECT;
@@ -634,7 +676,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                         }
                         break;
                     case R.id.action_remark:
-                        mPresenter.onRemark(fileList);
+                        mPresenter.onRemark(fileList, selectedItemList);
                         break;
                 }
                 return false;
@@ -644,12 +686,14 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
             public void onDestroyActionMode(ActionMode mode) {
                 if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT
                         && mPresenter.mEditType != Constants.EditType.ZIP && mPresenter.mEditType != Constants.EditType.UNZIP) {
-                    mPresenter.loadAlbum(mSearchStr);
                     getActivity().supportInvalidateOptionsMenu();
                     mActionMode = null;
                     mPresenter.mEditType = Constants.EditType.NONE;
-                } else {
-                    mPresenter.loadAlbum(mSearchStr);
+                    if (mPresenter.isInAlbum) {
+                        mAlbumAdapter.clearSelectedState();
+                    } else {
+                        mImageAdapter.clearSelectedState();
+                    }
                 }
             }
         });

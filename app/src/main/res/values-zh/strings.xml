@@ -12,6 +12,7 @@
     <string name="str_file_info">文件属性</string>
     <string name="str_zip_info">压缩包详情</string>
     <string name="str_file_name">文件名称</string>
+    <string name="str_file_remark">文件备注</string>
     <string name="str_file_path">父文件夹</string>
     <string name="str_file_size">文件大小</string>
     <string name="str_file_date">最后修改</string>
