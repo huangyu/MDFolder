@@ -19,9 +19,9 @@ public class ApkFilter implements FilenameFilter {
     @Override
     public boolean accept(File dir, String name) {
         if (TextUtils.isEmpty(mSearchStr)) {
-            return !name.matches("^\\.+[^\\.].+") && name.endsWith(".apk");
+            return !name.matches("^\\.+[^\\.].*") && name.endsWith(".apk");
         }
-        return containsIgnoreCase(name, mSearchStr) && !name.matches("^\\.+[^\\.].+") && name.endsWith(".apk");
+        return containsIgnoreCase(name, mSearchStr) && !name.matches("^\\.+[^\\.].*") && name.endsWith(".apk");
     }
 
     /**

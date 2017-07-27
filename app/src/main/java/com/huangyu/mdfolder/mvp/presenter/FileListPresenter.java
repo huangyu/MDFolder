@@ -70,6 +70,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     public int mSelectType;   // 当前选择类型
     public int mSortType;   // 当前排序类型
     public int mOrderType;  // 当前升降序类型
+    public boolean isPasteActonMode; // 是否是复制粘贴状态
 
     @Override
     public void create() {
@@ -118,12 +119,11 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void onNext(ArrayList<FileItem> fileList) {
                         mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
-                        mView.refreshData(fileList, false, 0);
+                        mView.refreshView(fileList, false, 0);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        e.printStackTrace();
                         mView.showError(e.getMessage());
                         onCompleted();
                     }
@@ -170,7 +170,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void onNext(ArrayList<FileItem> fileList) {
                         mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
-                        mView.refreshData(fileList, false, 0);
+                        mView.refreshView(fileList, false, 0);
                     }
 
                     @Override
@@ -221,46 +221,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                     public void onNext(ArrayList<FileItem> fileList) {
                         mView.removeAllTabs();
                         mView.addTab(mCurrentPath);
-                        mView.refreshData(fileList, false, 0);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mView.showError(e.getMessage());
-                        onCompleted();
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        mView.stopRefresh();
-                    }
-                });
-        mRxManager.add(subscription);
-    }
-
-    /**
-     * 全局查询
-     */
-    public void onSearchFileList(final String searchStr) {
-        Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
-            @Override
-            public Observable<ArrayList<FileItem>> call() {
-                return Observable.just(mFileListModel.getGlobalFileListBySearch(searchStr, mContext.getContentResolver()));
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<ArrayList<FileItem>>() {
-                    @Override
-                    public void onStart() {
-                        mView.showTabs();
-                        mView.startRefresh();
-                        mView.hideTabs();
-                    }
-
-                    @Override
-                    public void onNext(ArrayList<FileItem> fileList) {
-                        mView.refreshData(fileList, false, 0);
+                        mView.refreshView(fileList, false, 0);
                     }
 
                     @Override
@@ -332,7 +293,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                 mView.addTab(mView.getResString(R.string.menu_apps) + "  " + fileList.size());
                                 break;
                         }
-                        mView.refreshData(fileList, false, 0);
+                        mView.refreshView(fileList, false, 0);
                     }
 
                     @Override
@@ -350,7 +311,45 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     }
 
     /**
-     * 刷新界面
+     * 全局查询
+     */
+    public void onSearchFileList(final String searchStr) {
+        Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
+            @Override
+            public Observable<ArrayList<FileItem>> call() {
+                return Observable.just(mFileListModel.getGlobalFileListBySearch(searchStr, mContext.getContentResolver()));
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<ArrayList<FileItem>>() {
+                    @Override
+                    public void onStart() {
+                        mView.hideTabs();
+                        mView.startRefresh();
+                    }
+
+                    @Override
+                    public void onNext(ArrayList<FileItem> fileList) {
+                        mView.refreshView(fileList, false, 0);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.showError(e.getMessage());
+                        onCompleted();
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        mView.stopRefresh();
+                    }
+                });
+        mRxManager.add(subscription);
+    }
+
+    /**
+     * 刷新界面（下拉）
      */
     public void onRefreshInSwipe(final String searchStr, final boolean ifClearSelected) {
         Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
@@ -400,12 +399,11 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                 mView.addTab(mView.getResString(R.string.menu_apps) + "  " + fileList.size());
                                 break;
                         }
-                        mView.refreshData(fileList, ifClearSelected, 0);
+                        mView.refreshView(fileList, ifClearSelected, 0);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        e.printStackTrace();
                         mView.showError(e.getMessage());
                         onCompleted();
                     }
@@ -442,7 +440,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
 
                     @Override
                     public void onNext(ArrayList<FileItem> fileList) {
-                        mView.refreshData(fileList, ifClearSelected, scrollY);
+                        mView.refreshView(fileList, ifClearSelected, scrollY);
                     }
 
                     @Override
@@ -463,7 +461,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     }
 
     /**
-     * 新增文件
+     * 新增文件（只支持单个文件）
      */
     public void onAddFile() {
         if (mSelectType != Constants.SelectType.MENU_FILE && mSelectType != Constants.SelectType.MENU_DOWNLOAD && mSelectType != Constants.SelectType.MENU_SDCARD) {
@@ -555,12 +553,12 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                             DocumentFile documentFile = DocumentFileUtils.getDocumentFile(new File(filePath), false);
                                             mDocumentFileModel.addFile(documentFile, "application/octet-stream", filename);
                                             mView.showMessage(mView.getResString(R.string.tips_add_file_successfully));
-                                            mView.refreshData(false, 0);
+                                            mView.addData(transformFile(new File(filePath)));
                                         } else {
                                             if (mFileModel.addFile(filePath)) {
-                                                MediaScanUtils.scanFiles(mContext, new String[]{filePath}, new String[]{MimeTypeUtils.getMIMEType(filePath)});
+                                                scanFile(filePath);
                                                 mView.showMessage(mView.getResString(R.string.tips_add_file_successfully));
-                                                mView.refreshData(false, 0);
+                                                mView.addData(transformFile(new File(filePath)));
                                             } else {
                                                 mView.showMessage(mView.getResString(R.string.tips_add_file_error));
                                             }
@@ -596,7 +594,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     }
 
     /**
-     * 新增文件夹
+     * 新增文件夹（只支持单个文件）
      */
     public void onAddFolder() {
         if (mSelectType != Constants.SelectType.MENU_FILE && mSelectType != Constants.SelectType.MENU_DOWNLOAD && mSelectType != Constants.SelectType.MENU_SDCARD) {
@@ -686,14 +684,13 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         }
                                         if (mSelectType == Constants.SelectType.MENU_SDCARD) {
                                             DocumentFileUtils.getDocumentFile(new File(filePath), true);
-//                                            mDocumentFileModel.addFolder(documentFile, filename);
                                             mView.showMessage(mView.getResString(R.string.tips_add_folder_successfully));
-                                            mView.refreshData(false, 0);
+                                            mView.addData(transformFile(new File(filePath)));
                                         } else {
                                             if (mFileModel.addFolder(filePath)) {
-                                                MediaScanUtils.scanFiles(mContext, new String[]{filePath}, new String[]{MimeTypeUtils.getMIMEType(filePath)});
+                                                scanFile(filePath);
                                                 mView.showMessage(mView.getResString(R.string.tips_add_folder_successfully));
-                                                mView.refreshData(false, 0);
+                                                mView.addData(transformFile(new File(filePath)));
                                             } else {
                                                 mView.showMessage(mView.getResString(R.string.tips_add_folder_error));
                                             }
@@ -729,12 +726,12 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     }
 
     /**
-     * 重命名文件（暂时只支持单个文件）
+     * 重命名文件（只支持单个文件）
      *
      * @param fileList 文件列表
      */
-    public void onRenameFile(final ArrayList<FileItem> fileList) {
-        if (fileList.size() != 1) {
+    public void onRenameFile(final ArrayList<FileItem> fileList, final ArrayList<Integer> selectedItemList) {
+        if (fileList.size() != 1 || selectedItemList.size() != 1) {
             mView.showMessage(mView.getResString(R.string.tips_choose_one_file));
         } else {
             final View view = mView.inflateFilenameInputDialogLayout();
@@ -802,6 +799,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         @Override
                                         public void onNext(Boolean result) {
                                             if (result) {
+                                                String newPath = new File(filePath).getParent() + File.separator + filename;
+                                                int position = selectedItemList.get(0);
+                                                mView.changeData(transformFile(new File(newPath)), position);
                                                 mView.showMessage(mView.getResString(R.string.tips_rename_successfully));
                                             } else {
                                                 mView.showMessage(mView.getResString(R.string.tips_rename_in_error));
@@ -836,12 +836,12 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     }
 
     /**
-     * 备注文件（暂时只支持单个文件）
+     * 备注文件（只支持单个文件）
      *
      * @param fileList 文件列表
      */
-    public void onRemark(final ArrayList<FileItem> fileList) {
-        if (fileList.size() != 1) {
+    public void onRemark(final ArrayList<FileItem> fileList, final ArrayList<Integer> selectedItemList) {
+        if (fileList.size() != 1 || selectedItemList.size() != 1) {
             mView.showMessage(mView.getResString(R.string.tips_choose_one_file));
         } else {
             final View view = mView.inflateFilenameInputDialogLayout();
@@ -876,6 +876,8 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         @Override
                                         public void onNext(Object result) {
                                             SPUtils.setFileRemark(filePath, remark);
+                                            int position = selectedItemList.get(0);
+                                            mView.changeData(transformFile(new File(filePath)), position);
                                             mView.showMessage(mView.getResString(R.string.tips_remark_successfully));
                                         }
 
@@ -983,6 +985,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                             public void onCompleted() {
                                                 mView.hideProgressDialog();
                                                 mView.finishAction();
+                                                refreshAfterFinishAction();
                                             }
                                         });
                                 mRxManager.add(subscription);
@@ -994,35 +997,40 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     }
 
     /**
-     * 显示文件详情
+     * 显示文件详情（只支持单个文件）
      *
      * @param fileList 文件列表
      */
-    public void onShowFileInfo(final ArrayList<FileItem> fileList) {
-        if (fileList.size() != 1) {
+    public void onShowFileInfo(final ArrayList<FileItem> fileList, final ArrayList<Integer> selectedItemList) {
+        if (fileList.size() != 1 || selectedItemList.size() != 1) {
             mView.showMessage(mView.getResString(R.string.tips_choose_one_file));
         } else {
-            mView.showInfoBottomSheet(fileList.get(0), new DialogInterface.OnCancelListener() {
+            final FileItem fileItem = fileList.get(0);
+            final int position = selectedItemList.get(0);
+            mView.showInfoBottomSheet(fileItem, new DialogInterface.OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialog) {
                     mView.finishAction();
+                    mView.changeData(fileItem, position);
                 }
             });
         }
     }
 
     /**
-     * 卸载文件
+     * 卸载文件（只支持单个文件）
      *
      * @param fileList 文件列表
      */
-    public void onUninstall(final ArrayList<FileItem> fileList) {
-        if (fileList.size() != 1) {
+    public void onUninstall(final ArrayList<FileItem> fileList, final ArrayList<Integer> selectedItemList) {
+        if (fileList.size() != 1 || selectedItemList.size() != 1) {
             mView.showMessage(mView.getResString(R.string.tips_choose_one_file));
         } else {
             try {
                 FileItem fileItem = fileList.get(0);
+                int position = selectedItemList.get(0);
                 Intent intent = new Intent(Intent.ACTION_DELETE, Uri.fromParts("package", fileItem.getPackageName(), null));
+                intent.putExtra("position", position);
                 ((FileListActivity) mContext).startActivityForResult(intent, UNINSTALL_REQUEST_CODE);
             } catch (Exception e) {
                 mView.showMessage(mView.getResString(R.string.tips_can_not_access_file));
@@ -1035,7 +1043,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      *
      * @param fileList 文件列表
      */
-    public void onDelete(final ArrayList<FileItem> fileList) {
+    public void onDelete(final ArrayList<FileItem> fileList, final ArrayList<Integer> selectedItemList) {
         mView.showNormalAlert(mView.getResString(R.string.tips_delete_files), mView.getResString(R.string.act_delete), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -1082,6 +1090,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                             @Override
                                             public void onNext(Boolean result) {
                                                 if (result) {
+                                                    for (Integer position : selectedItemList) {
+                                                        mView.deleteData(position);
+                                                    }
                                                     mView.showMessage(mView.getResString(R.string.tips_delete_successfully));
                                                 } else {
                                                     mView.showMessage(mView.getResString(R.string.tips_delete_in_error));
@@ -1161,8 +1172,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                                     for (File f : fileArrayList) {
                                                         SPUtils.removeFileRemark(f.getPath());
                                                     }
-                                                    MediaScanUtils.scanFiles(mContext, new String[]{newPath}, new String[]{MimeTypeUtils.getMIMEType(newPath)});
-
+                                                    scanFile(newPath);
                                                 }
                                                 return result;
                                             }
@@ -1194,6 +1204,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                             public void onCompleted() {
                                                 mView.hideProgressDialog();
                                                 mView.finishAction();
+                                                refreshAfterFinishAction();
                                             }
                                         });
                                 mRxManager.add(subscription);
@@ -1263,6 +1274,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     public void onCompleted() {
                                         mView.hideProgressDialog();
                                         mView.finishAction();
+                                        refreshAfterFinishAction();
                                     }
                                 });
                         mRxManager.add(subscription);
@@ -1306,6 +1318,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     public void onCompleted() {
                                         mView.hideProgressDialog();
                                         mView.finishAction();
+                                        refreshAfterFinishAction();
                                     }
                                 });
                         mRxManager.add(subscription2);
@@ -1362,6 +1375,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                                         public void onCompleted() {
                                                             mView.hideProgressDialog();
                                                             mView.finishAction();
+                                                            refreshAfterFinishAction();
                                                         }
                                                     });
                                             mRxManager.add(subscription);
@@ -1416,6 +1430,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                         public void onCompleted() {
                                             mView.hideProgressDialog();
                                             mView.finishAction();
+                                            refreshAfterFinishAction();
                                         }
                                     });
                             mRxManager.add(subscription3);
@@ -1457,36 +1472,42 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     mDocumentFileModel.createOrExistsFile(destFile);
                                     result = mDocumentFileModel.copyFile(srcFile, destFile);
                                 }
+                                if (result) {
+                                    scanFile(destPath);
+                                }
                                 return result;
                             }
-                        }).subscribe(new Subscriber<Boolean>() {
-                            @Override
-                            public void onStart() {
-                                mView.showProgressDialog(mContext.getString(R.string.tips_copying));
-                            }
+                        })
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Subscriber<Boolean>() {
+                                    @Override
+                                    public void onStart() {
+                                        mView.showProgressDialog(mContext.getString(R.string.tips_copying));
+                                    }
 
-                            @Override
-                            public void onNext(Boolean result) {
-                                if (result) {
-                                    scanFile(mCurrentPath);
-                                    mView.showMessage(mView.getResString(R.string.tips_copy_successfully));
-                                } else {
-                                    mView.showMessage(mView.getResString(R.string.tips_copy_in_error));
-                                }
-                            }
+                                    @Override
+                                    public void onNext(Boolean result) {
+                                        if (result) {
+                                            mView.showMessage(mView.getResString(R.string.tips_copy_successfully));
+                                        } else {
+                                            mView.showMessage(mView.getResString(R.string.tips_copy_in_error));
+                                        }
+                                    }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                mView.showError(e.getMessage());
-                                onCompleted();
-                            }
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        mView.showError(e.getMessage());
+                                        onCompleted();
+                                    }
 
-                            @Override
-                            public void onCompleted() {
-                                mView.hideProgressDialog();
-                                mView.finishAction();
-                            }
-                        });
+                                    @Override
+                                    public void onCompleted() {
+                                        mView.hideProgressDialog();
+                                        mView.finishAction();
+                                        refreshAfterFinishAction();
+                                    }
+                                });
                         mRxManager.add(subscription);
                     }
                 });
@@ -1526,36 +1547,42 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                     mDocumentFileModel.createOrExistsFile(destFile);
                                     result = mDocumentFileModel.moveFile(srcFile, destFile);
                                 }
+                                if (result) {
+                                    scanFile(destPath);
+                                }
                                 return result;
                             }
-                        }).subscribe(new Subscriber<Boolean>() {
-                            @Override
-                            public void onStart() {
-                                mView.showProgressDialog(mContext.getString(R.string.tips_moving));
-                            }
+                        })
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Subscriber<Boolean>() {
+                                    @Override
+                                    public void onStart() {
+                                        mView.showProgressDialog(mContext.getString(R.string.tips_moving));
+                                    }
 
-                            @Override
-                            public void onNext(Boolean result) {
-                                if (result) {
-                                    scanFile(mCurrentPath);
-                                    mView.showMessage(mView.getResString(R.string.tips_move_successfully));
-                                } else {
-                                    mView.showMessage(mView.getResString(R.string.tips_move_in_error));
-                                }
-                            }
+                                    @Override
+                                    public void onNext(Boolean result) {
+                                        if (result) {
+                                            mView.showMessage(mView.getResString(R.string.tips_move_successfully));
+                                        } else {
+                                            mView.showMessage(mView.getResString(R.string.tips_move_in_error));
+                                        }
+                                    }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                mView.showError(e.getMessage());
-                                onCompleted();
-                            }
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        mView.showError(e.getMessage());
+                                        onCompleted();
+                                    }
 
-                            @Override
-                            public void onCompleted() {
-                                mView.hideProgressDialog();
-                                mView.finishAction();
-                            }
-                        });
+                                    @Override
+                                    public void onCompleted() {
+                                        mView.hideProgressDialog();
+                                        mView.finishAction();
+                                        refreshAfterFinishAction();
+                                    }
+                                });
                         mRxManager.add(subscription);
                     }
                 });
@@ -1643,54 +1670,66 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
      */
     private ArrayList<FileItem> transformFileList(ArrayList<File> fileList) {
         if (fileList != null && fileList.size() > 0) {
-            PackageManager pm = BaseApplication.getInstance().getApplicationContext().getPackageManager();
             ArrayList<FileItem> fileItemList = new ArrayList<>();
-            FileItem fileItem;
             for (File file : fileList) {
-                fileItem = new FileItem();
-                fileItem.setName(file.getName());
-                fileItem.setPath(file.getPath());
-                if (file.isDirectory()) {
-//                    fileItem.setSize(FileUtils.getDirLength(file));
-                    fileItem.setSize("0");
-                    File[] listFiles = file.listFiles();
-                    if (listFiles != null && listFiles.length > 0) {
-                        int hiddenCount = 0;
-                        for (File f : listFiles) {
-                            if (f.isHidden() && !SPUtils.isShowHiddenFiles()) {
-                                hiddenCount++;
-                            }
-                        }
-                        fileItem.setCount(file.list().length - hiddenCount);
-                    } else {
-                        fileItem.setCount(0);
-                    }
-                } else {
-                    fileItem.setSize(String.valueOf(FileUtils.getFileLength(file)));
-                    fileItem.setCount(0);
+                FileItem fileItem = transformFile(file);
+                if (fileItem != null) {
+                    fileItemList.add(fileItem);
                 }
-                fileItem.setDate(String.valueOf(file.lastModified() / 1000));
-                fileItem.setIsDirectory(file.isDirectory());
-                fileItem.setParent(file.getParent());
-                fileItem.setType(MimeTypeUtils.getTypeBySuffix(FileUtils.getSuffix(file.getName())));
-                fileItem.setIsShow(!file.isHidden());
-                fileItem.setRemark(SPUtils.getFileRemark(file.getPath()));
-
-                if (file.getName().endsWith(".apk")) {
-                    PackageInfo packageInfo = pm.getPackageArchiveInfo(file.getPath(), PackageManager.GET_ACTIVITIES);
-                    if (packageInfo != null) {
-                        ApplicationInfo appInfo = packageInfo.applicationInfo;
-                        appInfo.sourceDir = file.getPath();
-                        appInfo.publicSourceDir = file.getPath();
-                        Drawable icon = appInfo.loadIcon(pm);
-                        fileItem.setIcon(icon);
-                    }
-                }
-                fileItemList.add(fileItem);
             }
             return mFileListModel.orderByType(fileItemList);
         }
         return null;
+    }
+
+    /**
+     * 转换文件
+     *
+     * @param file 文件列表
+     * @return FileItem
+     */
+    private FileItem transformFile(File file) {
+        PackageManager pm = BaseApplication.getInstance().getApplicationContext().getPackageManager();
+        FileItem fileItem = new FileItem();
+        fileItem.setName(file.getName());
+        fileItem.setPath(file.getPath());
+        if (file.isDirectory()) {
+//          ileItem.setSize(FileUtils.getDirLength(file));
+            fileItem.setSize("0");
+            File[] listFiles = file.listFiles();
+            if (listFiles != null && listFiles.length > 0) {
+                int hiddenCount = 0;
+                for (File f : listFiles) {
+                    if (f.isHidden() && !SPUtils.isShowHiddenFiles()) {
+                        hiddenCount++;
+                    }
+                }
+                fileItem.setCount(file.list().length - hiddenCount);
+            } else {
+                fileItem.setCount(0);
+            }
+        } else {
+            fileItem.setSize(String.valueOf(FileUtils.getFileLength(file)));
+            fileItem.setCount(0);
+        }
+        fileItem.setDate(String.valueOf(file.lastModified() / 1000));
+        fileItem.setIsDirectory(file.isDirectory());
+        fileItem.setParent(file.getParent());
+        fileItem.setType(MimeTypeUtils.getTypeBySuffix(FileUtils.getSuffix(file.getName())));
+        fileItem.setIsShow(!file.isHidden());
+        fileItem.setRemark(SPUtils.getFileRemark(file.getPath()));
+
+        if (file.getName().endsWith(".apk")) {
+            PackageInfo packageInfo = pm.getPackageArchiveInfo(file.getPath(), PackageManager.GET_ACTIVITIES);
+            if (packageInfo != null) {
+                ApplicationInfo appInfo = packageInfo.applicationInfo;
+                appInfo.sourceDir = file.getPath();
+                appInfo.publicSourceDir = file.getPath();
+                Drawable icon = appInfo.loadIcon(pm);
+                fileItem.setIcon(icon);
+            }
+        }
+        return fileItem;
     }
 
     /**
@@ -1773,16 +1812,33 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     }
 
     private void scanFile(String filePath) {
-        ArrayList<File> list = FileUtils.listFilesInDir(filePath);
-        int size = list.size();
-        String[] pathArray = new String[size];
-        String[] mimeTypeArray = new String[size];
-        for (int i = 0; i < size; i++) {
-            String path = list.get(i).getPath();
-            pathArray[i] = path;
-            mimeTypeArray[i] = MimeTypeUtils.getMIMEType(path);
+        File file = new File(filePath);
+        if (file.isDirectory()) {
+            ArrayList<File> list = FileUtils.listFilesInDir(filePath);
+            int size = list.size();
+            String[] pathArray = new String[size];
+            String[] mimeTypeArray = new String[size];
+            for (int i = 0; i < size; i++) {
+                String path = list.get(i).getPath();
+                pathArray[i] = path;
+                mimeTypeArray[i] = MimeTypeUtils.getMIMEType(path);
+            }
+            MediaScanUtils.scanFiles(mContext, pathArray, mimeTypeArray);
+        } else {
+            String mimeType = MimeTypeUtils.getMIMEType(filePath);
+            MediaScanUtils.scanFiles(mContext, new String[]{filePath}, new String[]{mimeType});
         }
-        MediaScanUtils.scanFiles(mContext, pathArray, mimeTypeArray);
+    }
+
+    private void refreshAfterFinishAction() {
+        if (isPasteActonMode) {
+            mView.refreshData(true);
+        } else if (mEditType != Constants.EditType.COPY && mEditType != Constants.EditType.CUT
+                && mEditType != Constants.EditType.ZIP && mEditType != Constants.EditType.UNZIP) {
+            mView.refreshData(true);
+        } else {
+            mView.refreshData(false);
+        }
     }
 
 }

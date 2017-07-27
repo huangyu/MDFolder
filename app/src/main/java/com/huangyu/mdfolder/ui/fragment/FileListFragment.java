@@ -501,11 +501,12 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             }
         });
 
-        mRxManager.on("onFinishAction", new Action1<String>() {
+        mRxManager.on("onUninstall", new Action1<Integer>() {
 
             @Override
-            public void call(String s) {
+            public void call(Integer position) {
                 finishAction();
+                mAdapter.removeItem(position);
             }
         });
     }
@@ -560,7 +561,26 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         }
     }
 
-    private void refreshData(boolean ifClearSelected) {
+    @Override
+    public void addData(FileItem fileItem) {
+        mAdapter.addItem(fileItem);
+        mAdapter.clearSelectedState();
+    }
+
+    @Override
+    public void changeData(FileItem fileItem, int position) {
+        mAdapter.changeItem(fileItem, position);
+        mAdapter.clearSelectedState();
+    }
+
+    @Override
+    public void deleteData(int position) {
+        mAdapter.removeItem(position);
+        mAdapter.clearSelectedState();
+    }
+
+    @Override
+    public void refreshData(boolean ifClearSelected) {
         mPresenter.onRefreshInSwipe(mSearchStr, ifClearSelected);
     }
 
@@ -570,11 +590,13 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     @Override
-    public void refreshData(ArrayList<FileItem> filesList, boolean ifClearSelected, final int scrollY) {
+    public void refreshView(ArrayList<FileItem> filesList, boolean ifClearSelected, final int scrollY) {
         mAdapter.clearData(ifClearSelected);
 
         if (filesList == null || filesList.isEmpty()) {
             mLlEmpty.setVisibility(View.VISIBLE);
+            showFloatingActionMenu();
+            return;
         } else {
             mLlEmpty.setVisibility(View.GONE);
             mAdapter.setData(filesList);
@@ -702,6 +724,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     private ActionMode getControlActionMode() {
+        mPresenter.isPasteActonMode = false;
         return getActivity().startActionMode(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -731,12 +754,13 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 final ArrayList<FileItem> fileList = mAdapter.getSelectedDataList();
+                final ArrayList<Integer> selectedItemList = mAdapter.getSelectedItemList();
                 switch (item.getItemId()) {
                     case R.id.action_rename:
-                        mPresenter.onRenameFile(fileList);
+                        mPresenter.onRenameFile(fileList, selectedItemList);
                         break;
                     case R.id.action_info:
-                        mPresenter.onShowFileInfo(fileList);
+                        mPresenter.onShowFileInfo(fileList, selectedItemList);
                         break;
                     case R.id.action_share:
                         File file;
@@ -748,7 +772,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         mPresenter.shareFile(getContext(), files);
                         break;
                     case R.id.action_delete:
-                        mPresenter.onDelete(fileList);
+                        mPresenter.onDelete(fileList, selectedItemList);
                         break;
                     case R.id.action_copy:
                         mPresenter.mEditType = Constants.EditType.COPY;
@@ -798,10 +822,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         }
                         break;
                     case R.id.action_uninstall:
-                        mPresenter.onUninstall(fileList);
+                        mPresenter.onUninstall(fileList, selectedItemList);
                         break;
                     case R.id.action_remark:
-                        mPresenter.onRemark(fileList);
+                        mPresenter.onRemark(fileList, selectedItemList);
                         break;
                 }
                 return false;
@@ -811,18 +835,16 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             public void onDestroyActionMode(ActionMode mode) {
                 if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT
                         && mPresenter.mEditType != Constants.EditType.ZIP && mPresenter.mEditType != Constants.EditType.UNZIP) {
-                    refreshData(true);
                     getActivity().supportInvalidateOptionsMenu();
                     mActionMode = null;
                     mPresenter.mEditType = Constants.EditType.NONE;
-                } else {
-                    refreshData(false);
                 }
             }
         });
     }
 
     private ActionMode getPasteActonMode() {
+        mPresenter.isPasteActonMode = true;
         return getActivity().startActionMode(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -858,11 +880,11 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
-                refreshData(true);
                 getActivity().supportInvalidateOptionsMenu();
                 mActionMode = null;
                 mPresenter.mEditType = Constants.EditType.NONE;
                 mAdapter.mSelectedFileList = null;
+                mPresenter.isPasteActonMode = false;
             }
         });
     }

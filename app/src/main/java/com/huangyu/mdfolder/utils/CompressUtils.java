@@ -126,12 +126,18 @@ public class CompressUtils {
         return true;
     }
 
-    private static void unRar(File rarPathFile, String toPath) {
+    /**
+     * 解压rar文件
+     *
+     * @param rarFilePath 压缩文件路径
+     * @param toPath      解压路径
+     */
+    private static void unRar(File rarFilePath, String toPath) {
         FileOutputStream fileOut;
         File file;
         Archive rarFile = null;
         try {
-            rarFile = new Archive(rarPathFile);
+            rarFile = new Archive(rarFilePath);
         } catch (RarException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -225,9 +231,12 @@ public class CompressUtils {
                 fileItem = new FileItem();
                 fileItem.setName(fileName);
                 fileItem.setDate(String.valueOf(Zip4jUtil.dosToJavaTme(fileHeader.getLastModFileTime())));
-                fileItem.setSize(String.valueOf(fileHeader.getUncompressedSize()));
+                long uncompressedSize = fileHeader.getUncompressedSize();
+                fileItem.setSize(String.valueOf(uncompressedSize));
                 fileItem.setPath(zipFilePath);
-                fileItemList.add(fileItem);
+                if (uncompressedSize != 0L) {
+                    fileItemList.add(fileItem);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

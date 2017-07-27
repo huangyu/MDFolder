@@ -23,7 +23,7 @@ public class SearchFilter implements FilenameFilter {
 
     @Override
     public boolean accept(File file, String name) {
-        boolean hiddenResult = !name.matches("^\\.+[^\\.].+");
+        boolean hiddenResult = !name.matches("^\\.+[^\\.].*");
         if (TextUtils.isEmpty(mSearchStr)) {
             return isShowHidden || hiddenResult;
         } else {

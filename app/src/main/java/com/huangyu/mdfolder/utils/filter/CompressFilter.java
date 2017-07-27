@@ -19,9 +19,9 @@ public class CompressFilter implements FilenameFilter {
     @Override
     public boolean accept(File dir, String name) {
         if (TextUtils.isEmpty(mSearchStr)) {
-            return !name.matches("^\\.+[^\\.].+") && (name.endsWith(".rar") || name.endsWith("7z") || name.endsWith(".zip"));
+            return !name.matches("^\\.+[^\\.].*") && (name.endsWith(".rar") || name.endsWith("7z") || name.endsWith(".zip"));
         }
-        return containsIgnoreCase(name, mSearchStr) && !name.matches("^\\.+[^\\.].+") && (name.endsWith(".rar") || name.endsWith("7z") || name.endsWith(".zip"));
+        return containsIgnoreCase(name, mSearchStr) && !name.matches("^\\.+[^\\.].*") && (name.endsWith(".rar") || name.endsWith("7z") || name.endsWith(".zip"));
     }
 
     /**

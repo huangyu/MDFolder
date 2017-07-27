@@ -39,7 +39,7 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
 
     public void addItem(T data) {
         mDataList.add(data);
-        notifyDataSetChanged();
+        notifyItemInserted(mDataList.size() - 1);
     }
 
     public void addItem(T data, int position) {
@@ -47,9 +47,15 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
         notifyItemInserted(position);
     }
 
-    public void removeItem(int positon) {
-        mDataList.remove(positon);
-        notifyItemRemoved(positon);
+    public void changeItem(T data, int position) {
+        mDataList.remove(position);
+        mDataList.add(position, data);
+        notifyItemChanged(position);
+    }
+
+    public void removeItem(int position) {
+        mDataList.remove(position);
+        notifyItemRemoved(position);
     }
 
     public void clearData(boolean ifClearSelected) {
