@@ -589,6 +589,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     @Override
     public void deleteData(int position) {
         mAdapter.removeItem(position);
+    }
+
+    @Override
+    public void clearSelectedState() {
         mAdapter.clearSelectedState();
     }
 

@@ -37,6 +37,8 @@ public interface IFileListView extends IBaseView {
 
     void deleteData(int position);
 
+    void clearSelectedState();
+
     void refreshData(boolean ifClearSelected);
 
     void refreshData(boolean ifClearSelected, final int position);

@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * Created by huangyu on 2017/7/1.
  */
 
-public interface IAlbumFolderView extends IBaseView {
+public interface IAlbumAndImageView extends IBaseView {
 
     void showTabs();
 

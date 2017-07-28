@@ -136,6 +136,7 @@ public class FileListModel implements IBaseModel {
                 MediaStore.Files.FileColumns.SIZE,
                 MediaStore.Files.FileColumns.DATE_MODIFIED};
 
+        // 7天内的最近文件
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.DATE, -7);
@@ -178,7 +179,7 @@ public class FileListModel implements IBaseModel {
 
                     String remark = SPUtils.getFileRemark(filePath);
                     fileItem.setRemark(remark);
-                    if (!fileItem.isDirectory() && !isCache(filePath)) {
+                    if (!fileItem.isDirectory() && !isNeedHidden(filePath)) {
                         fileItemList.add(fileItem);
                     }
                 }
@@ -189,9 +190,9 @@ public class FileListModel implements IBaseModel {
         return null;
     }
 
-    private boolean isCache(String filePath) {
+    private boolean isNeedHidden(String filePath) {
         File file = new File(filePath);
-        return filePath.contains("/Android/data") || file.isHidden() || file.getParentFile().isHidden();
+        return filePath.contains("/Android/data") || FileUtils.getSuffix(file.getName()).endsWith(".log") || file.isHidden() || file.getParentFile().isHidden();
     }
 
     private boolean isFolder(String fileRealName) {

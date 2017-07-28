@@ -29,7 +29,7 @@ import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.AppApplication;
 import com.huangyu.mdfolder.app.Constants;
-import com.huangyu.mdfolder.ui.fragment.AlbumFolderFragment;
+import com.huangyu.mdfolder.ui.fragment.AlbumAndImageFragment;
 import com.huangyu.mdfolder.ui.fragment.FileListFragment;
 import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.SDCardUtils;
@@ -70,7 +70,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
 
     private SearchView mSearchView;
     private FileListFragment mFileListFragment;
-    private AlbumFolderFragment mAlbumFolderFragment;
+    private AlbumAndImageFragment mAlbumAndImageFragment;
     private boolean isSearchViewShow;
     private long mCurrentTime;
     private int selectedPosition = 0;
@@ -88,7 +88,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     @Override
     protected void initView(Bundle savedInstanceState) {
         mFileListFragment = new FileListFragment();
-        mAlbumFolderFragment = new AlbumFolderFragment();
+        mAlbumAndImageFragment = new AlbumAndImageFragment();
 
         setSupportActionBar(mToolbar);
 
@@ -185,11 +185,11 @@ public class FileListActivity extends ThematicActivity implements NavigationView
 
     private void replaceFragment() {
         mFileListFragment = new FileListFragment();
-        mAlbumFolderFragment = new AlbumFolderFragment();
+        mAlbumAndImageFragment = new AlbumAndImageFragment();
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.rl_file, mFileListFragment)
-                .replace(R.id.rl_album, mAlbumFolderFragment)
+                .replace(R.id.rl_album, mAlbumAndImageFragment)
                 .commitAllowingStateLoss();
     }
 
@@ -204,7 +204,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             return;
         }
 
-        if (mAlbumFolderFragment != null && mAlbumFolderFragment.isVisible() && mAlbumFolderFragment.onBackPressed()) {
+        if (mAlbumAndImageFragment != null && mAlbumAndImageFragment.isVisible() && mAlbumAndImageFragment.onBackPressed()) {
             return;
         }
 
@@ -524,8 +524,8 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     @Override
     public void onActivityReenter(int resultCode, Intent data) {
         super.onActivityReenter(resultCode, data);
-        if (resultCode == RESULT_OK && data != null && mAlbumFolderFragment != null) {
-            mAlbumFolderFragment.onActivityReenter(resultCode, data);
+        if (resultCode == RESULT_OK && data != null && mAlbumAndImageFragment != null) {
+            mAlbumAndImageFragment.onActivityReenter(resultCode, data);
         }
     }
 

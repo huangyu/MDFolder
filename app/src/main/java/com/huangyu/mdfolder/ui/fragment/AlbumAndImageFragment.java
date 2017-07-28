@@ -38,8 +38,8 @@ import com.huangyu.library.util.LogUtils;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
-import com.huangyu.mdfolder.mvp.presenter.AlbumFolderPresenter;
-import com.huangyu.mdfolder.mvp.view.IAlbumFolderView;
+import com.huangyu.mdfolder.mvp.presenter.AlbumAndImagePresenter;
+import com.huangyu.mdfolder.mvp.view.IAlbumAndImageView;
 import com.huangyu.mdfolder.ui.activity.FileListActivity;
 import com.huangyu.mdfolder.ui.activity.ImageBrowserActivity;
 import com.huangyu.mdfolder.ui.adapter.ImageAdapter;
@@ -63,7 +63,7 @@ import rx.functions.Action1;
 /**
  * Created by huangyu on 2017-5-23.
  */
-public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFolderPresenter> implements IAlbumFolderView {
+public class AlbumAndImageFragment extends BaseFragment<IAlbumAndImageView, AlbumAndImagePresenter> implements IAlbumAndImageView {
 
     @Bind(R.id.cl_main)
     CoordinatorLayout mCoordinatorLayout;
@@ -103,7 +103,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
     }
 
     @Override
-    protected IAlbumFolderView initAttachView() {
+    protected IAlbumAndImageView initAttachView() {
         return this;
     }
 
@@ -327,21 +327,21 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
             }
         });
 
-        if (mPresenter.isInAlbum) {
-            mPresenter.loadAlbum(mSearchStr);
-        } else {
-            mPresenter.loadImage(mSearchStr, true);
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
 //        if (mPresenter.isInAlbum) {
 //            mPresenter.loadAlbum(mSearchStr);
 //        } else {
 //            mPresenter.loadImage(mSearchStr, true);
 //        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mPresenter.isInAlbum) {
+            mPresenter.loadAlbum(mSearchStr);
+        } else {
+            mPresenter.loadImage(mSearchStr, true);
+        }
     }
 
     public void startRefresh() {

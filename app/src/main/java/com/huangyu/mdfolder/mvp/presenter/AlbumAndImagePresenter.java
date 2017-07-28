@@ -18,7 +18,7 @@ import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.bean.FileItem;
 import com.huangyu.mdfolder.mvp.model.FileListModel;
 import com.huangyu.mdfolder.mvp.model.FileModel;
-import com.huangyu.mdfolder.mvp.view.IAlbumFolderView;
+import com.huangyu.mdfolder.mvp.view.IAlbumAndImageView;
 import com.huangyu.mdfolder.utils.MediaScanUtils;
 import com.huangyu.mdfolder.utils.SPUtils;
 
@@ -43,7 +43,7 @@ import static com.huangyu.mdfolder.app.Constants.OrderType.DESC;
  * Created by huangyu on 2017/5/22.
  */
 
-public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
+public class AlbumAndImagePresenter extends BasePresenter<IAlbumAndImageView> {
 
     private FileListModel mFileListModel;
     private FileModel mFileModel;
