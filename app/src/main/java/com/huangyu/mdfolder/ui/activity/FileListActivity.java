@@ -568,8 +568,10 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                 mRxManager.post("toStorage", true);
             }
         } else if (requestCode == UNINSTALL_REQUEST_CODE) {
-            int position = data.getIntExtra("position", -1);
-            mRxManager.post("onUninstall", position);
+            if (data != null) {
+                int position = data.getIntExtra("position", -1);
+                mRxManager.post("onUninstall", position);
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
