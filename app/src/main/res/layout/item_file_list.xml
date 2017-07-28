@@ -15,8 +15,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
         android:contentDescription="@string/str_image"
-        android:scaleType="centerCrop"
-        android:src="@mipmap/ic_file" />
+        android:scaleType="centerCrop" />
 
     <RelativeLayout
         android:layout_width="match_parent"

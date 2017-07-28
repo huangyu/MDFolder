@@ -1094,7 +1094,9 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                             @Override
                                             public void onNext(Boolean result) {
                                                 if (result) {
-
+                                                    for (Integer position : selectedItemList) {
+                                                        mView.deleteData(position);
+                                                    }
                                                     mView.clearSelectedState();
                                                     mView.showMessage(mView.getResString(R.string.tips_delete_successfully));
                                                 } else {
