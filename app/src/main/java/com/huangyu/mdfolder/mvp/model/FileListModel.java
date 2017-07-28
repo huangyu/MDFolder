@@ -192,7 +192,7 @@ public class FileListModel implements IBaseModel {
 
     private boolean isNeedHidden(String filePath) {
         File file = new File(filePath);
-        return filePath.contains("/Android/data") || FileUtils.getSuffix(file.getName()).endsWith(".log") || file.isHidden() || file.getParentFile().isHidden();
+        return filePath.contains("cache") || filePath.contains("/Android/data") || FileUtils.getSuffix(file.getName()).endsWith(".log") || file.isHidden() || file.getParentFile().isHidden();
     }
 
     private boolean isFolder(String fileRealName) {
