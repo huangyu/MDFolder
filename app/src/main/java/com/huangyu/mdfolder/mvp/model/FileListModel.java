@@ -178,7 +178,7 @@ public class FileListModel implements IBaseModel {
 
                     String remark = SPUtils.getFileRemark(filePath);
                     fileItem.setRemark(remark);
-                    if (!fileItem.isDirectory()) {
+                    if (!fileItem.isDirectory() && !isCache(filePath)) {
                         fileItemList.add(fileItem);
                     }
                 }
@@ -187,6 +187,11 @@ public class FileListModel implements IBaseModel {
             return fileItemList;
         }
         return null;
+    }
+
+    private boolean isCache(String filePath) {
+        File file = new File(filePath);
+        return filePath.contains("/Android/data") || file.isHidden() || file.getParentFile().isHidden();
     }
 
     private boolean isFolder(String fileRealName) {
@@ -502,78 +507,6 @@ public class FileListModel implements IBaseModel {
         }
         return photoList;
     }
-
-//    public ArrayList<FileItem> getAudioAlbumList(String searchStr, ContentResolver contentResolver) {
-//        String[] STORE_AUDIOS = {
-//                MediaStore.Audio.Media._ID,
-//                MediaStore.Audio.Media.DATA,
-//                MediaStore.Audio.Media.DISPLAY_NAME,
-//                MediaStore.Audio.Media.DATE_ADDED,
-//                MediaStore.Audio.Media.ALBUM_ID,
-//                MediaStore.Audio.Media.ALBUM,
-//                MediaStore.Audio.Media.SIZE,
-//                MediaStore.Audio.Media.DATE_MODIFIED
-//        };
-//        Cursor cursor = MediaStore.Images.Media.query(
-//                contentResolver,
-//                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, STORE_AUDIOS, null, MediaStore.Audio.Media.DISPLAY_NAME + " asc");
-//        Map<String, FileItem> albumFolderMap = new LinkedHashMap<>();
-//
-//        if (cursor != null) {
-//            while (cursor.moveToNext()) {
-//                int imageId = cursor.getInt(0);
-//                String filePath = cursor.getString(1);
-//                String fileName = cursor.getString(2);
-//                long addTime = cursor.getLong(3);
-//
-//                int albumId = cursor.getInt(4);
-//                String albumName = cursor.getString(5);
-//                String fileLength = cursor.getString(6);
-//                String date = cursor.getString(7);
-//
-//                String fileRealName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
-//                if (FileUtils.isFileExists(filePath)) {
-//                    FileItem fileItem = new FileItem();
-//                    fileItem.setPath(filePath);
-//                    FileItem albumFolder = albumFolderMap.get(albumName);
-//                    if (albumFolder != null) {
-//                        if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
-//                            albumFolder.addPhoto(fileItem);
-//                        }
-//                    } else {
-//                        albumFolder = new FileItem();
-//                        albumFolder.setName(albumName);
-//                        albumFolder.setType(Constants.FileType.AUDIO);
-//
-//                        Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
-//                        Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
-//                        Bitmap bitmap = null;
-//                        try {
-//                            bitmap = MediaStore.Images.Media.getBitmap(contentResolver, albumArtUri);
-//                            bitmap = ImageUtils.decodeSampledBitmapFromUri(albumArtUri, 160, 160);
-//                        } catch (IOException e) {
-//                        }
-//                        albumFolder.setIcon(ImageUtils.bitmap2Drawable(BaseApplication.getInstance().getResources(), bitmap));
-//                        if (TextUtils.isEmpty(albumFolder.getPath())) {
-//                            albumFolder.setPath(filePath);
-//                        }
-//                        if (TextUtils.isEmpty(searchStr) || fileRealName.contains(searchStr)) {
-//                            albumFolder.addPhoto(fileItem);
-//                            albumFolderMap.put(albumName, albumFolder);
-//                        }
-//                    }
-//                }
-//            }
-//            cursor.close();
-//        }
-//        ArrayList<FileItem> albumFolders = new ArrayList<>();
-//
-//        for (Map.Entry<String, FileItem> folderEntry : albumFolderMap.entrySet()) {
-//            FileItem albumFolder = folderEntry.getValue();
-//            albumFolders.add(albumFolder);
-//        }
-//        return albumFolders;
-//    }
 
     public ArrayList<FileItem> getAudioList(String searchStr, ContentResolver contentResolver) {
         String[] projection = new String[]{MediaStore.Audio.AudioColumns.DATA,
