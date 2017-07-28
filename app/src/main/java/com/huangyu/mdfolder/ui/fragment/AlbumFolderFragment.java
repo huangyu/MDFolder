@@ -119,6 +119,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                     FileItem file = mImageAdapter.getItem(position);
                     if (file == null) {
                         finishAction();
+                        mPresenter.refreshAfterFinishAction();
                         return;
                     }
                     if (SPUtils.isBuildInMode()) {
@@ -149,6 +150,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                     mActionMode.setTitle(String.format(getString(R.string.tips_selected), mImageAdapter.getSelectedItemCount()));
                     if (mImageAdapter.getSelectedItemCount() == 0) {
                         finishAction();
+                        mPresenter.refreshAfterFinishAction();
                     }
                 }
             }
@@ -183,6 +185,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                     mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAlbumAdapter.getSelectedItemCount()));
                     if (mAlbumAdapter.getSelectedItemCount() == 0) {
                         finishAction();
+                        mPresenter.refreshAfterFinishAction();
                     }
                 }
             }
@@ -599,6 +602,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                         mActionMode.setTitle(String.format(getString(R.string.tips_selected), mImageAdapter.getSelectedItemCount()));
                         if (mImageAdapter.getSelectedItemCount() == 0) {
                             finishAction();
+                            mPresenter.refreshAfterFinishAction();
                         }
                         break;
                     case R.id.action_inverse_all:
@@ -607,6 +611,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                         mActionMode.setTitle(String.format(getString(R.string.tips_selected), mImageAdapter.getSelectedItemCount()));
                         if (mImageAdapter.getSelectedItemCount() == 0) {
                             finishAction();
+                            mPresenter.refreshAfterFinishAction();
                         }
                         break;
                     case R.id.action_remark:
@@ -665,6 +670,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                         mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAlbumAdapter.getSelectedItemCount()));
                         if (mAlbumAdapter.getSelectedItemCount() == 0) {
                             finishAction();
+                            mPresenter.refreshAfterFinishAction();
                         }
                         break;
                     case R.id.action_inverse_all:
@@ -673,6 +679,7 @@ public class AlbumFolderFragment extends BaseFragment<IAlbumFolderView, AlbumFol
                         mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAlbumAdapter.getSelectedItemCount()));
                         if (mAlbumAdapter.getSelectedItemCount() == 0) {
                             finishAction();
+                            mPresenter.refreshAfterFinishAction();
                         }
                         break;
                     case R.id.action_remark:

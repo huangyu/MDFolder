@@ -668,7 +668,7 @@ public class AlbumFolderPresenter extends BasePresenter<IAlbumFolderView> {
         return mFileModel.shareFile(context, fileList);
     }
 
-    private void refreshAfterFinishAction() {
+    public void refreshAfterFinishAction() {
         if (mEditType != Constants.EditType.COPY && mEditType != Constants.EditType.CUT
                 && mEditType != Constants.EditType.ZIP && mEditType != Constants.EditType.UNZIP) {
             mView.refreshData(true);

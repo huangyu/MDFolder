@@ -1836,7 +1836,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
         }
     }
 
-    private void refreshAfterFinishAction() {
+    public void refreshAfterFinishAction() {
         if (isPasteActonMode) {
             mView.refreshData(true);
         } else if (mEditType != Constants.EditType.COPY && mEditType != Constants.EditType.CUT

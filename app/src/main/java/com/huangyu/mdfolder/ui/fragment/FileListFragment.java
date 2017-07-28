@@ -118,6 +118,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     FileItem file = mAdapter.getItem(position);
                     if (file == null) {
                         finishAction();
+                        mPresenter.refreshAfterFinishAction();
                         return;
                     }
 
@@ -247,6 +248,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     }
 
                     finishAction();
+                    mPresenter.refreshAfterFinishAction();
                 } else if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT
                         || mPresenter.mEditType == Constants.EditType.ZIP || mPresenter.mEditType == Constants.EditType.UNZIP) {
                     FileItem file = mAdapter.getItem(position);
@@ -263,6 +265,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAdapter.getSelectedItemCount()));
                     if (mAdapter.getSelectedItemCount() == 0) {
                         finishAction();
+                        mPresenter.refreshAfterFinishAction();
                     }
                 }
             }
@@ -283,6 +286,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAdapter.getSelectedItemCount()));
             }
         });
+
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -542,6 +546,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT
                         && mPresenter.mEditType != Constants.EditType.ZIP && mPresenter.mEditType != Constants.EditType.UNZIP) {
                     finishAction();
+                    mPresenter.refreshAfterFinishAction();
                 }
             }
         });
@@ -819,6 +824,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAdapter.getSelectedItemCount()));
                         if (mAdapter.getSelectedItemCount() == 0) {
                             finishAction();
+                            mPresenter.refreshAfterFinishAction();
                         }
                         break;
                     case R.id.action_inverse_all:
@@ -827,6 +833,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAdapter.getSelectedItemCount()));
                         if (mAdapter.getSelectedItemCount() == 0) {
                             finishAction();
+                            mPresenter.refreshAfterFinishAction();
                         }
                         break;
                     case R.id.action_uninstall:
