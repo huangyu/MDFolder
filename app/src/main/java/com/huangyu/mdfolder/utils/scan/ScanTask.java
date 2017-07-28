@@ -50,7 +50,11 @@ public class ScanTask extends AsyncTask<Void, Integer, Void> {
                 }
             });
             while (mCount != mPathsList.size()) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
 
+                }
             }
         }
         return null;

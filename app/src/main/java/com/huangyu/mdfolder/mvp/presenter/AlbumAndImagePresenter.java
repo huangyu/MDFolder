@@ -51,8 +51,9 @@ public class AlbumAndImagePresenter extends BasePresenter<IAlbumAndImageView> {
     public int mEditType;   // 当前编辑状态
     public int mSortType;   // 当前排序类型
     public int mOrderType;  // 当前升降序类型
-    public FileItem mCurrentAlbum;
-    public boolean isInAlbum = true;
+    public FileItem mCurrentAlbum; // 当前相册
+    public boolean isInAlbum; // 是否处于相册状态
+    public boolean isActionModeActive; // 是否处于ActionMode状态
     private int mScrollY;
 
     @Override
@@ -63,6 +64,7 @@ public class AlbumAndImagePresenter extends BasePresenter<IAlbumAndImageView> {
         mSortType = Constants.SortType.TYPE;
         mOrderType = DESC;
         mScrollY = 0;
+        isInAlbum = true;
     }
 
     public void loadAlbum(final String searchStr, final int scrollY) {

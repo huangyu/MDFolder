@@ -1,4 +1,4 @@
-package com.huangyu.mdfolder.utils.transformer;
+package com.huangyu.mdfolder.ui.widget.transformer;
 
 import android.support.v4.view.ViewPager;
 import android.view.View;

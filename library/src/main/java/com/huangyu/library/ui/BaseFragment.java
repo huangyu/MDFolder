@@ -22,7 +22,7 @@ import static com.huangyu.library.util.GenericUtils.getT;
  */
 public abstract class BaseFragment<V extends IBaseView, P extends BasePresenter<V>> extends Fragment {
 
-    private View mRootView;
+    protected View mRootView;
     protected P mPresenter;
     protected RxManager mRxManager = new RxManager();
 

@@ -1,4 +1,4 @@
-package com.huangyu.mdfolder.ui.widget;
+package com.huangyu.mdfolder.ui.widget.decoration;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;

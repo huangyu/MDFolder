@@ -741,17 +741,11 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     private ActionMode getControlActionMode() {
-        mPresenter.isPasteActonMode = false;
         return getActivity().startActionMode(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                if (mPresenter.mSelectType == Constants.SelectType.MENU_APPS) {
-                    mode.getMenuInflater().inflate(R.menu.menu_control_apps, menu);
-                } else if (mPresenter.mSelectType == Constants.SelectType.MENU_SDCARD) {
-                    mode.getMenuInflater().inflate(R.menu.menu_control_sdcard, menu);
-                } else {
-                    mode.getMenuInflater().inflate(R.menu.menu_control, menu);
-                }
+                mPresenter.isActionModeActive = true;
+                mPresenter.isActionModeActive = false;
                 return true;
             }
 
@@ -859,16 +853,17 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     mPresenter.mEditType = Constants.EditType.NONE;
                     mAdapter.clearSelectedState();
                 }
+                mPresenter.isActionModeActive = false;
             }
         });
     }
 
     private ActionMode getPasteActonMode() {
-        mPresenter.isPasteActonMode = true;
         return getActivity().startActionMode(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                mode.getMenuInflater().inflate(R.menu.menu_paste, menu);
+                mPresenter.isActionModeActive = true;
+                mPresenter.isPasteActonMode = true;
                 return true;
             }
 
@@ -905,9 +900,16 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 mPresenter.mEditType = Constants.EditType.NONE;
                 mAdapter.mSelectedFileList = null;
                 mPresenter.isPasteActonMode = false;
+                mPresenter.isActionModeActive = false;
                 mAdapter.clearSelectedState();
             }
         });
+    }
+
+    @Override
+    public void onDestroy() {
+        finishAction();
+        super.onDestroy();
     }
 
     public boolean onBackPressed() {
@@ -930,6 +932,10 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         View firstVisibleChildView = layoutManager.findViewByPosition(position);
         int itemHeight = firstVisibleChildView.getHeight();
         return (position) * itemHeight - firstVisibleChildView.getTop();
+    }
+
+    public boolean isActionModeActive() {
+        return mPresenter.isActionModeActive;
     }
 
 }

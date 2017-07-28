@@ -44,7 +44,7 @@ import com.huangyu.mdfolder.ui.activity.FileListActivity;
 import com.huangyu.mdfolder.ui.activity.ImageBrowserActivity;
 import com.huangyu.mdfolder.ui.adapter.ImageAdapter;
 import com.huangyu.mdfolder.ui.adapter.AlbumAdapter;
-import com.huangyu.mdfolder.ui.widget.VerticalGirdDecoration;
+import com.huangyu.mdfolder.ui.widget.decoration.VerticalGirdDecoration;
 import com.huangyu.mdfolder.ui.widget.TabView;
 import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.KeyboardUtils;
@@ -538,6 +538,12 @@ public class AlbumAndImageFragment extends BaseFragment<IAlbumAndImageView, Albu
         mRecyclerView.setAdapter(mAlbumAdapter);
     }
 
+    @Override
+    public void onDestroy() {
+        finishAction();
+        super.onDestroy();
+    }
+
     public void finishAction() {
         mSearchStr = "";
         if (mActionMode != null) {
@@ -559,7 +565,7 @@ public class AlbumAndImageFragment extends BaseFragment<IAlbumAndImageView, Albu
         return getActivity().startActionMode(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                mode.getMenuInflater().inflate(R.menu.menu_control_image, menu);
+                mPresenter.isActionModeActive = true;
                 return true;
             }
 
@@ -634,6 +640,7 @@ public class AlbumAndImageFragment extends BaseFragment<IAlbumAndImageView, Albu
                         mImageAdapter.clearSelectedState();
                     }
                 }
+                mPresenter.isActionModeActive = false;
             }
         });
     }
@@ -642,7 +649,7 @@ public class AlbumAndImageFragment extends BaseFragment<IAlbumAndImageView, Albu
         return getActivity().startActionMode(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                mode.getMenuInflater().inflate(R.menu.menu_control_image_file, menu);
+                mPresenter.isActionModeActive = true;
                 return true;
             }
 
@@ -702,6 +709,7 @@ public class AlbumAndImageFragment extends BaseFragment<IAlbumAndImageView, Albu
                         mImageAdapter.clearSelectedState();
                     }
                 }
+                mPresenter.isActionModeActive = false;
             }
         });
     }
@@ -712,6 +720,10 @@ public class AlbumAndImageFragment extends BaseFragment<IAlbumAndImageView, Albu
         View firstVisibleChildView = layoutManager.findViewByPosition(position);
         int itemHeight = firstVisibleChildView.getHeight();
         return (position / mDefaultGridCount) * itemHeight - firstVisibleChildView.getTop();
+    }
+
+    public boolean isActionModeActive() {
+        return mPresenter.isActionModeActive;
     }
 
     /************************************ 转场动画相关 ************************************/

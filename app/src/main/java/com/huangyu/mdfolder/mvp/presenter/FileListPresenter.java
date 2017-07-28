@@ -71,6 +71,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     public int mSortType;   // 当前排序类型
     public int mOrderType;  // 当前升降序类型
     public boolean isPasteActonMode; // 是否是复制粘贴状态
+    public boolean isActionModeActive;// 是否是ActionMode状态
 
     @Override
     public void create() {
@@ -1093,9 +1094,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                             @Override
                                             public void onNext(Boolean result) {
                                                 if (result) {
-                                                    for (Integer position : selectedItemList) {
-                                                        mView.deleteData(position);
-                                                    }
+
                                                     mView.clearSelectedState();
                                                     mView.showMessage(mView.getResString(R.string.tips_delete_successfully));
                                                 } else {

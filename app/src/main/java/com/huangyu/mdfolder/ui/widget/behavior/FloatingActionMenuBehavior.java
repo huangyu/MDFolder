@@ -1,4 +1,4 @@
-package com.huangyu.mdfolder.ui.widget;
+package com.huangyu.mdfolder.ui.widget.behavior;
 
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
