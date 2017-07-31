@@ -16,7 +16,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="160dp">
+            android:layout_height="152dp">
 
             <ImageView
                 android:id="@+id/iv_image"
@@ -36,11 +36,11 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:layout_margin="12dp"
+                android:layout_margin="8dp"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@+id/tv_size"
                 android:layout_toStartOf="@+id/tv_size"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/tv_size"
@@ -49,8 +49,8 @@
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
-                android:layout_margin="12dp"
-                android:textSize="14sp" />
+                android:layout_margin="8dp"
+                android:textSize="12sp" />
         </RelativeLayout>
 
     </LinearLayout>
