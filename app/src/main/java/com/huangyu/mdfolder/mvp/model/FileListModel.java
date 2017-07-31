@@ -143,8 +143,12 @@ public class FileListModel implements IBaseModel {
         Date date = calendar.getTime();
 
         Cursor cursor = contentResolver.query(MediaStore.Files.getContentUri("external"), projection,
-                MediaStore.Files.FileColumns.DATE_MODIFIED + " > ? ",
-                new String[]{"" + date.getTime() / 1000}, null);
+                MediaStore.Files.FileColumns.DATE_ADDED + " > ? and " + MediaStore.Files.FileColumns.DATE_MODIFIED + " > ? and ? != ? and "
+                        + MediaStore.Files.FileColumns.MIME_TYPE + " != ?",
+                new String[]{"" + date.getTime() / 1000,
+                        "" + date.getTime() / 1000,
+                        MediaStore.Files.FileColumns.DATE_ADDED,
+                        MediaStore.Files.FileColumns.DATE_MODIFIED, "*/*"}, null);
         if (cursor != null) {
             PackageManager pm = BaseApplication.getInstance().getApplicationContext().getPackageManager();
             ArrayList<FileItem> fileItemList = new ArrayList<>();
@@ -179,7 +183,15 @@ public class FileListModel implements IBaseModel {
 
                     String remark = SPUtils.getFileRemark(filePath);
                     fileItem.setRemark(remark);
-                    if (!fileItem.isDirectory() && !isNeedHidden(filePath)) {
+                    boolean is32, is24;
+                    if (fileRealName.contains(".")) {
+                        is32 = is32(fileRealName.substring(0, fileRealName.lastIndexOf(".")));
+                        is24 = is24(fileRealName.substring(0, fileRealName.lastIndexOf(".")));
+                    } else {
+                        is32 = is32(fileRealName);
+                        is24 = is24(fileRealName);
+                    }
+                    if (!fileItem.isDirectory() && !is32 && !is24 && !isCacheOrLog(filePath) && !isTencent(filePath) && !isThumbnails(filePath)) {
                         fileItemList.add(fileItem);
                     }
                 }
@@ -190,9 +202,39 @@ public class FileListModel implements IBaseModel {
         return null;
     }
 
-    private boolean isNeedHidden(String filePath) {
-        File file = new File(filePath);
-        return filePath.contains("cache") || filePath.contains("/Android/data") || FileUtils.getSuffix(file.getName()).endsWith(".log") || file.isHidden() || file.getParentFile().isHidden();
+    private boolean isThumbnails(String filePath) {
+        if (filePath.contains(".thumbnails")) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isTencent(String filePath) {
+        if (filePath.contains("Tencent")) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isCacheOrLog(String filePath) {
+        if (filePath.contains("Cache") || filePath.contains("cache") || filePath.contains("log") || filePath.contains("Log")) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean is32(String fileName) {
+        if (fileName.matches("^([a-zA-Z0-9]{32})$")) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean is24(String fileName) {
+        if (fileName.matches("^([a-zA-Z0-9]{24})$")) {
+            return true;
+        }
+        return false;
     }
 
     private boolean isFolder(String fileRealName) {

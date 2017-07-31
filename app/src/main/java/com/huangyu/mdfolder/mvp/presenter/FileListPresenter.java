@@ -558,11 +558,13 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                             mDocumentFileModel.addFile(documentFile, "application/octet-stream", filename);
                                             mView.showMessage(mView.getResString(R.string.tips_add_file_successfully));
                                             mView.addData(transformFile(new File(filePath)));
+                                            mView.clearSelectedState();
                                         } else {
                                             if (mFileModel.addFile(filePath)) {
                                                 scanFile(filePath);
                                                 mView.showMessage(mView.getResString(R.string.tips_add_file_successfully));
                                                 mView.addData(transformFile(new File(filePath)));
+                                                mView.clearSelectedState();
                                             } else {
                                                 mView.showMessage(mView.getResString(R.string.tips_add_file_error));
                                             }
@@ -690,11 +692,13 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                             DocumentFileUtils.getDocumentFile(new File(filePath), true);
                                             mView.showMessage(mView.getResString(R.string.tips_add_folder_successfully));
                                             mView.addData(transformFile(new File(filePath)));
+                                            mView.clearSelectedState();
                                         } else {
                                             if (mFileModel.addFolder(filePath)) {
                                                 scanFile(filePath);
                                                 mView.showMessage(mView.getResString(R.string.tips_add_folder_successfully));
                                                 mView.addData(transformFile(new File(filePath)));
+                                                mView.clearSelectedState();
                                             } else {
                                                 mView.showMessage(mView.getResString(R.string.tips_add_folder_error));
                                             }
@@ -806,6 +810,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                                 String newPath = new File(filePath).getParent() + File.separator + filename;
                                                 int position = selectedItemList.get(0);
                                                 mView.changeData(transformFile(new File(newPath)), position);
+                                                mView.clearSelectedState();
                                                 mView.showMessage(mView.getResString(R.string.tips_rename_successfully));
                                             } else {
                                                 mView.showMessage(mView.getResString(R.string.tips_rename_in_error));
@@ -882,6 +887,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                             SPUtils.setFileRemark(filePath, remark);
                                             int position = selectedItemList.get(0);
                                             mView.changeData(transformFile(new File(filePath)), position);
+                                            mView.clearSelectedState();
                                             mView.showMessage(mView.getResString(R.string.tips_remark_successfully));
                                         }
 
@@ -1016,6 +1022,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                 public void onCancel(DialogInterface dialog) {
                     mView.finishAction();
                     mView.changeData(fileItem, position);
+                    mView.clearSelectedState();
                 }
             });
         }

@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.internal.NavigationMenuView;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.provider.DocumentFile;
@@ -115,8 +116,9 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             item.setTitle(getString(R.string.menu_outer_storage) + " " + SDCardUtils.getSDCardSizeInfo(getStoragePath(this, true)));
         }
         mNavigationView.getMenu().setGroupCheckable(R.id.nav_group_folder, true, true);
-
         mNavigationView.getMenu().getItem(0).setTitle(getString(R.string.menu_inner_storage) + " " + SDCardUtils.getSDCardSizeInfo(getStoragePath(this, false)));
+
+        disableNavigationViewScrollbars(mNavigationView);
 
         View header = mNavigationView.getHeaderView(0);
         LinearLayout mLlHeader = ButterKnife.findById(header, R.id.ll_header);
@@ -438,6 +440,15 @@ public class FileListActivity extends ThematicActivity implements NavigationView
         isSearchViewShow = false;
     }
 
+    private void disableNavigationViewScrollbars(NavigationView navigationView) {
+        if (navigationView != null) {
+            NavigationMenuView navigationMenuView = (NavigationMenuView) navigationView.getChildAt(0);
+            if (navigationMenuView != null) {
+                navigationMenuView.setVerticalScrollBarEnabled(false);
+            }
+        }
+    }
+
     @AfterPermissionGranted(PERMISSION_ACCESS_FILES)
     private void requirePermissions() {
         String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -475,7 +486,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
 
     @Override
     public void onPermissionsDenied(int requestCode, List<String> perms) {
-        AlertUtils.showSnack(mRlFile, getString(R.string.tips_no_permissions), getString(R.string.act_exit), new View.OnClickListener() {
+        AlertUtils.showToast(mRlFile, getString(R.string.tips_no_permissions), getString(R.string.act_exit), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ActivityManager.getInstance().finishAllActivity();

@@ -583,7 +583,6 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     @Override
     public void changeData(FileItem fileItem, int position) {
         mAdapter.changeItem(fileItem, position);
-        mAdapter.clearSelectedState();
     }
 
     @Override
@@ -641,7 +640,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             LogUtils.logd(error);
 //            LogToFileUtils.saveCrashInfoFile(error);
         }
-        AlertUtils.showSnack(mCoordinatorLayout, getString(R.string.tips_error));
+        AlertUtils.showToast(getContext(), getString(R.string.tips_error));
     }
 
     @Override

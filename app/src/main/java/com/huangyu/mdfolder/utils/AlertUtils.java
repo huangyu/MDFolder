@@ -71,7 +71,7 @@ public class AlertUtils {
      * @param action          按钮操作
      * @param onClickListener 按钮事件
      */
-    public static void showSnack(@NonNull View view, String content, String action, View.OnClickListener onClickListener) {
+    public static void showToast(@NonNull View view, String content, String action, View.OnClickListener onClickListener) {
         Snackbar.make(view, content, Snackbar.LENGTH_SHORT).setDuration(Snackbar.LENGTH_INDEFINITE).setAction(action, onClickListener).show();
     }
 
