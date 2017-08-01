@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/iv_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
         android:layout_centerVertical="true"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
@@ -23,9 +23,8 @@
         android:layout_centerVertical="true"
         android:background="?android:attr/selectableItemBackground"
         android:orientation="vertical"
-        android:paddingBottom="8dp"
-        android:paddingLeft="8dp"
-        android:paddingTop="8dp">
+        android:paddingBottom="12dp"
+        android:paddingTop="12dp">
 
         <TextView
             android:id="@+id/tv_name"
@@ -64,7 +63,7 @@
             android:layout_marginLeft="72dp"
             android:layout_marginRight="48dp"
             android:layout_marginStart="72dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:textColor="@color/colorSecondaryText"

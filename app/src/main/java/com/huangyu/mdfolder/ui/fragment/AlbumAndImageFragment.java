@@ -143,7 +143,7 @@ public class AlbumAndImageFragment extends BaseFragment<IAlbumAndImageView, Albu
                             AlertUtils.showToast(getContext(), getString(R.string.tips_can_not_access_file));
                         }
                     }
-                } else if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT
+                } else if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.MOVE
                         && mPresenter.mEditType != Constants.EditType.ZIP && mPresenter.mEditType != Constants.EditType.UNZIP) {
                     mPresenter.mEditType = Constants.EditType.SELECT;
                     mImageAdapter.switchSelectedState(position);
@@ -158,7 +158,7 @@ public class AlbumAndImageFragment extends BaseFragment<IAlbumAndImageView, Albu
         mImageAdapter.setOnItemLongClick(new CommonRecyclerViewAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, int position) {
-                if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT
+                if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.MOVE
                         || mPresenter.mEditType == Constants.EditType.ZIP || mPresenter.mEditType == Constants.EditType.UNZIP) {
                     return;
                 }
@@ -178,7 +178,7 @@ public class AlbumAndImageFragment extends BaseFragment<IAlbumAndImageView, Albu
                 if (mPresenter.mEditType == Constants.EditType.NONE) {
                     mPresenter.mCurrentAlbum = mAlbumAdapter.getItem(position);
                     mPresenter.loadImage(mSearchStr, true, getScrollYDistance());
-                } else if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT
+                } else if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.MOVE
                         && mPresenter.mEditType != Constants.EditType.ZIP && mPresenter.mEditType != Constants.EditType.UNZIP) {
                     mPresenter.mEditType = Constants.EditType.SELECT;
                     mAlbumAdapter.switchSelectedState(position);
@@ -193,7 +193,7 @@ public class AlbumAndImageFragment extends BaseFragment<IAlbumAndImageView, Albu
         mAlbumAdapter.setOnItemLongClick(new CommonRecyclerViewAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, int position) {
-                if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT
+                if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.MOVE
                         || mPresenter.mEditType == Constants.EditType.ZIP || mPresenter.mEditType == Constants.EditType.UNZIP) {
                     return;
                 }
@@ -629,7 +629,7 @@ public class AlbumAndImageFragment extends BaseFragment<IAlbumAndImageView, Albu
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
-                if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT
+                if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.MOVE
                         && mPresenter.mEditType != Constants.EditType.ZIP && mPresenter.mEditType != Constants.EditType.UNZIP) {
                     getActivity().supportInvalidateOptionsMenu();
                     mActionMode = null;
@@ -698,7 +698,7 @@ public class AlbumAndImageFragment extends BaseFragment<IAlbumAndImageView, Albu
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
-                if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT
+                if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.MOVE
                         && mPresenter.mEditType != Constants.EditType.ZIP && mPresenter.mEditType != Constants.EditType.UNZIP) {
                     getActivity().supportInvalidateOptionsMenu();
                     mActionMode = null;

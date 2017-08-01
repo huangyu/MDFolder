@@ -671,7 +671,7 @@ public class AlbumAndImagePresenter extends BasePresenter<IAlbumAndImageView> {
     }
 
     public void refreshAfterFinishAction() {
-        if (mEditType != Constants.EditType.COPY && mEditType != Constants.EditType.CUT
+        if (mEditType != Constants.EditType.COPY && mEditType != Constants.EditType.MOVE
                 && mEditType != Constants.EditType.ZIP && mEditType != Constants.EditType.UNZIP) {
             mView.refreshData(true);
         } else {

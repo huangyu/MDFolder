@@ -35,6 +35,9 @@ import com.huangyu.mdfolder.utils.SPUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
@@ -1057,7 +1060,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     public void onDelete(final ArrayList<FileItem> fileList, final ArrayList<Integer> selectedItemList) {
         mView.showNormalAlert(mView.getResString(R.string.tips_delete_files), mView.getResString(R.string.act_delete), new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialog, final int which) {
                 Subscription subscription = Observable.from(fileList).groupBy(new Func1<FileItem, Boolean>() {
                     @Override
                     public Boolean call(FileItem file) {
@@ -1101,8 +1104,15 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                             @Override
                                             public void onNext(Boolean result) {
                                                 if (result) {
-                                                    for (Integer position : selectedItemList) {
-                                                        mView.deleteData(position);
+                                                    Collections.sort(selectedItemList, new Comparator<Integer>() {
+                                                        @Override
+                                                        public int compare(Integer o1, Integer o2) {
+                                                            return o2.compareTo(o1);
+                                                        }
+                                                    });
+                                                    Iterator<Integer> it = selectedItemList.iterator();
+                                                    while (it.hasNext()) {
+                                                        mView.deleteData(it.next());
                                                     }
                                                     mView.clearSelectedState();
                                                     mView.showMessage(mView.getResString(R.string.tips_delete_successfully));
@@ -1848,7 +1858,7 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     public void refreshAfterFinishAction() {
         if (isPasteActonMode) {
             mView.refreshData(true);
-        } else if (mEditType != Constants.EditType.COPY && mEditType != Constants.EditType.CUT
+        } else if (mEditType != Constants.EditType.COPY && mEditType != Constants.EditType.MOVE
                 && mEditType != Constants.EditType.ZIP && mEditType != Constants.EditType.UNZIP) {
             mView.refreshData(true);
         } else {

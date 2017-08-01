@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -44,6 +45,7 @@ import com.huangyu.mdfolder.ui.activity.ImageBrowserActivity;
 import com.huangyu.mdfolder.ui.activity.VideoBrowserActivity;
 import com.huangyu.mdfolder.ui.adapter.FileListAdapter;
 import com.huangyu.mdfolder.ui.widget.TabView;
+import com.huangyu.mdfolder.ui.widget.delegate.WindowCallbackDelegate;
 import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.CompressUtils;
 import com.huangyu.mdfolder.utils.KeyboardUtils;
@@ -95,6 +97,8 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     private FileListAdapter mAdapter;
     private ActionMode mActionMode;
     private String mSearchStr = "";
+
+    private WindowCallbackDelegate mWindowCallbackDelegate;
 
     @Override
     protected int getLayoutId() {
@@ -249,7 +253,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
                     finishAction();
                     mPresenter.refreshAfterFinishAction();
-                } else if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT
+                } else if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.MOVE
                         || mPresenter.mEditType == Constants.EditType.ZIP || mPresenter.mEditType == Constants.EditType.UNZIP) {
                     FileItem file = mAdapter.getItem(position);
                     if (file == null) {
@@ -274,7 +278,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
         mAdapter.setOnItemLongClick(new CommonRecyclerViewAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, final int position) {
-                if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.CUT
+                if (mPresenter.mEditType == Constants.EditType.COPY || mPresenter.mEditType == Constants.EditType.MOVE
                         || mPresenter.mEditType == Constants.EditType.ZIP || mPresenter.mEditType == Constants.EditType.UNZIP) {
                     return;
                 }
@@ -543,7 +547,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     int index = (Integer) tag;
                     mPresenter.enterCertainFolder(index);
                 }
-                if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT
+                if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.MOVE
                         && mPresenter.mEditType != Constants.EditType.ZIP && mPresenter.mEditType != Constants.EditType.UNZIP) {
                     finishAction();
                     mPresenter.refreshAfterFinishAction();
@@ -786,14 +790,14 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         break;
                     case R.id.action_copy:
                         mPresenter.mEditType = Constants.EditType.COPY;
-                        mActionMode = getPasteActonMode();
                         mAdapter.mSelectedFileList = fileList;
+                        mActionMode = getPasteActonMode();
                         mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAdapter.getSelectedItemCount()));
                         break;
                     case R.id.action_move:
-                        mPresenter.mEditType = Constants.EditType.CUT;
-                        mActionMode = getPasteActonMode();
+                        mPresenter.mEditType = Constants.EditType.MOVE;
                         mAdapter.mSelectedFileList = fileList;
+                        mActionMode = getPasteActonMode();
                         mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAdapter.getSelectedItemCount()));
                         break;
                     case R.id.action_show_hide:
@@ -801,17 +805,17 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                         break;
                     case R.id.action_compress:
                         mPresenter.mEditType = Constants.EditType.ZIP;
-                        mActionMode = getPasteActonMode();
                         mAdapter.mSelectedFileList = fileList;
+                        mActionMode = getPasteActonMode();
                         mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAdapter.getSelectedItemCount()));
                         break;
                     case R.id.action_extract:
                         if (fileList.size() != 1) {
                             showMessage(getResString(R.string.tips_choose_one_file));
                         } else {
+                            mAdapter.mSelectedFileList = fileList;
                             mPresenter.mEditType = Constants.EditType.UNZIP;
                             mActionMode = getPasteActonMode();
-                            mAdapter.mSelectedFileList = fileList;
                             mActionMode.setTitle(String.format(getString(R.string.tips_selected), mAdapter.getSelectedItemCount()));
                         }
                         break;
@@ -845,7 +849,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
-                if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.CUT
+                if (mPresenter.mEditType != Constants.EditType.COPY && mPresenter.mEditType != Constants.EditType.MOVE
                         && mPresenter.mEditType != Constants.EditType.ZIP && mPresenter.mEditType != Constants.EditType.UNZIP) {
                     getActivity().supportInvalidateOptionsMenu();
                     mActionMode = null;
@@ -863,6 +867,8 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 mPresenter.isActionModeActive = true;
                 mPresenter.isPasteActonMode = true;
+                mWindowCallbackDelegate = new WindowCallbackDelegate(getActivity().getWindow().getCallback(), getActivity());
+                getActivity().getWindow().setCallback(mWindowCallbackDelegate);
                 return true;
             }
 
@@ -880,7 +886,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                     case R.id.action_paste:
                         if (mPresenter.mEditType == Constants.EditType.COPY) {
                             mPresenter.onCopy(fileList);
-                        } else if (mPresenter.mEditType == Constants.EditType.CUT) {
+                        } else if (mPresenter.mEditType == Constants.EditType.MOVE) {
                             mPresenter.onMove(fileList);
                         } else if (mPresenter.mEditType == Constants.EditType.ZIP) {
                             mPresenter.onCompress(fileList);
@@ -896,11 +902,15 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             public void onDestroyActionMode(ActionMode mode) {
                 getActivity().supportInvalidateOptionsMenu();
                 mActionMode = null;
-                mPresenter.mEditType = Constants.EditType.NONE;
                 mAdapter.mSelectedFileList = null;
+                mPresenter.mEditType = Constants.EditType.NONE;
                 mPresenter.isPasteActonMode = false;
                 mPresenter.isActionModeActive = false;
                 mAdapter.clearSelectedState();
+                Window.Callback originalWindowCallback = mWindowCallbackDelegate.getOriginalWindowCallback();
+                if (originalWindowCallback != null) {
+                    getActivity().getWindow().setCallback(originalWindowCallback);
+                }
             }
         });
     }

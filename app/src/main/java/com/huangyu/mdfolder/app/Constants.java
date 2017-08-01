@@ -20,7 +20,7 @@ public class Constants extends BaseConstants {
 
         public static final int COPY = 0x00000002;
 
-        public static final int CUT = 0x00000003;
+        public static final int MOVE = 0x00000003;
 
         public static final int ZIP = 0x00000004;
 

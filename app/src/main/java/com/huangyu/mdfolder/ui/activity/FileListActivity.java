@@ -19,6 +19,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -196,34 +197,23 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     }
 
     @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (mFileListFragment != null && mFileListFragment.isVisible() && mFileListFragment.isActionModeActive()) {
+            onBackFolder();
+            return true;
+        } else if (mAlbumAndImageFragment != null && mAlbumAndImageFragment.isVisible() && mAlbumAndImageFragment.isActionModeActive()) {
+            onBackFolder();
+            return true;
+        } else {
+            return super.dispatchKeyEvent(event);
+        }
+    }
+
+    @Override
     public void onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mDrawerLayout.closeDrawer(GravityCompat.START);
+        if (onBackFolder()) {
             return;
         }
-
-        if (mFileListFragment != null && mFileListFragment.isVisible() && mFileListFragment.onBackPressed()) {
-            return;
-        }
-
-        if (mAlbumAndImageFragment != null && mAlbumAndImageFragment.isVisible() && mAlbumAndImageFragment.onBackPressed()) {
-            return;
-        }
-
-        if (mSearchView != null && mSearchView.isShown() && isSearchViewShow) {
-            resetSearch();
-            return;
-        }
-
-        if (selectedPosition != 0) {
-            selectedPosition = 0;
-            mRlFile.setVisibility(View.VISIBLE);
-            mRlAlbum.setVisibility(View.GONE);
-            mRxManager.post("toStorage", false);
-            mNavigationView.setCheckedItem(R.id.nav_inner_storage);
-            return;
-        }
-
         if (isDoubleCheck()) {
             ActivityManager.getInstance().finishAllActivity();
         } else {
@@ -233,6 +223,36 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                 AlertUtils.showToast(FileListActivity.this, getString(R.string.tips_leave));
             }
         }
+    }
+
+    private boolean onBackFolder() {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+            return true;
+        }
+
+        if (mFileListFragment != null && mFileListFragment.isVisible() && mFileListFragment.onBackPressed()) {
+            return true;
+        }
+
+        if (mAlbumAndImageFragment != null && mAlbumAndImageFragment.isVisible() && mAlbumAndImageFragment.onBackPressed()) {
+            return true;
+        }
+
+        if (mSearchView != null && mSearchView.isShown() && isSearchViewShow) {
+            resetSearch();
+            return true;
+        }
+
+        if (selectedPosition != 0) {
+            selectedPosition = 0;
+            mRlFile.setVisibility(View.VISIBLE);
+            mRlAlbum.setVisibility(View.GONE);
+            mRxManager.post("toStorage", false);
+            mNavigationView.setCheckedItem(R.id.nav_inner_storage);
+            return true;
+        }
+        return false;
     }
 
     private boolean isDoubleCheck() {
