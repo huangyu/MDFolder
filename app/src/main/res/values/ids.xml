@@ -2,4 +2,5 @@
 <resources>
     <item name="tab_tag" type="id" />
     <item name="nav_outer_storage" type="id" />
+    <item name="nav_collect" type="id" />
 </resources>

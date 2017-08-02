@@ -18,7 +18,7 @@ public class SettingsActivity extends ThematicActivity {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.content_main;
+        return R.layout.activity_file_list;
     }
 
     @Override

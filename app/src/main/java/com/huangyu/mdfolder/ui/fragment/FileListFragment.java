@@ -494,6 +494,14 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
             }
         });
 
+        mRxManager.on("toPath", new Action1<String>() {
+            @Override
+            public void call(String s) {
+                mPresenter.mSelectType = Constants.SelectType.MENU_FILE;
+                mPresenter.onLoadBookmarkFileList(mSearchStr, s);
+            }
+        });
+
         mRxManager.on("onSortType", new Action1<Integer>() {
             @Override
             public void call(Integer sortType) {
@@ -525,6 +533,19 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
                 mAdapter.removeItem(position);
             }
         });
+
+        mRxManager.on("onSaveBookmark", new Action1<String>() {
+            @Override
+            public void call(String s) {
+                mPresenter.onSaveBookmark();
+            }
+        });
+
+    }
+
+    @Override
+    public void refreshBookmarkList() {
+        ((FileListActivity) getActivity()).refreshBookMarkList();
     }
 
     @Override

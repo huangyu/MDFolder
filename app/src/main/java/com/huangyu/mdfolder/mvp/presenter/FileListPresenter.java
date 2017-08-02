@@ -141,6 +141,82 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     }
 
     /**
+     * 获取书签文件列表
+     */
+    public void onLoadBookmarkFileList(final String searchStr, final String path) {
+        Subscription subscription = Observable.defer(new Func0<Observable<ArrayList<FileItem>>>() {
+            @Override
+            public Observable<ArrayList<FileItem>> call() {
+                return Observable.just(getCurrentFileList(searchStr));
+            }
+        })
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        mCurrentPath = path;
+                        mFileStack.clear();
+                        mScrollYStack.clear();
+                        mBeforeScrollY = 0;
+                        String rootPath = mFileListModel.getRootPath();
+                        String sdcardPath = mFileListModel.getStorageCardPath(true);
+                        String storageCardPath = mFileListModel.getStorageCardPath(false);
+                        if (mCurrentPath.contains(rootPath)) {
+                            setStack(rootPath);
+                        } else if (sdcardPath != null && mCurrentPath.contains(sdcardPath)) {
+                            setStack(sdcardPath);
+                        } else if (storageCardPath != null && mCurrentPath.contains(storageCardPath)) {
+                            setStack(storageCardPath);
+                        }
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<ArrayList<FileItem>>() {
+                    @Override
+                    public void onStart() {
+                        mView.showTabs();
+                        mView.startRefresh();
+                    }
+
+                    @Override
+                    public void onNext(ArrayList<FileItem> fileList) {
+                        mView.refreshView(fileList, false, 0);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        mView.showError(e.getMessage());
+                        onCompleted();
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        mView.stopRefresh();
+                    }
+                });
+        mRxManager.add(subscription);
+    }
+
+    private void setStack(String rootPath) {
+        mView.removeAllTabs();
+        mView.addTab(rootPath);
+        String nameString = mCurrentPath.substring(rootPath.length() + 1);
+        String[] nameArray = nameString.split("/");
+        for (int i = 0; i < nameArray.length; i++) {
+            mView.addTab(nameArray[i]);
+            String path = rootPath;
+            mFileStack.push(path);
+            mScrollYStack.push(0);
+            for (int j = 0; j <= i; j++) {
+                path += "/" + nameArray[j];
+                mFileStack.push(path);
+                mScrollYStack.push(0);
+            }
+        }
+    }
+
+    /**
      * 获取存储器文件列表
      */
     public void onLoadStorageFileList(final boolean isOuter, final String searchStr) {
@@ -282,10 +358,10 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                 mView.addTab(mView.getResString(R.string.menu_document) + "  " + fileList.size());
                                 break;
                             case Constants.SelectType.MENU_PHOTO:
-                                mView.addTab(mView.getResString(R.string.menu_image) + "  " + fileList.size());
+                                mView.addTab(mView.getResString(R.string.menu_photo) + "  " + fileList.size());
                                 break;
                             case Constants.SelectType.MENU_MUSIC:
-                                mView.addTab(mView.getResString(R.string.menu_audio) + "  " + fileList.size());
+                                mView.addTab(mView.getResString(R.string.menu_music) + "  " + fileList.size());
                                 break;
                             case Constants.SelectType.MENU_VIDEO:
                                 mView.addTab(mView.getResString(R.string.menu_video) + "  " + fileList.size());
@@ -383,11 +459,11 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                                 break;
                             case Constants.SelectType.MENU_PHOTO:
                                 mView.removeAllTabs();
-                                mView.addTab(mView.getResString(R.string.menu_image) + "  " + fileList.size());
+                                mView.addTab(mView.getResString(R.string.menu_photo) + "  " + fileList.size());
                                 break;
                             case Constants.SelectType.MENU_MUSIC:
                                 mView.removeAllTabs();
-                                mView.addTab(mView.getResString(R.string.menu_audio) + "  " + fileList.size());
+                                mView.addTab(mView.getResString(R.string.menu_music) + "  " + fileList.size());
                                 break;
                             case Constants.SelectType.MENU_VIDEO:
                                 mView.removeAllTabs();
@@ -1005,6 +1081,38 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
                             }
                         });
                 mRxManager.add(subscription);
+            }
+        });
+    }
+
+    /**
+     * 收藏当前路径
+     */
+    public void onSaveBookmark() {
+        mView.showNormalAlert(mView.getResString(R.string.tips_save_bookmark), mView.getResString(R.string.act_confirm), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    int maxNum = SPUtils.getBookmarkNum();
+                    boolean isExist = false;
+                    for (int i = 0; i < maxNum; i++) {
+                        String path = SPUtils.getBookmarkName(i);
+                        if (path != null && path.equals(mCurrentPath)) {
+                            isExist = true;
+                            break;
+                        }
+                    }
+                    if (!isExist) {
+                        SPUtils.setBookmarkName(maxNum, mCurrentPath);
+                        SPUtils.setBookmarkNum(++maxNum);
+                        mView.showMessage(mView.getResString(R.string.tips_save_bookmark_successfully));
+                        mView.refreshBookmarkList();
+                    } else {
+                        mView.showMessage(mView.getResString(R.string.tips_save_bookmark_already));
+                    }
+                } catch (Exception e) {
+                    mView.showMessage(mView.getResString(R.string.tips_save_bookmark_in_error));
+                }
             }
         });
     }

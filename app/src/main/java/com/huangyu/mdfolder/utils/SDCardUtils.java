@@ -138,7 +138,7 @@ public final class SDCardUtils {
         double allSize = getSDAllSize(sdcardPath);
         double usageSize = allSize - freeSize;
         DecimalFormat df = new DecimalFormat("0.0");
-        return " (" + df.format(usageSize) + "GB/" + df.format(allSize) + "GB" + ")";
+        return df.format(usageSize) + "GB/" + df.format(allSize) + "GB";
     }
 
     /**

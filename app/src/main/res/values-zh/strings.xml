@@ -33,12 +33,13 @@
 
     <string name="transition_image_name">Image transition</string>
 
+    <string name="menu_bookmark">书签</string>
     <string name="menu_other">其他</string>
     <string name="menu_root">系统目录</string>
     <string name="menu_inner_storage">内置存储</string>
     <string name="menu_outer_storage">外置存储</string>
-    <string name="menu_image">图片</string>
-    <string name="menu_audio">音频</string>
+    <string name="menu_photo">图片</string>
+    <string name="menu_music">音频</string>
     <string name="menu_video">视频</string>
     <string name="menu_recent">最近文件</string>
     <string name="menu_document">文档</string>
@@ -143,6 +144,13 @@
     <string name="tips_calculating">计算文件数量中&#8230;</string>
     <string name="tips_scanning">扫描中&#8230;</string>
     <string name="tips_scan_complete">扫描完毕</string>
+    <string name="tips_save_bookmark">保存当前路径为书签？</string>
+    <string name="tips_save_bookmark_already">书签已存在</string>
+    <string name="tips_save_bookmark_successfully">书签保存成功</string>
+    <string name="tips_save_bookmark_in_error">书签保存失败</string>
+    <string name="tips_delete_bookmark">删除%s书签？</string>
+    <string name="tips_delete_bookmark_successfully">书签删除成功</string>
+    <string name="tips_delete_bookmark_in_error">书签删除失败</string>
 
     <string name="pref_settings">设置</string>
     <string name="pref_appearance">外观</string>

@@ -8,18 +8,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.internal.NavigationMenuView;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.NavigationView;
 import android.support.v4.provider.DocumentFile;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.SparseArray;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,8 +33,14 @@ import com.huangyu.mdfolder.ui.fragment.FileListFragment;
 import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.SDCardUtils;
 import com.huangyu.mdfolder.utils.SPUtils;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -50,19 +53,13 @@ import static com.huangyu.mdfolder.app.Constants.STORAGE_REQUEST_CODE;
 import static com.huangyu.mdfolder.app.Constants.UNINSTALL_REQUEST_CODE;
 import static com.huangyu.mdfolder.utils.SDCardUtils.getStoragePath;
 
-public class FileListActivity extends ThematicActivity implements NavigationView.OnNavigationItemSelectedListener, EasyPermissions.PermissionCallbacks {
+public class FileListActivity extends ThematicActivity implements EasyPermissions.PermissionCallbacks {
 
     @Bind(R.id.appbar)
     AppBarLayout mAppBarLayout;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
-
-    @Bind(R.id.drawer_layout)
-    DrawerLayout mDrawerLayout;
-
-    @Bind(R.id.nav_view)
-    NavigationView mNavigationView;
 
     @Bind(R.id.rl_file)
     RelativeLayout mRlFile;
@@ -76,10 +73,11 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     private boolean isSearchViewShow;
     private long mCurrentTime;
     private int selectedPosition = 0;
+    private Drawer mDrawer;
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_main;
+        return R.layout.activity_file_list;
     }
 
     @Override
@@ -103,71 +101,240 @@ public class FileListActivity extends ThematicActivity implements NavigationView
         }
         mToolbar.setTitleTextAppearance(this, R.style.ToolBarTitle);
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        mDrawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-
-        mNavigationView.setNavigationItemSelectedListener(this);
-
-        String outerSdcardPath = getStoragePath(this, true);
-        if (!TextUtils.isEmpty(outerSdcardPath)) {
-            MenuItem item = mNavigationView.getMenu().add(R.id.nav_group_folder, R.id.nav_outer_storage, 2, getString(R.string.menu_outer_storage));
-            item.setIcon(R.mipmap.ic_sd);
-            item.setTitle(getString(R.string.menu_outer_storage) + " " + SDCardUtils.getSDCardSizeInfo(getStoragePath(this, true)));
-        }
-        mNavigationView.getMenu().setGroupCheckable(R.id.nav_group_folder, true, true);
-        mNavigationView.getMenu().getItem(0).setTitle(getString(R.string.menu_inner_storage) + " " + SDCardUtils.getSDCardSizeInfo(getStoragePath(this, false)));
-
-        disableNavigationViewScrollbars(mNavigationView);
-
-        View header = mNavigationView.getHeaderView(0);
-        LinearLayout mLlHeader = ButterKnife.findById(header, R.id.ll_header);
+        View header = LayoutInflater.from(this).inflate(R.layout.nav_header_main, new LinearLayout(this), false);
         String themeMode = getThemeMode();
         switch (themeMode) {
             case "1":
-                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                header.setBackgroundResource(R.color.colorPrimaryDark);
                 break;
             case "2":
-                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryIndigo));
+                header.setBackgroundResource(R.color.colorPrimaryIndigo);
                 break;
             case "3":
-                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryCyan));
+                header.setBackgroundResource(R.color.colorPrimaryCyan);
                 break;
             case "4":
-                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryTeal));
+                header.setBackgroundResource(R.color.colorPrimaryTeal);
                 break;
             case "5":
-                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryGreen));
+                header.setBackgroundResource(R.color.colorPrimaryGreen);
                 break;
             case "6":
-                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryRed));
+                header.setBackgroundResource(R.color.colorPrimaryRed);
                 break;
             case "7":
-                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryPurple));
+                header.setBackgroundResource(R.color.colorPrimaryPurple);
                 break;
             case "8":
-                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryOrange));
+                header.setBackgroundResource(R.color.colorPrimaryOrange);
                 break;
             case "9":
-                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryYellow));
+                header.setBackgroundResource(R.color.colorPrimaryYellow);
                 break;
             case "10":
-                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryPink));
+                header.setBackgroundResource(R.color.colorPrimaryPink);
                 break;
             case "11":
-                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryBrown));
+                header.setBackgroundResource(R.color.colorPrimaryBrown);
                 break;
             case "12":
-                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryGrey));
+                header.setBackgroundResource(R.color.colorPrimaryGrey);
                 break;
             case "13":
-                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryBlack));
+                header.setBackgroundResource(R.color.colorPrimaryBlack);
                 break;
             default:
-                mLlHeader.setBackgroundColor(getResources().getColor(R.color.colorPrimaryBlue));
+                header.setBackgroundResource(R.color.colorPrimaryBlue);
                 break;
         }
+
+
+        mDrawer = new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(mToolbar)
+                .withHeader(header)
+                .withActionBarDrawerToggle(true)
+                .build();
+
+        PrimaryDrawerItem item1;
+        PrimaryDrawerItem item3;
+        PrimaryDrawerItem item4;
+        PrimaryDrawerItem item5;
+        PrimaryDrawerItem item6;
+        PrimaryDrawerItem item7;
+        PrimaryDrawerItem item8;
+        PrimaryDrawerItem item9;
+        PrimaryDrawerItem item10;
+        PrimaryDrawerItem item11;
+        PrimaryDrawerItem item12;
+        PrimaryDrawerItem item13;
+
+        if (isLightMode()) {
+            item1 = new PrimaryDrawerItem().withIdentifier(0L).withIcon(R.mipmap.ic_storage).withName(R.string.menu_inner_storage).withDescription(SDCardUtils.getSDCardSizeInfo(getStoragePath(this, false))).withTextColorRes(R.color.colorPrimaryText).withDescriptionTextColorRes(R.color.colorSecondaryText);
+            item3 = new PrimaryDrawerItem().withIdentifier(2L).withIcon(R.mipmap.ic_root).withName(R.string.menu_root).withTextColorRes(R.color.colorPrimaryText);
+            item4 = new PrimaryDrawerItem().withIdentifier(3L).withIcon(R.mipmap.ic_recent).withName(R.string.menu_recent).withTextColorRes(R.color.colorPrimaryText);
+            item5 = new PrimaryDrawerItem().withIdentifier(4L).withIcon(R.mipmap.ic_download).withName(R.string.menu_download).withTextColorRes(R.color.colorPrimaryText);
+            item6 = new PrimaryDrawerItem().withIdentifier(5L).withIcon(R.mipmap.ic_photo).withName(R.string.menu_photo).withTextColorRes(R.color.colorPrimaryText);
+            item7 = new PrimaryDrawerItem().withIdentifier(6L).withIcon(R.mipmap.ic_music).withName(R.string.menu_music).withTextColorRes(R.color.colorPrimaryText);
+            item8 = new PrimaryDrawerItem().withIdentifier(7L).withIcon(R.mipmap.ic_video).withName(R.string.menu_video).withTextColorRes(R.color.colorPrimaryText);
+            item9 = new PrimaryDrawerItem().withIdentifier(8L).withIcon(R.mipmap.ic_document).withName(R.string.menu_document).withTextColorRes(R.color.colorPrimaryText);
+            item10 = new PrimaryDrawerItem().withIdentifier(9L).withIcon(R.mipmap.ic_apk).withName(R.string.menu_apk).withTextColorRes(R.color.colorPrimaryText);
+            item11 = new PrimaryDrawerItem().withIdentifier(10L).withIcon(R.mipmap.ic_zip).withName(R.string.menu_compress).withTextColorRes(R.color.colorPrimaryText);
+            item12 = new PrimaryDrawerItem().withIdentifier(11L).withIcon(R.mipmap.ic_apps).withName(R.string.menu_apps).withTextColorRes(R.color.colorPrimaryText);
+            item13 = new PrimaryDrawerItem().withIdentifier(12L).withIcon(R.mipmap.ic_settings).withName(R.string.menu_settings).withTextColorRes(R.color.colorPrimaryText);
+            mDrawer.getRecyclerView().setBackgroundResource(R.drawable.select_item);
+        } else {
+            item1 = new PrimaryDrawerItem().withIdentifier(0L).withIcon(R.mipmap.ic_storage).withName(R.string.menu_inner_storage).withDescription(SDCardUtils.getSDCardSizeInfo(getStoragePath(this, false))).withTextColorRes(R.color.colorPrimaryTextWhite).withDescriptionTextColorRes(R.color.colorSecondaryTextWhite);
+            item3 = new PrimaryDrawerItem().withIdentifier(2L).withIcon(R.mipmap.ic_root).withName(R.string.menu_root).withTextColorRes(R.color.colorPrimaryTextWhite);
+            item4 = new PrimaryDrawerItem().withIdentifier(3L).withIcon(R.mipmap.ic_recent).withName(R.string.menu_recent).withTextColorRes(R.color.colorPrimaryTextWhite);
+            item5 = new PrimaryDrawerItem().withIdentifier(4L).withIcon(R.mipmap.ic_download).withName(R.string.menu_download).withTextColorRes(R.color.colorPrimaryTextWhite);
+            item6 = new PrimaryDrawerItem().withIdentifier(5L).withIcon(R.mipmap.ic_photo).withName(R.string.menu_photo).withTextColorRes(R.color.colorPrimaryTextWhite);
+            item7 = new PrimaryDrawerItem().withIdentifier(6L).withIcon(R.mipmap.ic_music).withName(R.string.menu_music).withTextColorRes(R.color.colorPrimaryTextWhite);
+            item8 = new PrimaryDrawerItem().withIdentifier(7L).withIcon(R.mipmap.ic_video).withName(R.string.menu_video).withTextColorRes(R.color.colorPrimaryTextWhite);
+            item9 = new PrimaryDrawerItem().withIdentifier(8L).withIcon(R.mipmap.ic_document).withName(R.string.menu_document).withTextColorRes(R.color.colorPrimaryTextWhite);
+            item10 = new PrimaryDrawerItem().withIdentifier(9L).withIcon(R.mipmap.ic_apk).withName(R.string.menu_apk).withTextColorRes(R.color.colorPrimaryTextWhite);
+            item11 = new PrimaryDrawerItem().withIdentifier(10L).withIcon(R.mipmap.ic_zip).withName(R.string.menu_compress).withTextColorRes(R.color.colorPrimaryTextWhite);
+            item12 = new PrimaryDrawerItem().withIdentifier(11L).withIcon(R.mipmap.ic_apps).withName(R.string.menu_apps).withTextColorRes(R.color.colorPrimaryTextWhite);
+            item13 = new PrimaryDrawerItem().withIdentifier(12L).withIcon(R.mipmap.ic_settings).withName(R.string.menu_settings).withTextColorRes(R.color.colorPrimaryTextWhite);
+            mDrawer.getRecyclerView().setBackgroundResource(R.drawable.select_item_dark);
+        }
+
+        mDrawer.addItems(
+                item1,
+                item3,
+                item4,
+                item5,
+                item6,
+                item7,
+                item8,
+                item9,
+                item10,
+                item11,
+                item12,
+                new DividerDrawerItem()
+        );
+
+        String outerSdcardPath = getStoragePath(this, true);
+        if (!TextUtils.isEmpty(outerSdcardPath)) {
+            PrimaryDrawerItem item2;
+            if (isLightMode()) {
+                item2 = new PrimaryDrawerItem().withIdentifier(1L).withIcon(R.mipmap.ic_sd)
+                        .withName(R.string.menu_outer_storage).withDescription(SDCardUtils.getSDCardSizeInfo(getStoragePath(this, true)))
+                        .withTextColorRes(R.color.colorPrimaryText).withDescriptionTextColorRes(R.color.colorSecondaryText);
+            } else {
+                item2 = new PrimaryDrawerItem().withIdentifier(1L).withIcon(R.mipmap.ic_sd)
+                        .withName(R.string.menu_outer_storage).withDescription(SDCardUtils.getSDCardSizeInfo(getStoragePath(this, true)))
+                        .withTextColorRes(R.color.colorPrimaryTextWhite).withDescriptionTextColorRes(R.color.colorSecondaryTextWhite);
+            }
+            mDrawer.addItemAtPosition(item2, 2);
+        }
+        mDrawer.addItemAtPosition(item13, mDrawer.getAdapter().getItemCount());
+
+        mDrawer.setOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+            @Override
+            public boolean onItemClick(View view, final int position, final IDrawerItem drawerItem) {
+                mDrawer.closeDrawer();
+                selectedPosition = Long.valueOf(drawerItem.getIdentifier()).intValue();
+                if (selectedPosition != 5) {
+                    mRlFile.setVisibility(View.VISIBLE);
+                    mRlAlbum.setVisibility(View.GONE);
+                }
+                getWindow().getDecorView().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        switch (selectedPosition) {
+                            case 0:
+                                mRxManager.post("toStorage", false);
+                                break;
+                            case 1:
+                                checkSdCardPermission();
+                                break;
+                            case 2:
+                                mRxManager.post("toRoot", "");
+                                break;
+                            case 3:
+                                mRxManager.post("toRecent", "");
+                                break;
+                            case 4:
+                                mRxManager.post("toDownload", "");
+                                break;
+                            case 5:
+                                mRlFile.setVisibility(View.GONE);
+                                mRlAlbum.setVisibility(View.VISIBLE);
+                                break;
+                            case 6:
+                                mRxManager.post("toMusic", "");
+                                break;
+                            case 7:
+                                mRxManager.post("toVideo", "");
+                                break;
+                            case 8:
+                                mRxManager.post("toDocument", "");
+                                break;
+                            case 9:
+                                mRxManager.post("toApk", "");
+                                break;
+                            case 10:
+                                mRxManager.post("toZip", "");
+                                break;
+                            case 11:
+                                mRxManager.post("toApps", "");
+                                break;
+                            case 12:
+                                startActivity(SettingsActivity.class);
+                                break;
+                            default:
+                                PrimaryDrawerItem primaryDrawerItem = (PrimaryDrawerItem) drawerItem;
+                                String path = primaryDrawerItem.getDescription().getText().toString();
+                                mRxManager.post("toPath", path);
+                                break;
+                        }
+                        resetSearch();
+                    }
+                }, 200);
+                return true;
+            }
+        });
+        mDrawer.setOnDrawerItemLongClickListener(new Drawer.OnDrawerItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(View view, int position, IDrawerItem drawerItem) {
+                final int longClickPosition = Long.valueOf(drawerItem.getIdentifier()).intValue();
+                switch (longClickPosition) {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 11:
+                    case 12:
+                        break;
+                    default:
+                        PrimaryDrawerItem primaryDrawerItem = (PrimaryDrawerItem) drawerItem;
+                        String name = primaryDrawerItem.getName().getText().toString();
+                        AlertUtils.showNormalAlert(FileListActivity.this, String.format(getString(R.string.tips_delete_bookmark), name), getString(R.string.act_confirm), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                try {
+                                    SPUtils.removeBookmark(longClickPosition - 100);
+                                    AlertUtils.showToast(FileListActivity.this, getString(R.string.tips_delete_bookmark_successfully));
+                                    refreshBookMarkList();
+                                } catch (Exception e) {
+                                    AlertUtils.showToast(FileListActivity.this, getString(R.string.tips_delete_bookmark_in_error));
+                                }
+                            }
+                        });
+                        break;
+                }
+                return true;
+            }
+        });
+
+        refreshBookMarkList();
 
         requirePermissions();
     }
@@ -226,8 +393,8 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     }
 
     private boolean onBackFolder() {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mDrawerLayout.closeDrawer(GravityCompat.START);
+        if (mDrawer.isDrawerOpen()) {
+            mDrawer.closeDrawer();
             return true;
         }
 
@@ -249,7 +416,7 @@ public class FileListActivity extends ThematicActivity implements NavigationView
             mRlFile.setVisibility(View.VISIBLE);
             mRlAlbum.setVisibility(View.GONE);
             mRxManager.post("toStorage", false);
-            mNavigationView.setCheckedItem(R.id.nav_inner_storage);
+            mDrawer.setSelection(0L);
             return true;
         }
         return false;
@@ -260,16 +427,14 @@ public class FileListActivity extends ThematicActivity implements NavigationView
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        initSearchView(menu);
-        return true;
-    }
-
-    @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.clear();
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        if (selectedPosition == 3 || selectedPosition == 5 || selectedPosition == 6 || selectedPosition == 7
+                || selectedPosition == 8 || selectedPosition == 9 || selectedPosition == 10 || selectedPosition == 11 || selectedPosition == 12) {
+            getMenuInflater().inflate(R.menu.menu_main2, menu);
+        } else {
+            getMenuInflater().inflate(R.menu.menu_main, menu);
+        }
         initSearchView(menu);
 
         int sortType = SPUtils.getSortType();
@@ -341,6 +506,9 @@ public class FileListActivity extends ThematicActivity implements NavigationView
                     mRxManager.post("onOrderType", Constants.OrderType.ASC);
                 }
                 break;
+            case R.id.action_bookmark:
+                mRxManager.post("onSaveBookmark", "");
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -384,87 +552,59 @@ public class FileListActivity extends ThematicActivity implements NavigationView
         });
     }
 
-    @Override
-    public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
-        mDrawerLayout.closeDrawer(GravityCompat.START);
-
-        if (item.getItemId() != R.id.nav_photo) {
-            mRlFile.setVisibility(View.VISIBLE);
-            mRlAlbum.setVisibility(View.GONE);
-        }
-        getWindow().getDecorView().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                switch (item.getItemId()) {
-                    case R.id.nav_inner_storage:
-                        selectedPosition = 0;
-                        mRxManager.post("toStorage", false);
-                        break;
-                    case R.id.nav_outer_storage:
-                        checkSdCardPermission();
-                        break;
-                    case R.id.nav_root:
-                        selectedPosition = 2;
-                        mRxManager.post("toRoot", "");
-                        break;
-                    case R.id.nav_recent:
-                        selectedPosition = 3;
-                        mRxManager.post("toRecent", "");
-                        break;
-                    case R.id.nav_download:
-                        selectedPosition = 4;
-                        mRxManager.post("toDownload", "");
-                        break;
-                    case R.id.nav_photo:
-                        selectedPosition = 5;
-                        mRlFile.setVisibility(View.GONE);
-                        mRlAlbum.setVisibility(View.VISIBLE);
-                        break;
-                    case R.id.nav_music:
-                        selectedPosition = 6;
-                        mRxManager.post("toMusic", "");
-                        break;
-                    case R.id.nav_video:
-                        selectedPosition = 7;
-                        mRxManager.post("toVideo", "");
-                        break;
-                    case R.id.nav_document:
-                        selectedPosition = 8;
-                        mRxManager.post("toDocument", "");
-                        break;
-                    case R.id.nav_apk:
-                        selectedPosition = 9;
-                        mRxManager.post("toApk", "");
-                        break;
-                    case R.id.nav_zip:
-                        selectedPosition = 10;
-                        mRxManager.post("toZip", "");
-                        break;
-                    case R.id.nav_apps:
-                        selectedPosition = 11;
-                        mRxManager.post("toApps", "");
-                        break;
-                    case R.id.nav_settings:
-                        startActivity(SettingsActivity.class);
-                        break;
-                }
-                resetSearch();
-            }
-        }, 200);
-        return true;
-    }
-
     private void resetSearch() {
         supportInvalidateOptionsMenu();
         mSearchView.onActionViewCollapsed();
         isSearchViewShow = false;
     }
 
-    private void disableNavigationViewScrollbars(NavigationView navigationView) {
-        if (navigationView != null) {
-            NavigationMenuView navigationMenuView = (NavigationMenuView) navigationView.getChildAt(0);
-            if (navigationMenuView != null) {
-                navigationMenuView.setVerticalScrollBarEnabled(false);
+    public void refreshBookMarkList() {
+        int maxNum = SPUtils.getBookmarkNum();
+        SparseArray<String> bookmarkMap = new SparseArray<>();
+        List<String> bookmarkList = new ArrayList<>();
+        String bookmarkName;
+        for (int i = 0; i < maxNum; i++) {
+            bookmarkName = SPUtils.getBookmarkName(i);
+            if (bookmarkName != null) {
+                bookmarkMap.put(i, bookmarkName);
+                bookmarkList.add(bookmarkName);
+            }
+        }
+
+        for (int i = 0; i < maxNum; i++) {
+            mDrawer.removeItems(100L + i);
+        }
+        PrimaryDrawerItem primaryDrawerItem;
+        if (bookmarkList.size() > 0) {
+            IDrawerItem drawerItem = mDrawer.getDrawerItem("divider");
+            if (drawerItem == null) {
+                DividerDrawerItem dividerDrawerItem = new DividerDrawerItem().withTag("divider");
+                mDrawer.addItemAtPosition(dividerDrawerItem, mDrawer.getAdapter().getItemCount() - 1);
+            }
+            for (int i = 0; i < maxNum; i++) {
+                bookmarkName = bookmarkMap.get(i);
+                if (bookmarkName != null) {
+                    primaryDrawerItem = new PrimaryDrawerItem();
+                    if (isLightMode()) {
+                        if (bookmarkName.equals(SDCardUtils.getStoragePath(this, false)) || bookmarkName.equals(SDCardUtils.getStoragePath(this, true))) {
+                            primaryDrawerItem.withIdentifier(100L + i).withName(bookmarkName).withIcon(R.mipmap.ic_bookmark).withDescription(bookmarkName).withTextColorRes(R.color.colorPrimaryText).withDescriptionTextColorRes(R.color.colorSecondaryText);
+                        } else {
+                            primaryDrawerItem.withIdentifier(100L + i).withName(bookmarkName.substring(bookmarkName.lastIndexOf("/") + 1)).withIcon(R.mipmap.ic_bookmark).withDescription(bookmarkName).withTextColorRes(R.color.colorPrimaryText).withDescriptionTextColorRes(R.color.colorSecondaryText);
+                        }
+                    } else {
+                        if (bookmarkName.equals(SDCardUtils.getStoragePath(this, false)) || bookmarkName.equals(SDCardUtils.getStoragePath(this, true))) {
+                            primaryDrawerItem.withIdentifier(100L + i).withName(bookmarkName).withIcon(R.mipmap.ic_bookmark).withDescription(bookmarkName).withTextColorRes(R.color.colorPrimaryTextWhite).withDescriptionTextColorRes(R.color.colorSecondaryTextWhite);
+                        } else {
+                            primaryDrawerItem.withIdentifier(100L + i).withName(bookmarkName.substring(bookmarkName.lastIndexOf("/") + 1)).withIcon(R.mipmap.ic_bookmark).withDescription(bookmarkName).withTextColorRes(R.color.colorPrimaryTextWhite).withDescriptionTextColorRes(R.color.colorSecondaryTextWhite);
+                        }
+                    }
+                    mDrawer.addItemAtPosition(primaryDrawerItem, mDrawer.getAdapter().getItemCount() - 2);
+                }
+            }
+        } else {
+            IDrawerItem drawerItem = mDrawer.getDrawerItem("divider");
+            if (drawerItem != null) {
+                mDrawer.removeItem(drawerItem.getIdentifier());
             }
         }
     }

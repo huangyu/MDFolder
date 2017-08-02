@@ -50,11 +50,4 @@
             app:showAsAction="withText" />
     </group>
 
-    <item
-        android:id="@+id/action_bookmark"
-        android:icon="@mipmap/ic_bookmark_white"
-        android:orderInCategory="8"
-        android:title="@string/menu_bookmark"
-        app:showAsAction="ifRoom" />
-
 </menu>

@@ -79,4 +79,6 @@ public interface IFileListView extends IBaseView {
 
     String getResString(int resId);
 
+    void refreshBookmarkList();
+
 }

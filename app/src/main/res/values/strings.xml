@@ -33,11 +33,12 @@
     <string name="transition_image_name">Image transition</string>
 
     <string name="menu_other">Other</string>
+    <string name="menu_bookmark">Bookmark</string>
     <string name="menu_root">System</string>
     <string name="menu_inner_storage">Storage</string>
     <string name="menu_outer_storage">SDCard</string>
-    <string name="menu_image">Image</string>
-    <string name="menu_audio">Audio</string>
+    <string name="menu_photo">Image</string>
+    <string name="menu_music">Audio</string>
     <string name="menu_video">Video</string>
     <string name="menu_document">Document</string>
     <string name="menu_download">Download</string>
@@ -142,6 +143,13 @@
     <string name="tips_calculating">Calculating file count&#8230;</string>
     <string name="tips_scanning">Scanning&#8230;</string>
     <string name="tips_scan_complete">Scan complete.</string>
+    <string name="tips_save_bookmark">Save current path as bookmark?</string>
+    <string name="tips_save_bookmark_already">Bookmark has already saved.</string>
+    <string name="tips_save_bookmark_successfully">Bookmark save successfully.</string>
+    <string name="tips_save_bookmark_in_error">Bookmark save in error.</string>
+    <string name="tips_delete_bookmark">Delete %s bookmark?</string>
+    <string name="tips_delete_bookmark_successfully">Bookmark delete successfully.</string>
+    <string name="tips_delete_bookmark_in_error">Bookmark delete in error.</string>
 
     <string name="pref_settings">Settings</string>
     <string name="pref_appearance">Appearance</string>

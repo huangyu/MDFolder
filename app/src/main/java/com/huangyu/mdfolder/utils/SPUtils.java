@@ -19,6 +19,8 @@ public class SPUtils {
 
     /**
      * 是否是白天主题
+     *
+     * @return 是否是白天
      */
     public static boolean isLightMode() {
         String themeMode = getThemeMode();
@@ -32,7 +34,7 @@ public class SPUtils {
     /**
      * 设置主题
      *
-     * @return true/false
+     * @return 主题
      */
     public static String getThemeMode() {
         String[] themesArray = BaseApplication.getInstance().getApplicationContext().getResources().getStringArray(R.array.array_themes_value);
@@ -43,7 +45,7 @@ public class SPUtils {
     /**
      * 是否显示隐藏文件
      *
-     * @return true/false
+     * @return 是否显示隐藏文件
      */
     public static boolean isShowHiddenFiles() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(BaseApplication.getInstance().getApplicationContext());
@@ -64,7 +66,7 @@ public class SPUtils {
     /**
      * 是否是内置模式
      *
-     * @return true/false
+     * @return 是否内置模式
      */
     public static boolean isBuildInMode() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(BaseApplication.getInstance().getApplicationContext());
@@ -74,7 +76,7 @@ public class SPUtils {
     /**
      * 是否是显示全部应用
      *
-     * @return true/false
+     * @return 是否显示全部应用
      */
     public static boolean isShowAllApps() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(BaseApplication.getInstance().getApplicationContext());
@@ -84,7 +86,7 @@ public class SPUtils {
     /**
      * 是否是全局搜索
      *
-     * @return true/false
+     * @return 是否全局搜索
      */
     public static boolean isSearchGlobally() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(BaseApplication.getInstance().getApplicationContext());
@@ -93,6 +95,9 @@ public class SPUtils {
 
     /**
      * 设置文件备注
+     *
+     * @param filePath 文件路径
+     * @param remark   备注
      */
     public static void setFileRemark(String filePath, String remark) {
         com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
@@ -102,6 +107,7 @@ public class SPUtils {
     /**
      * 获取文件备注
      *
+     * @param filePath 文件路径
      * @return 备注名
      */
     public static String getFileRemark(String filePath) {
@@ -127,6 +133,8 @@ public class SPUtils {
 
     /**
      * 设置排序类型
+     *
+     * @param type 类型
      */
     public static void setSortType(int type) {
         com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
@@ -143,10 +151,62 @@ public class SPUtils {
 
     /**
      * 设置升降序类型
+     *
+     * @param type 类型
      */
     public static void setOrderType(int type) {
         com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
         sp.put("order_type", type);
+    }
+
+    /**
+     * 设置书签序号
+     *
+     * @param num 书签序号
+     */
+    public static void setBookmarkNum(int num) {
+        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        sp.put("bookmark_num", num);
+    }
+
+    /**
+     * 获取书签序号
+     *
+     * @@return 书签序号
+     */
+    public static int getBookmarkNum() {
+        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        return sp.getInt("bookmark_num", 0);
+    }
+
+    /**
+     * 设置书签名
+     *
+     * @param name 书签名
+     */
+    public static void setBookmarkName(int num, String name) {
+        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        sp.put("bookmark_name" + num, name);
+    }
+
+    /**
+     * 获取书签名
+     *
+     * @@return 书签名
+     */
+    public static String getBookmarkName(int num) {
+        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        return sp.getString("bookmark_name" + num, null);
+    }
+
+    /**
+     * 删除书签
+     *
+     * @param num
+     */
+    public static void removeBookmark(int num) {
+        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        sp.remove("bookmark_name" + num);
     }
 
 }
