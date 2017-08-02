@@ -8,8 +8,8 @@ android {
         applicationId "com.huangyu.mdfolder"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 20
-        versionName "1.2.0"
+        versionCode 21
+        versionName "1.2.1"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {

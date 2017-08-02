@@ -201,18 +201,18 @@ public class FileListPresenter extends BasePresenter<IFileListView> {
     private void setStack(String rootPath) {
         mView.removeAllTabs();
         mView.addTab(rootPath);
+        mFileStack.push(rootPath);
+        mScrollYStack.push(0);
         String nameString = mCurrentPath.substring(rootPath.length() + 1);
         String[] nameArray = nameString.split("/");
         for (int i = 0; i < nameArray.length; i++) {
             mView.addTab(nameArray[i]);
             String path = rootPath;
-            mFileStack.push(path);
-            mScrollYStack.push(0);
             for (int j = 0; j <= i; j++) {
                 path += "/" + nameArray[j];
-                mFileStack.push(path);
-                mScrollYStack.push(0);
             }
+            mFileStack.push(path);
+            mScrollYStack.push(0);
         }
     }
 
