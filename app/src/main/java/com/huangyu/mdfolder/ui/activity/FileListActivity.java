@@ -179,7 +179,7 @@ public class FileListActivity extends ThematicActivity implements EasyPermission
             item8 = new PrimaryDrawerItem().withIdentifier(7L).withIcon(R.mipmap.ic_video).withName(R.string.menu_video).withTextColorRes(R.color.colorPrimaryText);
             item9 = new PrimaryDrawerItem().withIdentifier(8L).withIcon(R.mipmap.ic_document).withName(R.string.menu_document).withTextColorRes(R.color.colorPrimaryText);
             item10 = new PrimaryDrawerItem().withIdentifier(9L).withIcon(R.mipmap.ic_apk).withName(R.string.menu_apk).withTextColorRes(R.color.colorPrimaryText);
-            item11 = new PrimaryDrawerItem().withIdentifier(10L).withIcon(R.mipmap.ic_zip).withName(R.string.menu_compress).withTextColorRes(R.color.colorPrimaryText);
+            item11 = new PrimaryDrawerItem().withIdentifier(10L).withIcon(R.mipmap.ic_zip).withName(R.string.menu_compress_package).withTextColorRes(R.color.colorPrimaryText);
             item12 = new PrimaryDrawerItem().withIdentifier(11L).withIcon(R.mipmap.ic_apps).withName(R.string.menu_apps).withTextColorRes(R.color.colorPrimaryText);
             item13 = new PrimaryDrawerItem().withIdentifier(12L).withIcon(R.mipmap.ic_settings).withName(R.string.menu_settings).withTextColorRes(R.color.colorPrimaryText);
             mDrawer.getRecyclerView().setBackgroundResource(R.drawable.select_item);
@@ -193,7 +193,7 @@ public class FileListActivity extends ThematicActivity implements EasyPermission
             item8 = new PrimaryDrawerItem().withIdentifier(7L).withIcon(R.mipmap.ic_video).withName(R.string.menu_video).withTextColorRes(R.color.colorPrimaryTextWhite);
             item9 = new PrimaryDrawerItem().withIdentifier(8L).withIcon(R.mipmap.ic_document).withName(R.string.menu_document).withTextColorRes(R.color.colorPrimaryTextWhite);
             item10 = new PrimaryDrawerItem().withIdentifier(9L).withIcon(R.mipmap.ic_apk).withName(R.string.menu_apk).withTextColorRes(R.color.colorPrimaryTextWhite);
-            item11 = new PrimaryDrawerItem().withIdentifier(10L).withIcon(R.mipmap.ic_zip).withName(R.string.menu_compress).withTextColorRes(R.color.colorPrimaryTextWhite);
+            item11 = new PrimaryDrawerItem().withIdentifier(10L).withIcon(R.mipmap.ic_zip).withName(R.string.menu_compress_package).withTextColorRes(R.color.colorPrimaryTextWhite);
             item12 = new PrimaryDrawerItem().withIdentifier(11L).withIcon(R.mipmap.ic_apps).withName(R.string.menu_apps).withTextColorRes(R.color.colorPrimaryTextWhite);
             item13 = new PrimaryDrawerItem().withIdentifier(12L).withIcon(R.mipmap.ic_settings).withName(R.string.menu_settings).withTextColorRes(R.color.colorPrimaryTextWhite);
             mDrawer.getRecyclerView().setBackgroundResource(R.drawable.select_item_dark);
