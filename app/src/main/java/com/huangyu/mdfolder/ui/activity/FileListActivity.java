@@ -31,6 +31,7 @@ import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.ui.fragment.AlbumAndImageFragment;
 import com.huangyu.mdfolder.ui.fragment.FileListFragment;
 import com.huangyu.mdfolder.utils.AlertUtils;
+import com.huangyu.mdfolder.utils.RootUtils;
 import com.huangyu.mdfolder.utils.SDCardUtils;
 import com.huangyu.mdfolder.utils.SPUtils;
 import com.mikepenz.materialdrawer.Drawer;
@@ -250,7 +251,7 @@ public class FileListActivity extends ThematicActivity implements EasyPermission
                                 checkSdCardPermission();
                                 break;
                             case 2:
-                                mRxManager.post("toRoot", "");
+                                checkRootPermission();
                                 break;
                             case 3:
                                 mRxManager.post("toRecent", "");
@@ -310,6 +311,7 @@ public class FileListActivity extends ThematicActivity implements EasyPermission
                     case 7:
                     case 8:
                     case 9:
+                    case 10:
                     case 11:
                     case 12:
                         break;
@@ -646,12 +648,29 @@ public class FileListActivity extends ThematicActivity implements EasyPermission
 
     @Override
     public void onPermissionsDenied(int requestCode, List<String> perms) {
-        AlertUtils.showToast(mRlFile, getString(R.string.tips_no_permissions), getString(R.string.act_exit), new View.OnClickListener() {
+        AlertUtils.showSnack(mRlFile, getString(R.string.tips_no_permissions), getString(R.string.act_exit), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ActivityManager.getInstance().finishAllActivity();
             }
         });
+    }
+
+    private void checkRootPermission() {
+        if (RootUtils.isRoot()) {
+            if (RootUtils.requestRootPermission("com.huangyu.mdfolder")) {
+                if (RootUtils.mount()) {
+                    // TODO
+                } else {
+                    // TODO
+                }
+            } else {
+                // TODO
+            }
+        } else {
+            AlertUtils.showToast(this, getString(R.string.tips_no_root_permission));
+            mRxManager.post("toRoot", "");
+        }
     }
 
     private void checkSdCardPermission() {

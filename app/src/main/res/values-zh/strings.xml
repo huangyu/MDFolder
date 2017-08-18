@@ -151,6 +151,7 @@
     <string name="tips_delete_bookmark">删除%s书签？</string>
     <string name="tips_delete_bookmark_successfully">书签删除成功</string>
     <string name="tips_delete_bookmark_in_error">书签删除失败</string>
+    <string name="tips_no_root_permission">设备未获取Root权限</string>
 
     <string name="pref_settings">设置</string>
     <string name="pref_appearance">外观</string>

@@ -48,7 +48,7 @@ import com.huangyu.mdfolder.ui.widget.decoration.VerticalGirdDecoration;
 import com.huangyu.mdfolder.ui.widget.TabView;
 import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.KeyboardUtils;
-import com.huangyu.mdfolder.utils.OnSharedViewListener;
+import com.huangyu.mdfolder.utils.listener.OnSharedViewListener;
 import com.huangyu.mdfolder.utils.SPUtils;
 
 import java.io.File;

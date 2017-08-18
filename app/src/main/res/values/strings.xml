@@ -150,6 +150,7 @@
     <string name="tips_delete_bookmark">Delete %s bookmark?</string>
     <string name="tips_delete_bookmark_successfully">Bookmark delete successfully.</string>
     <string name="tips_delete_bookmark_in_error">Bookmark delete in error.</string>
+    <string name="tips_no_root_permission">Not root yet.</string>
 
     <string name="pref_settings">Settings</string>
     <string name="pref_appearance">Appearance</string>
