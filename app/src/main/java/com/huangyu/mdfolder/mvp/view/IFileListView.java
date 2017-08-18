@@ -49,6 +49,10 @@ public interface IFileListView extends IBaseView {
 
     void showProgressDialog(String message);
 
+    void showProgressDialog(int totalCount, String message);
+
+    void updateProgressDialog(int count);
+
     void hideProgressDialog();
 
     void showMessage(String message);

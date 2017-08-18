@@ -905,8 +905,8 @@ public class FileListModel implements IBaseModel {
      * @param zipFilePath 文件路径
      * @return true/false
      */
-    public boolean zipFileList(ArrayList<File> resFiles, String zipFilePath) {
-        return CompressUtils.zipFile(resFiles, zipFilePath);
+    public boolean zipFileList(ArrayList<File> resFiles, String zipFilePath, CompressUtils.ZipCallBack zipCallBack) {
+        return CompressUtils.zipFile(resFiles, zipFilePath, zipCallBack);
     }
 
     /**
@@ -916,8 +916,8 @@ public class FileListModel implements IBaseModel {
      * @param toPath      目标文件路径
      * @return true/false
      */
-    public boolean unZipFileList(String zipFilePath, String toPath) {
-        return CompressUtils.unZipFile(zipFilePath, toPath);
+    public boolean unZipFileList(String zipFilePath, String toPath,  CompressUtils.UnZipCallBack unzipCallBack) {
+        return CompressUtils.unZipFile(zipFilePath, toPath, unzipCallBack);
     }
 
     /**
@@ -928,8 +928,8 @@ public class FileListModel implements IBaseModel {
      * @param password    解压密码
      * @return true/false
      */
-    public boolean unZipFileList(String zipFilePath, String toPath, String password) {
-        return CompressUtils.unZipFile(zipFilePath, toPath, password);
+    public boolean unZipFileList(String zipFilePath, String toPath, String password, CompressUtils.UnZipCallBack unZipCallBack) {
+        return CompressUtils.unZipFile(zipFilePath, toPath, password, unZipCallBack);
     }
 
     /**
@@ -950,8 +950,8 @@ public class FileListModel implements IBaseModel {
      * @param toPath      目标文件路径
      * @return true/false
      */
-    public boolean unRarFileList(String zipFilePath, String toPath) {
-        return CompressUtils.unRarFile(zipFilePath, toPath);
+    public boolean unRarFileList(String zipFilePath, String toPath, CompressUtils.UnZipCallBack unzipCallBack) {
+        return CompressUtils.unRarFile(zipFilePath, toPath, unzipCallBack);
     }
 
 }

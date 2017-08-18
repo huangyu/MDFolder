@@ -93,7 +93,7 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     @Bind(R.id.fab_add_folder)
     FloatingActionButton mFabAddFolder;
 
-    private ProgressDialog progressDialog;
+    private ProgressDialog mProgressDialog;
     private FileListAdapter mAdapter;
     private ActionMode mActionMode;
     private String mSearchStr = "";
@@ -749,19 +749,63 @@ public class FileListFragment extends BaseFragment<IFileListView, FileListPresen
     }
 
     @Override
-    public void showProgressDialog(String message) {
-        progressDialog = new ProgressDialog(getContext());
-        progressDialog.setTitle(getString(R.string.tips_alert));
-        progressDialog.setMessage(message);
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+    public void showProgressDialog(final String message) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog = new ProgressDialog(getContext());
+                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                mProgressDialog.setTitle(getString(R.string.tips_alert));
+                mProgressDialog.setMessage(message);
+                mProgressDialog.setCancelable(false);
+                mProgressDialog.show();
+            }
+        });
+    }
+
+    @Override
+    public void showProgressDialog(final int totalCount, final String message) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog = new ProgressDialog(getContext());
+                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                mProgressDialog.setMessage(message);
+                mProgressDialog.setMax(totalCount);
+                mProgressDialog.setProgress(0);
+                mProgressDialog.setCancelable(false);
+                mProgressDialog.show();
+            }
+        });
+    }
+
+    @Override
+    public void updateProgressDialog(final int count) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                    final int progress = mProgressDialog.getProgress() + count;
+
+                    mProgressDialog.setProgress(progress);
+                    if (progress == mProgressDialog.getMax()) {
+                        hideProgressDialog();
+                    }
+                }
+            }
+        });
     }
 
     @Override
     public void hideProgressDialog() {
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                }
+            }
+        });
     }
 
     private ActionMode getControlActionMode() {

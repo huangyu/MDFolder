@@ -31,10 +31,19 @@ public class CompressUtils {
         throw new UnsupportedOperationException("u can't instantiate me...");
     }
 
+    public interface ZipCallBack {
+        void working();
+    }
+
+    public interface UnZipCallBack {
+        void start(int totalCount);
+        void working();
+    }
+
     /**
      * 压缩zip文件
      */
-    public static boolean zipFile(ArrayList<File> fileList, String toPath) {
+    public static boolean zipFile(ArrayList<File> fileList, String toPath, ZipCallBack zipCallBack) {
         try {
             ZipFile zipFile = new ZipFile(toPath);
             ZipParameters parameters = new ZipParameters();
@@ -46,6 +55,7 @@ public class CompressUtils {
                 } else {
                     zipFile.addFile(file, parameters);
                 }
+                zipCallBack.working();
             }
         } catch (ZipException e) {
             e.printStackTrace();
@@ -61,12 +71,13 @@ public class CompressUtils {
      * @param toPath      解压路径
      */
     @SuppressWarnings("unchecked")
-    public static boolean unZipFile(String zipFilePath, String toPath) {
+    public static boolean unZipFile(String zipFilePath, String toPath, UnZipCallBack unzipCallBack) {
         try {
             ZipFile zipFile = new ZipFile(zipFilePath);
             UnzipParameters param = new UnzipParameters();
             zipFile.setFileNameCharset("ISO8859-1");
             List<FileHeader> list = zipFile.getFileHeaders();
+            unzipCallBack.start(list.size());
             for (FileHeader fileHeader : list) {
                 byte[] b = fileHeader.getFileName().getBytes("ISO8859-1");
                 String fileName;
@@ -75,6 +86,7 @@ public class CompressUtils {
                     fileName = new String(b, "GBK");
                 }
                 zipFile.extractFile(fileHeader, toPath, param, fileName);
+                unzipCallBack.working();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -90,12 +102,13 @@ public class CompressUtils {
      * @param toPath      解压路径
      */
     @SuppressWarnings("unchecked")
-    public static boolean unZipFile(String zipFilePath, String toPath, String password) {
+    public static boolean unZipFile(String zipFilePath, String toPath, String password, UnZipCallBack unZipCallBack) {
         try {
             ZipFile zipFile = new ZipFile(zipFilePath);
             UnzipParameters param = new UnzipParameters();
             zipFile.setFileNameCharset("ISO8859-1");
             List<FileHeader> list = zipFile.getFileHeaders();
+            unZipCallBack.start(list.size());
             for (FileHeader fileHeader : list) {
                 byte[] b = fileHeader.getFileName().getBytes("ISO8859-1");
                 String fileName;
@@ -107,6 +120,7 @@ public class CompressUtils {
                     zipFile.setPassword(password);
                 }
                 zipFile.extractFile(fileHeader, toPath, param, fileName);
+                unZipCallBack.working();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -121,8 +135,8 @@ public class CompressUtils {
      * @param rarFilePath 压缩文件路径
      * @param toPath      解压路径
      */
-    public static boolean unRarFile(String rarFilePath, String toPath) {
-        unRar(new File(rarFilePath), toPath);
+    public static boolean unRarFile(String rarFilePath, String toPath, UnZipCallBack unZipCallBack) {
+        unRar(new File(rarFilePath), toPath, unZipCallBack);
         return true;
     }
 
@@ -132,7 +146,7 @@ public class CompressUtils {
      * @param rarFilePath 压缩文件路径
      * @param toPath      解压路径
      */
-    private static void unRar(File rarFilePath, String toPath) {
+    private static void unRar(File rarFilePath, String toPath, UnZipCallBack unZipCallBack) {
         FileOutputStream fileOut;
         File file;
         Archive rarFile = null;
@@ -143,6 +157,7 @@ public class CompressUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        unZipCallBack.start(rarFile.getFileHeaders().size());
         de.innosystec.unrar.rarfile.FileHeader fh = rarFile.nextFileHeader();
         while (fh != null) {
             String fileName;
@@ -163,6 +178,7 @@ public class CompressUtils {
                 try {
                     fileOut = new FileOutputStream(file);
                     rarFile.extractFile(fh, fileOut);
+                    unZipCallBack.working();
                     fileOut.close();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
