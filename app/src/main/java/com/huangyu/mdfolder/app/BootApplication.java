@@ -6,7 +6,7 @@ import com.huangyu.library.util.SPUtils;
 /**
  * Created by huangyu on 2017-5-23.
  */
-public class AppApplication extends BaseApplication {
+public class BootApplication extends BaseApplication {
 
     private SPUtils spUtils;
 

@@ -2,14 +2,15 @@ apply plugin: 'com.android.application'
 
 android {
 
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    compileSdkVersion 27
+    buildToolsVersion '27.0.2'
+    flavorDimensions "default"
     defaultConfig {
         applicationId "com.huangyu.mdfolder"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 21
-        versionName "1.2.1"
+        versionName "1.2.2"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
@@ -39,21 +40,22 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':library')
-    compile "com.android.support:support-annotations:${versions.supportLib}"
-    compile "com.android.support:appcompat-v7:${versions.supportLib}"
-    compile "com.android.support:support-v4:${versions.supportLib}"
-    compile "com.android.support:support-vector-drawable:${versions.supportLib}"
-    compile "com.android.support:design:${versions.supportLib}"
-    compile "com.android.support:cardview-v7:${versions.supportLib}"
-    compile "com.android.support:preference-v14:${versions.supportLib}"
+    compile "com.android.support:support-annotations:27.1.0"
+    compile "com.android.support:appcompat-v7:27.1.0"
+    compile "com.android.support:support-v4:27.1.0"
+    compile "com.android.support:support-vector-drawable:27.1.0"
+    compile "com.android.support:design:27.1.0"
+    compile "com.android.support:cardview-v7:27.1.0"
+    compile "com.android.support:preference-v14:27.1.0"
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.github.bumptech.glide:glide:3.7.0'
-//    annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC0'
+    compile 'com.github.bumptech.glide:glide:4.2.0'
     compile 'pub.devrel:easypermissions:0.4.0'
     compile 'com.github.clans:fab:1.6.4'
     compile 'com.github.chrisbanes:PhotoView:2.0.0'
     compile 'com.afollestad:easyvideoplayer:0.3.0'
     compile 'com.hzy:un7zip:1.0.0'
+
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
     compile 'com.mikepenz:fastadapter-commons:2.6.0@aar'
     compile('com.mikepenz:aboutlibraries:5.9.5@aar') {

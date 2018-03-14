@@ -14,6 +14,7 @@ import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.library.rx.RxManager;
 
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 import static com.huangyu.library.util.GenericUtils.getT;
 
@@ -25,6 +26,7 @@ public abstract class BaseActivity<V extends IBaseView, P extends BasePresenter<
 
     protected P mPresenter;
     protected RxManager mRxManager = new RxManager();
+    private Unbinder mUnbinder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,7 +34,7 @@ public abstract class BaseActivity<V extends IBaseView, P extends BasePresenter<
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
         ActivityManager.getInstance().addActivity(this);
-        ButterKnife.bind(this);
+        mUnbinder = ButterKnife.bind(this);
 
         mPresenter = getT(this, 1);
         if (mPresenter != null) {
@@ -53,7 +55,7 @@ public abstract class BaseActivity<V extends IBaseView, P extends BasePresenter<
         if (mRxManager != null) {
             mRxManager.clear();
         }
-        ButterKnife.unbind(this);
+        mUnbinder.unbind();
         ActivityManager.getInstance().removeActivity(this);
         BaseApplication.getRefWatcher().watch(this);
         super.onDestroy();

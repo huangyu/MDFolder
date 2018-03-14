@@ -9,11 +9,11 @@ import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.mdfolder.R;
 import com.huangyu.mdfolder.ui.fragment.SettingsFragment;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 public class SettingsActivity extends ThematicActivity {
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
     @Override

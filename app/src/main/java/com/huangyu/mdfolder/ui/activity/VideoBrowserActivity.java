@@ -28,7 +28,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Subscriber;
@@ -41,16 +41,16 @@ import rx.schedulers.Schedulers;
  */
 public class VideoBrowserActivity extends ThematicActivity implements EasyVideoCallback {
 
-    @Bind(R.id.appbar)
+    @BindView(R.id.appbar)
     AppBarLayout mAppBarLayout;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.tv_number)
+    @BindView(R.id.tv_number)
     TextView mTvNumber;
 
-    @Bind(R.id.view_pager)
+    @BindView(R.id.view_pager)
     ViewPager mViewPager;
 
     private ProgressDialog mProgressDialog;

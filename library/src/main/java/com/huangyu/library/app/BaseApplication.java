@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 
-import com.huangyu.library.util.LogUtils;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
@@ -31,7 +30,6 @@ public class BaseApplication extends Application {
         isApkInDebug(getApplicationContext());
         if (isDebug()) {
 //            CrashHandler.getInstance().init(this);
-            LogUtils.init(true);
             if (LeakCanary.isInAnalyzerProcess(this)) {
                 return;
             }

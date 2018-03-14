@@ -57,7 +57,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.functions.Action1;
 
@@ -66,31 +66,31 @@ import rx.functions.Action1;
  */
 public class FileListFragment extends BaseFragment<IFileListView, FileListPresenter> implements IFileListView {
 
-    @Bind(R.id.cl_main)
+    @BindView(R.id.cl_main)
     CoordinatorLayout mCoordinatorLayout;
 
-    @Bind(R.id.swipe_refresh_layout)
+    @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
 
-    @Bind(R.id.tab_view)
+    @BindView(R.id.tab_view)
     TabView mTabView;
 
-    @Bind(R.id.recycler_view)
+    @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
-    @Bind(R.id.ll_empty)
+    @BindView(R.id.ll_empty)
     LinearLayout mLlEmpty;
 
-    @Bind(R.id.iv_center)
+    @BindView(R.id.iv_center)
     ImageView mIvCenter;
 
-    @Bind(R.id.fam_add)
+    @BindView(R.id.fam_add)
     FloatingActionMenu mFamAdd;
 
-    @Bind(R.id.fab_add_file)
+    @BindView(R.id.fab_add_file)
     FloatingActionButton mFabAddFile;
 
-    @Bind(R.id.fab_add_folder)
+    @BindView(R.id.fab_add_folder)
     FloatingActionButton mFabAddFolder;
 
     private ProgressDialog mProgressDialog;

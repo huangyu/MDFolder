@@ -17,7 +17,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.huangyu.library.app.BaseApplication;
-import com.huangyu.mdfolder.app.AppApplication;
+import com.huangyu.mdfolder.app.BootApplication;
 
 import java.io.File;
 import java.io.IOException;
@@ -134,7 +134,7 @@ public class DocumentFileUtils {
      */
     private static Uri[] getTreeUris() {
         List<Uri> uris = new ArrayList<>();
-        Uri uri = Uri.parse(((AppApplication) AppApplication.getInstance()).getSPUtils().getString("uri"));
+        Uri uri = Uri.parse(((BootApplication) BootApplication.getInstance()).getSPUtils().getString("uri"));
         if (uri != null) {
             uris.add(uri);
         }

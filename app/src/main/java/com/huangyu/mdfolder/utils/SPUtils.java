@@ -5,7 +5,7 @@ import android.preference.PreferenceManager;
 
 import com.huangyu.library.app.BaseApplication;
 import com.huangyu.mdfolder.R;
-import com.huangyu.mdfolder.app.AppApplication;
+import com.huangyu.mdfolder.app.BootApplication;
 import com.huangyu.mdfolder.app.Constants;
 
 /**
@@ -100,7 +100,7 @@ public class SPUtils {
      * @param remark   备注
      */
     public static void setFileRemark(String filePath, String remark) {
-        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        com.huangyu.library.util.SPUtils sp = ((BootApplication) BootApplication.getInstance()).getSPUtils();
         sp.put(filePath, remark);
     }
 
@@ -111,7 +111,7 @@ public class SPUtils {
      * @return 备注名
      */
     public static String getFileRemark(String filePath) {
-        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        com.huangyu.library.util.SPUtils sp = ((BootApplication) BootApplication.getInstance()).getSPUtils();
         return sp.getString(filePath);
     }
 
@@ -119,7 +119,7 @@ public class SPUtils {
      * 移除备注
      */
     public static void removeFileRemark(String filePath) {
-        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        com.huangyu.library.util.SPUtils sp = ((BootApplication) BootApplication.getInstance()).getSPUtils();
         sp.remove(filePath);
     }
 
@@ -127,7 +127,7 @@ public class SPUtils {
      * 获取排序类型
      */
     public static int getSortType() {
-        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        com.huangyu.library.util.SPUtils sp = ((BootApplication) BootApplication.getInstance()).getSPUtils();
         return sp.getInt("sort_type", Constants.SortType.TYPE);
     }
 
@@ -137,7 +137,7 @@ public class SPUtils {
      * @param type 类型
      */
     public static void setSortType(int type) {
-        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        com.huangyu.library.util.SPUtils sp = ((BootApplication) BootApplication.getInstance()).getSPUtils();
         sp.put("sort_type", type);
     }
 
@@ -145,7 +145,7 @@ public class SPUtils {
      * 获取升降序类型
      */
     public static int getOrderType() {
-        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        com.huangyu.library.util.SPUtils sp = ((BootApplication) BootApplication.getInstance()).getSPUtils();
         return sp.getInt("order_type", Constants.OrderType.ASC);
     }
 
@@ -155,7 +155,7 @@ public class SPUtils {
      * @param type 类型
      */
     public static void setOrderType(int type) {
-        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        com.huangyu.library.util.SPUtils sp = ((BootApplication) BootApplication.getInstance()).getSPUtils();
         sp.put("order_type", type);
     }
 
@@ -165,7 +165,7 @@ public class SPUtils {
      * @param num 书签序号
      */
     public static void setBookmarkNum(int num) {
-        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        com.huangyu.library.util.SPUtils sp = ((BootApplication) BootApplication.getInstance()).getSPUtils();
         sp.put("bookmark_num", num);
     }
 
@@ -175,7 +175,7 @@ public class SPUtils {
      * @@return 书签序号
      */
     public static int getBookmarkNum() {
-        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        com.huangyu.library.util.SPUtils sp = ((BootApplication) BootApplication.getInstance()).getSPUtils();
         return sp.getInt("bookmark_num", 0);
     }
 
@@ -185,7 +185,7 @@ public class SPUtils {
      * @param name 书签名
      */
     public static void setBookmarkName(int num, String name) {
-        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        com.huangyu.library.util.SPUtils sp = ((BootApplication) BootApplication.getInstance()).getSPUtils();
         sp.put("bookmark_name" + num, name);
     }
 
@@ -195,7 +195,7 @@ public class SPUtils {
      * @@return 书签名
      */
     public static String getBookmarkName(int num) {
-        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        com.huangyu.library.util.SPUtils sp = ((BootApplication) BootApplication.getInstance()).getSPUtils();
         return sp.getString("bookmark_name" + num, null);
     }
 
@@ -205,7 +205,7 @@ public class SPUtils {
      * @param num
      */
     public static void removeBookmark(int num) {
-        com.huangyu.library.util.SPUtils sp = ((AppApplication) AppApplication.getInstance()).getSPUtils();
+        com.huangyu.library.util.SPUtils sp = ((BootApplication) BootApplication.getInstance()).getSPUtils();
         sp.remove("bookmark_name" + num);
     }
 

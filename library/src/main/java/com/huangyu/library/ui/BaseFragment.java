@@ -14,6 +14,7 @@ import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.library.rx.RxManager;
 
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 import static com.huangyu.library.util.GenericUtils.getT;
 
@@ -25,6 +26,7 @@ public abstract class BaseFragment<V extends IBaseView, P extends BasePresenter<
     protected View mRootView;
     protected P mPresenter;
     protected RxManager mRxManager = new RxManager();
+    private Unbinder mUnbinder;
 
     @Nullable
     @Override
@@ -32,7 +34,7 @@ public abstract class BaseFragment<V extends IBaseView, P extends BasePresenter<
         if (mRootView == null) {
             mRootView = inflater.inflate(getLayoutId(), container, false);
         }
-        ButterKnife.bind(this, mRootView);
+        mUnbinder = ButterKnife.bind(this, mRootView);
 
         mPresenter = getT(this, 1);
         if (mPresenter != null) {
@@ -57,7 +59,7 @@ public abstract class BaseFragment<V extends IBaseView, P extends BasePresenter<
         if (mRootView != null) {
             ((ViewGroup) mRootView.getParent()).removeView(mRootView);
         }
-        ButterKnife.unbind(this);
+        mUnbinder.unbind();
     }
 
     @Override

@@ -42,21 +42,21 @@ import com.huangyu.mdfolder.mvp.presenter.AlbumAndImagePresenter;
 import com.huangyu.mdfolder.mvp.view.IAlbumAndImageView;
 import com.huangyu.mdfolder.ui.activity.FileListActivity;
 import com.huangyu.mdfolder.ui.activity.ImageBrowserActivity;
-import com.huangyu.mdfolder.ui.adapter.ImageAdapter;
 import com.huangyu.mdfolder.ui.adapter.AlbumAdapter;
-import com.huangyu.mdfolder.ui.widget.decoration.VerticalGirdDecoration;
+import com.huangyu.mdfolder.ui.adapter.ImageAdapter;
 import com.huangyu.mdfolder.ui.widget.TabView;
+import com.huangyu.mdfolder.ui.widget.decoration.VerticalGirdDecoration;
 import com.huangyu.mdfolder.utils.AlertUtils;
 import com.huangyu.mdfolder.utils.KeyboardUtils;
-import com.huangyu.mdfolder.utils.listener.OnSharedViewListener;
 import com.huangyu.mdfolder.utils.SPUtils;
+import com.huangyu.mdfolder.utils.listener.OnSharedViewListener;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.functions.Action1;
 
@@ -65,22 +65,22 @@ import rx.functions.Action1;
  */
 public class AlbumAndImageFragment extends BaseFragment<IAlbumAndImageView, AlbumAndImagePresenter> implements IAlbumAndImageView {
 
-    @Bind(R.id.cl_main)
+    @BindView(R.id.cl_main)
     CoordinatorLayout mCoordinatorLayout;
 
-    @Bind(R.id.swipe_refresh_layout)
+    @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
 
-    @Bind(R.id.tab_view)
+    @BindView(R.id.tab_view)
     TabView mTabView;
 
-    @Bind(R.id.recycler_view)
+    @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
-    @Bind(R.id.ll_empty)
+    @BindView(R.id.ll_empty)
     LinearLayout mLlEmpty;
 
-    @Bind(R.id.iv_center)
+    @BindView(R.id.iv_center)
     ImageView mIvCenter;
 
     private AlbumAdapter mAlbumAdapter;

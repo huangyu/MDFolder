@@ -21,7 +21,6 @@ import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.library.util.FileUtils;
@@ -38,7 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Subscriber;
@@ -52,16 +51,16 @@ import rx.schedulers.Schedulers;
  */
 public class ImageBrowserActivity extends ThematicActivity {
 
-    @Bind(R.id.appbar)
+    @BindView(R.id.appbar)
     AppBarLayout mAppBarLayout;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.tv_number)
+    @BindView(R.id.tv_number)
     TextView mTvNumber;
 
-    @Bind(R.id.view_pager)
+    @BindView(R.id.view_pager)
     ViewPager mViewPager;
 
     private ProgressDialog mProgressDialog;
@@ -368,7 +367,7 @@ public class ImageBrowserActivity extends ThematicActivity {
             PhotoView photoView = ButterKnife.findById(view, R.id.photo_view);
             String suffix = FileUtils.getSuffix(mImageList.get(position).getName());
             if (suffix.equals(".gif")) {
-                Glide.with(mContext).load(mImageList.get(position).getPath()).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(photoView);
+                Glide.with(mContext).load(mImageList.get(position).getPath()).into(photoView);
             } else {
                 Glide.with(mContext).load(mImageList.get(position).getPath()).into(photoView);
             }

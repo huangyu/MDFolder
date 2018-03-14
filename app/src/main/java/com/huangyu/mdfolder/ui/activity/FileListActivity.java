@@ -26,7 +26,7 @@ import android.widget.RelativeLayout;
 import com.huangyu.library.app.ActivityManager;
 import com.huangyu.library.mvp.IBaseView;
 import com.huangyu.mdfolder.R;
-import com.huangyu.mdfolder.app.AppApplication;
+import com.huangyu.mdfolder.app.BootApplication;
 import com.huangyu.mdfolder.app.Constants;
 import com.huangyu.mdfolder.ui.fragment.AlbumAndImageFragment;
 import com.huangyu.mdfolder.ui.fragment.FileListFragment;
@@ -44,7 +44,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -56,16 +56,16 @@ import static com.huangyu.mdfolder.utils.SDCardUtils.getStoragePath;
 
 public class FileListActivity extends ThematicActivity implements EasyPermissions.PermissionCallbacks {
 
-    @Bind(R.id.appbar)
+    @BindView(R.id.appbar)
     AppBarLayout mAppBarLayout;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.rl_file)
+    @BindView(R.id.rl_file)
     RelativeLayout mRlFile;
 
-    @Bind(R.id.rl_album)
+    @BindView(R.id.rl_album)
     RelativeLayout mRlAlbum;
 
     private SearchView mSearchView;
@@ -347,12 +347,6 @@ public class FileListActivity extends ThematicActivity implements EasyPermission
         if (isChanged()) {
             replaceFragment();
         }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-//        outState.putString("WORKAROUND_FOR_BUG_19917_KEY", "WORKAROUND_FOR_BUG_19917_VALUE");
-//        super.onSaveInstanceState(outState);
     }
 
     private void replaceFragment() {
@@ -747,7 +741,7 @@ public class FileListActivity extends ThematicActivity implements EasyPermission
                     Uri uri = data.getData();
                     getContentResolver().takePersistableUriPermission(data.getData(),
                             Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    ((AppApplication) AppApplication.getInstance()).getSPUtils().put("uri", uri.toString());
+                    ((BootApplication) BootApplication.getInstance()).getSPUtils().put("uri", uri.toString());
                     selectedPosition = 1;
                     mRxManager.post("toStorage", true);
                 }
